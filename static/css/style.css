@@ -68,6 +68,7 @@ body {
   left: -.72rem;
   width: 3.14rem;
   padding: 1rem;
+  filter: invert(1);
 }
 .logo-pic-centered {
   position: absolute;
@@ -75,6 +76,7 @@ body {
   left: calc(50% - 3rem);
   width: 6rem;
   padding-top: 2rem;
+  filter: invert(1);
 }
 
 .button-menu {
