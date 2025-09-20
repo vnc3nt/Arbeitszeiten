@@ -1,4 +1,9 @@
 {% extends "index.html" %}
+
+{% block head_tags %}
+<script type="text/javascript" src="{{ url_for('static', filename='script/date_selector.js') }}"></script>
+{% endblock head_tags %}
+
 {% block title %}
 <title>Home</title>
 {% endblock title %}
@@ -13,52 +18,32 @@
             {% include "snippets/profile_menu.html" %}
     </details>
 </div>
-{% include "snippets/data.html" %}
-<br>
-
-<div id="addCategoryModal" class="modal">
-    <div class="modal-content">
-        <h2>Neue Kategorie hinzufügen</h2>
-
-        <button class="cancle" id="cancelCategoryBtn">×</button>
 
 
-        <input type="text" id="categoryName" placeholder="Name">
-        <input type="text" id="categoryUnit" placeholder="Einheit">
-        <input type="color" id="categoryColor">
-        <div class="modal-buttons">
-            <button id="saveCategoryBtn">Speichern</button>
-        </div>
+<div class="container">
+  <div class="top-cards">
+    <div class="card card-red">
+      <div class="card-title">Insgesamt</div>
+      <div class="card-value">{{ total_hours }}h</div>
     </div>
+    <div class="card card-gray">
+      <div class="card-title">dieser Monat</div>
+      <div class="card-value">{{ month_hours }}h</div>
+    </div>
+  </div>
+
+  <div class="edit-section">
+    <div class="day-selection" id="day-selection">
+      <span id="selected-date-display">{{ selected_date_display or 'Heute' }}</span>
+      <input type="date" id="date-picker" value="{{ selected_date or '' }}" onchange="selectDate(this.value)">
+    </div>
+    <div class="edit-time-box">
+      <button class="edit-btn">-30min</button>
+      <span class="edit-time-value">{{ edit_time }}</span>
+      <button class="edit-btn">+30min</button>
+    </div>
+  </div>
 </div>
 
-<div id="addEditCategoryModal" class="modal">
-    <div class="modal-content">
-        <h2 id="addEditCategoryModalTitle"> [category] bearbeiten</h2>
-
-        <button class="cancle" id="cancelEditCategoryBtn">×</button>
-
-        <input type="text" id="editCategoryName" placeholder="Name">
-        <input type="text" id="editCategoryUnit" placeholder="Einheit">
-        <input type="color" id="editCategoryColor">
-        <div class="modal-buttons">
-            <button id="deleteCategoryBtn">Löschen</button>
-            <button id="saveEditCategoryBtn">Speichern</button>
-        </div>
-    </div>
-</div>
-
-<div id="addFirstInfoModal" class="modal">
-    <div class="modal-content">
-        <h2>Hi {{ get_username() }}!</h2>
-        Um loszulegen füge unten mithilfe des [+] eine neue Kategorie hinzu, die du tracken möchtest. <br><br>
-        Sobald du deine ersten Daten eingibst, erscheint dein Graph. <br><br>
-        Wechsel mithilfe der Optionen oben rechts die Ansicht. <br><br>
-        Oben drüber findest du dein Profil.
-        <div class="modal-buttons">
-            <button id="okBtn" onclick="hideAddFirstInfoModal()">OK</button>
-        </div>
-    </div>
-</div>
 
 {% endblock content %}

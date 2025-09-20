@@ -6,9 +6,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
         <meta name="color-scheme" content="light dark" />
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='script/chart.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='script/buttons.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='script/regex.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='script/impressum.js') }}"></script>
         <link rel="icon" href="{{ url_for('static', filename='img/appicons/favicon.png')}}">
@@ -17,7 +14,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" >
         <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop.css') }}" media="not (max-width:600px)" />
         <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}" media="(max-width:600px)" />
-        <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Safari -->
+        <meta name="mobile-web-app-capable" content="yes"> <!-- Safari -->
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- Safari -->
         <meta name="theme-color" content="var(--website-background-color)"> <!-- Chrome, Firefox OS and Opera -->
         {% block head_tags %} <!-- TODO sometimes app is stuck when server shuts down even after reboot of server-->

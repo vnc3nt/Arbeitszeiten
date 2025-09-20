@@ -67,18 +67,54 @@ def register():
         if username_input is not None and password_1 is not None and password_2 is not None and checkRegistration(username_input, password_1, password_2) and check_username(username_input):
             # successful logged in
             # token cleanup
-            
-            newUserId = db.session.query(func.max(users.id)).scalar() + 1
+            last_id = db.session.query(func.max(users.id)).scalar()
+            newUserId = (last_id or 0) + 1
             newUser = users(id=newUserId, username=username_input, password=hash_pw(password_1))
             db.session.add(newUser)
             db.session.commit()
             return redirect("/login")
     return render_template('register.html')
 
-@app.route('/home')
+@app.route('/home', methods=["GET", "POST"])
 @validTokenChecker
 def home():
-    return render_template('home.html', user_id=session.get(USERID), get_username=get_username)
+    from datetime import datetime, date
+    
+    # Get the selected date from query parameter or use today as default
+    selected_date_str = request.args.get('date', '')
+    selected_date = None
+    selected_date_display = 'Heute'
+    
+    if selected_date_str:
+        try:
+            selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+            # Check if the selected date is today
+            if selected_date == date.today():
+                selected_date_display = 'Heute'
+            else:
+                # Format the date in German format (DD.MM.YYYY)
+                selected_date_display = selected_date.strftime('%d.%m.%Y')
+        except ValueError:
+            # If date parsing fails, use today
+            selected_date = date.today()
+            selected_date_str = selected_date.isoformat()
+    else:
+        # Default to today
+        selected_date = date.today()
+        selected_date_str = selected_date.isoformat()
+    
+    # Here you can add logic to filter data based on the selected_date
+    # For now, we'll pass the variables to the template
+    
+    return render_template('home.html', 
+                         user_id=session.get(USERID), 
+                         get_username=get_username,
+                         selected_date=selected_date_str,
+                         selected_date_display=selected_date_display,
+                         total_hours="0",  # Replace with actual calculation
+                         month_hours="0",  # Replace with actual calculation
+                         edit_time="8:00"  # Replace with actual value for selected date
+                         )
 
 @app.route('/edit')
 @validTokenChecker

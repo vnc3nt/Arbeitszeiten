@@ -37,7 +37,7 @@
   @media (prefers-color-scheme: dark) or (prefers-color-scheme: no-preference) {
     html:not(.light-mode) {
       --text-color: #f5f6fa;
-      --website-background-color: #000000;
+      --website-background-color: #1A1A1A;
       --color-scheme: dark;
       --button-color: #5050504a;
       --selected-color: #6969694a;
@@ -54,6 +54,9 @@ body {
     position: fixed;
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
     background-color: var(--website-background-color);
 }
 
@@ -77,171 +80,6 @@ body {
   width: 6rem;
   padding-top: 2rem;
   filter: invert(1);
-}
-
-.button-menu {
-  position: fixed;
-  right: 0px;
-  bottom: 0px;
-  width: 100vw;
-  height: 20vh;
-  border-radius: 10px 10px 0 0;
-  border: solid 1px;
-  border-color: var(--selected-color);
-  margin: 0px;
-  overflow-y: scroll;
-  z-index: 0;
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  padding: 0px;
-  animation: profile-menu .2s ease;
-  user-select: auto;
-  z-index: 3;
-  background-color: var(--website-background-color);
-}
-.button-menu::-webkit-scrollbar {
-  display: none;
-}
-
-.MainButtons button {
-    touch-action: auto;
-    height: 90px;
-    width: 27%;
-    border: solid;
-    padding: 10px;
-    border-width: 3px;
-    border-radius: 10px;
-    color: var(--button-text-color);
-}
-
-.MainButtons {
-  touch-action: auto;
-  position: absolute;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  top: 10px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
-
-.category-button {
-  border-width: 1px;
-  border-style: solid;
-  font-size: 1.2rem;
-  white-space: nowrap; /* Verhindert Umbruch des Textes */
-  overflow: hidden; /* Versteckt den überlaufenden Text */
-  text-overflow: ellipsis; /* Setzt "..." am Ende des abgeschnittenen Textes */
-}
-
-.category-button img {
-  width: 2rem;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.google-visualization-tooltip {
-  border: solid 1px !important;
-  background-color: var(--button-color) !important;
-  border-radius: 10px !important;
-  border-color: var(--selected-color)!important;
-  box-shadow: none !important;
-  backdrop-filter: blur(7px) !important;
-  -webkit-backdrop-filter: blur(7px) !important;
-  padding: .5rem !important;
-  padding-bottom: 0rem !important;
-  min-width: 7rem !important;
-  z-index: 1 !important;
-}
-
-
-.google-visualization-tooltip > ul > li > span {
-  color: var(--text-color) !important;
-  font-size: 1rem !important;
-}
-
-.tooltipName {
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.tooltipDate {
-  opacity: 80%;
-  font-size: .8rem;
-}
-
-.tooltipData {
-  display: flex;
-  justify-content: right;
-  font-size: 1rem;
-}
-
-.tooltipValue {
-  font-weight: bold;
-  display: inline;
-  justify-content: end;
-}
-
-
-.scrollwindow {
-    position: absolute;
-    top: calc(4rem + 35px);
-    position: absolute;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    touch-action: pan-x; /*no gummy-scrolleffect on mobile when scrolling up and down*/
-    width: 92.5%;
-    height: calc(100% - 4rem - 140px);
-    width: 100%;
-    left: 0px;
-    height: calc(100% - 4rem - 90px - 90px);
-    /*scroll-snap-type: x mandatory;
-    scroll-padding: 20px;*/
-}
-
-.scrollwindow:has(#curve_chart) {
-    overscroll-behavior: contain;
-}
-
-.scale {
-  position: absolute;
-  top: calc(4rem + 50px);
-  right: 20px;
-  height: calc(100% - 4rem - 90px - 90px);
-  width: 30px;
-  color: var(--text-color);
-  cursor: none;
-  user-select: none;
-}
-
-.max {
-  position: absolute;
-  top: calc(4rem - 40px);
-  right: 0px;
-  padding: 10px;
-  background-color: var(--button-color);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  border-radius: 5px;
-  border: solid 1px;
-  border-color: var(--selected-color);
-  z-index: 1;
-}
-
-.min {
-  position: absolute;
-  bottom: 7vh;
-  right: 0px;
-  padding: 10px;
-  background-color: var(--button-color);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  border-radius: 5px;
-  border: solid 1px;
-  border-color: var(--selected-color);
 }
 
 .login {
@@ -712,4 +550,11 @@ dialog {
   top: 180px;
   width: 100vw;
   display: grid;
+}
+
+h2 {
+  text-align: left;
+  font-weight: bold;
+  font-size: 2rem;
+  padding: 0.5rem;
 }

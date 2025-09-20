@@ -82,3 +82,178 @@
 .legal {
     bottom: 100px;
 }
+
+
+
+/* Container zentrieren mit Flexbox */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Karten oben */
+.top-cards {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 3.5rem;
+    margin-bottom: 4rem;
+}
+
+/* Einzelne Karte */
+.card {
+    background: #442223;
+    color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    padding: 1rem 1.5rem;
+    text-align: center;
+    min-width: 140px;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* graue Karte */
+.card.gray {
+    background: #444;
+}
+
+/* Überschrift in Karte */
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+}
+
+.card-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+/* Bereich "Heute" */
+.edit-section {
+    margin-top: 5.5rem;
+    text-align: center;
+}
+
+.day-selection {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    display: inline-block;
+    position: relative;
+}
+
+.day-selection:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.day-selection #date-picker {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}
+
+.edit-time-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0px;
+}
+
+.edit-btn {
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    transition: background 0.15s;
+    margin: 0 -1rem;
+    width: 5rem;
+    height: 5rem;
+}
+
+.edit-btn:active {
+    background: #2a2a2a;
+}
+
+.edit-time-value {
+    background: #222;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 1.45rem;
+    font-weight: bold;
+    padding: 0.7rem 2rem;
+    width: 6rem;
+    height: 2.5rem;
+    margin: 0 0.2rem;
+}
+
+/* Responsive Design für Hochformat */
+@media (max-width: 500px) {
+    .container {
+        min-height: 100vh;
+    }
+    .top-cards {
+        gap: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+    }
+    .card {
+        min-width: 110px;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+    }
+    .day-selection {
+        background: #44444423;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.2rem;
+        font-size: 1.05rem;
+        font-weight: 500;
+        box-shadow: inset 0px 0px 1rem 3px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        position: relative;
+    }
+    
+    .day-selection:hover {
+        background: #55555533;
+    }
+    
+    .day-selection #date-picker {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+    }
+    .edit-time-value {
+        font-size: 1.2rem;
+        padding: 0.5rem 1.2rem;
+        min-width: 80px;
+    }
+    .edit-btn {
+        font-size: 0.95rem;
+        padding: 0.4rem 0.85rem;
+    }
+}
