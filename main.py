@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify, session, send_file
-from models import db, users, token, newdata, category
+from models import db, users, token, data, category
 import os
 from api import app as api_app
 from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw
@@ -123,7 +123,7 @@ def logout():
 def count_entries():  # sourcery skip: use-named-expression
     user = db.session.query(users).filter(users.id == session.get(USERID)).first()
     if user:
-        count = db.session.query(func.count(distinct(newdata.date))).filter(newdata.userid == user.id).scalar()
+        count = db.session.query(func.count(distinct(data.date))).filter(data.userid == user.id).scalar()
         #print(count)
         return jsonify(count=count)
     else:

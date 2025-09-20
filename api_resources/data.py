@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from flask_restful.reqparse import RequestParser
 from flask import json, jsonify, session
 from sqlalchemy import func
-from models import db, users, current_date, token, newdata, category #newdata und category statt data implementieren
+from models import db, users, current_date, token, data, category #data und category statt data implementieren
 
 from datetime import datetime
 from decimal import Decimal
@@ -51,7 +51,7 @@ class Data(Resource):
         category_map = {categ.id: categ.name for categ in categories}
         
         # Abfrage der Daten
-        existing_data = db.session.query(newdata).filter(newdata.userid == user_id).order_by(newdata.date).all()
+        existing_data = db.session.query(data).filter(data.userid == user_id).order_by(data.date).all()
         username = db.session.query(users).filter(users.id == user_id).first().username
         
         # Strukturierung der Daten für die Ausgabe
@@ -68,7 +68,7 @@ class Data(Resource):
         # Maximalwerte für jede Kategorie berechnen
         max_values = {}
         for categ_id, categ_name in category_map.items():
-            max_value = db.session.query(func.max(newdata.data)).filter(newdata.userid == user_id, newdata.categoryId == categ_id).scalar()
+            max_value = db.session.query(func.max(data.data)).filter(data.userid == user_id, data.categoryId == categ_id).scalar()
             max_values[categ_name] = float(max_value) if max_value is not None else None
         
         return jsonify({
@@ -95,11 +95,11 @@ class Data(Resource):
                 category_id = category_obj.id
             
             # Bestehende Daten für den aktuellen Tag und die Kategorie abrufen
-            existing_data = db.session.query(newdata).filter(newdata.userid == user_id, newdata.date == current_date(), newdata.categoryId == category_id).first()
+            existing_data = db.session.query(data).filter(data.userid == user_id, data.date == current_date(), data.categoryId == category_id).first()
             
             if existing_data is None:
                 # Neue Datenzeile einfügen
-                new_data = newdata(userid=user_id, date=current_date(), categoryId=category_id, data=value)
+                new_data = data(userid=user_id, date=current_date(), categoryId=category_id, data=value)
                 db.session.add(new_data)
             else:
                 # Vorhandene Datenzeile aktualisieren

@@ -1,5 +1,5 @@
 from typing import Optional
-from models import category, db, newdata,users,token,update_expire_time
+from models import category, db, data,users,token,update_expire_time
 import hashlib
 from flask import session, redirect
 from constants import USERID, TOKEN, USERNAME_REGEX
@@ -27,7 +27,7 @@ def delete_account(pw: Optional[str]):
         return "Falsches Passwort"
 
 def delete_user_data(id: int):
-    newdata.query.filter_by(userid=id).delete()
+    data.query.filter_by(userid=id).delete()
     token.query.filter_by(userid=id).delete()
     category.query.filter_by(userId=id).delete()
     users.query.filter_by(id=id).delete()

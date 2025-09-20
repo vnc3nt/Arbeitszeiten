@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from flask_restful.reqparse import RequestParser
 from flask import json, jsonify, session
 from sqlalchemy import func
-from models import db, users, current_date, token, newdata, category #newdata und category statt data implementieren
+from models import db, users, current_date, token, data, category #data und category statt data implementieren
 
 from datetime import datetime
 from decimal import Decimal
@@ -128,7 +128,7 @@ class Categories(Resource):
             
             if category_to_delete:
                 # Löschen aller verknüpften Daten
-                db.session.query(newdata).filter(newdata.userid == user_id, newdata.categoryId == category_id).delete()
+                db.session.query(data).filter(data.userid == user_id, data.categoryId == category_id).delete()
                 
                 # Löschen der Kategorie
                 db.session.commit()
