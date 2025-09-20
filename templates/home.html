@@ -26,22 +26,56 @@
       <div class="card-title">Insgesamt</div>
       <div class="card-value">{{ total_hours }}h</div>
     </div>
-    <div class="card card-gray">
-      <div class="card-title">dieser Monat</div>
+    <div class="card card-gray" onclick="openMaxHoursModal()">
+      <div class="card-title">{{ selected_month_name }}</div>
       <div class="card-value">{{ month_hours }}h</div>
     </div>
   </div>
 
   <div class="edit-section">
     <div class="day-selection" id="day-selection">
-      <span id="selected-date-display">{{ selected_date_display or 'Heute' }}</span>
-      <input type="date" id="date-picker" value="{{ selected_date or '' }}" onchange="selectDate(this.value)">
+      <input type="date" id="date-picker" value="{{ selected_date or '' }}" onchange="selectDate(this.value)" class="styled-date-picker">
     </div>
     <div class="edit-time-box">
-      <button class="edit-btn">-30min</button>
+      <form method="POST" style="display: inline;">
+        <input type="hidden" name="selected_date" value="{{ selected_date }}">
+        <input type="hidden" name="action" value="sub_30">
+        <button type="submit" class="edit-btn">-30min</button>
+      </form>
       <span class="edit-time-value">{{ edit_time }}</span>
-      <button class="edit-btn">+30min</button>
+      <form method="POST" style="display: inline;">
+        <input type="hidden" name="selected_date" value="{{ selected_date }}">
+        <input type="hidden" name="action" value="add_30">
+        <button type="submit" class="edit-btn">+30min</button>
+      </form>
     </div>
+  </div>
+</div>
+
+<!-- Modal für MaxHours Bearbeitung -->
+<div id="maxHoursModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Maximale Stunden pro Monat:</h3>
+      <span class="modal-close" onclick="closeMaxHoursModal()">&times;</span>
+    </div>
+    <form method="POST" action="{{ url_for('home') }}">
+      <input type="hidden" name="action" value="set_max_hours">
+      <input type="hidden" name="selected_date" value="{{ selected_date }}">
+      <div class="modal-body">
+        <input type="text" 
+               id="maxHoursInput" 
+               name="max_hours" 
+               placeholder="{{ current_max_hours or '' }}"
+               pattern="[0-9]+([,.][0-9]+)?"
+               title="Bitte geben Sie eine Zahl ein (z.B. 35, 35.5 oder 35,5)"
+               required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="closeMaxHoursModal()" class="btn-cancel">Abbrechen</button>
+        <button type="submit" class="btn-save">Speichern</button>
+      </div>
+    </form>
   </div>
 </div>
 

@@ -79,6 +79,57 @@ def register():
 @validTokenChecker
 def home():
     from datetime import datetime, date
+    from decimal import Decimal
+    
+    user_id = session.get(USERID)
+    
+    # Handle +30min/-30min actions
+    if request.method == "POST":
+        action = request.form.get('action')
+        selected_date_str = request.form.get('selected_date')
+        
+        if action and selected_date_str:
+            try:
+                selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+                
+                # Get current total hours for the date
+                current_total = db.session.query(func.sum(data.data)).filter(
+                    data.userid == user_id,
+                    data.date == selected_date
+                ).scalar() or Decimal('0')
+                
+                # Calculate new total
+                if action == 'add_30':
+                    new_total = current_total + Decimal('0.5')
+                elif action == 'sub_30':
+                    new_total = max(Decimal('0'), current_total - Decimal('0.5'))
+                else:
+                    new_total = current_total
+                
+                # Delete existing entries for this date
+                db.session.query(data).filter(
+                    data.userid == user_id,
+                    data.date == selected_date
+                ).delete()
+                
+                # Add new entry with updated total (if > 0)
+                if new_total > 0:
+                    new_entry = data(
+                        userid=user_id,
+                        date=selected_date,
+                        categoryid=None,  # You might want to use a default category
+                        data=new_total
+                    )
+                    db.session.add(new_entry)
+                
+                db.session.commit()
+                
+                # Redirect to avoid form resubmission
+                return redirect(f"/home?date={selected_date_str}")
+                
+            except (ValueError, Exception) as e:
+                print(f"Error processing time adjustment: {e}")
+                db.session.rollback()
     
     # Get the selected date from query parameter or use today as default
     selected_date_str = request.args.get('date', '')
@@ -103,17 +154,58 @@ def home():
         selected_date = date.today()
         selected_date_str = selected_date.isoformat()
     
-    # Here you can add logic to filter data based on the selected_date
-    # For now, we'll pass the variables to the template
+    # Calculate hours for selected date
+    day_total_hours = db.session.query(func.sum(data.data)).filter(
+        data.userid == user_id,
+        data.date == selected_date
+    ).scalar() or Decimal('0')
+    
+    # Format hours for display (e.g., 8.5 -> "8:30")
+    def format_hours(decimal_hours):
+        if decimal_hours == 0:
+            return "0:00"
+        hours = int(decimal_hours)
+        minutes = int((decimal_hours - hours) * 60)
+        return f"{hours}:{minutes:02d}"
+    
+    edit_time = format_hours(day_total_hours)
+    
+    # Calculate total hours (all time)
+    total_hours_decimal = db.session.query(func.sum(data.data)).filter(
+        data.userid == user_id
+    ).scalar() or Decimal('0')
+    
+    # Calculate month hours (for the selected date's month)
+    month_hours_decimal = db.session.query(func.sum(data.data)).filter(
+        data.userid == user_id,
+        func.extract('month', data.date) == selected_date.month,
+        func.extract('year', data.date) == selected_date.year
+    ).scalar() or Decimal('0')
+    
+    # Get German month name
+    german_months = {
+        1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
+        5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
+        9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
+    }
+    selected_month_name = german_months[selected_date.month]
+    
+    # Format decimal hours for display (e.g., 3.5 -> "3.5", 4.0 -> "4")
+    def format_decimal_hours(decimal_hours):
+        if decimal_hours == int(decimal_hours):
+            return str(int(decimal_hours))
+        else:
+            return str(float(decimal_hours))
     
     return render_template('home.html', 
-                         user_id=session.get(USERID), 
+                         user_id=user_id, 
                          get_username=get_username,
                          selected_date=selected_date_str,
                          selected_date_display=selected_date_display,
-                         total_hours="0",  # Replace with actual calculation
-                         month_hours="0",  # Replace with actual calculation
-                         edit_time="8:00"  # Replace with actual value for selected date
+                         selected_month_name=selected_month_name,
+                         total_hours=format_decimal_hours(total_hours_decimal),
+                         month_hours=format_decimal_hours(month_hours_decimal),
+                         edit_time=edit_time
                          )
 
 @app.route('/edit')

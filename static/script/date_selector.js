@@ -2,32 +2,11 @@
 let selectedDate = null;
 
 function selectDate(dateValue) {
-    console.log('selectDate called with:', dateValue); // Debug
+    console.log('selectDate called with:', dateValue);
     
     if (!dateValue) return;
     
     selectedDate = dateValue;
-    const displayElement = document.getElementById('selected-date-display');
-    
-    if (displayElement) {
-        const selectedDateObj = new Date(dateValue);
-        const today = new Date();
-        
-        // Normalize dates to compare only date part (not time)
-        const isToday = selectedDateObj.toDateString() === today.toDateString();
-        
-        if (isToday) {
-            displayElement.textContent = 'Heute';
-        } else {
-            // Format date in German format (DD.MM.YYYY)
-            const formattedDate = selectedDateObj.toLocaleDateString('de-DE', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            displayElement.textContent = formattedDate;
-        }
-    }
     
     // Store selected date and reload page
     updateSelectedDate(dateValue);
@@ -43,9 +22,49 @@ function updateSelectedDate(dateValue) {
     window.location.href = currentUrl.toString();
 }
 
+function formatDateInput() {
+    const datePicker = document.getElementById('date-picker');
+    if (!datePicker || !datePicker.value) return;
+    
+    const selectedDateObj = new Date(datePicker.value);
+    const today = new Date();
+    
+    // Check if the selected date is today
+    const isToday = selectedDateObj.toDateString() === today.toDateString();
+    
+    if (isToday) {
+        // Create a custom display for "today"
+        datePicker.style.color = 'transparent';
+        const displaySpan = document.createElement('span');
+        displaySpan.textContent = 'Heute';
+        displaySpan.style.position = 'absolute';
+        displaySpan.style.top = '50%';
+        displaySpan.style.left = '50%';
+        displaySpan.style.transform = 'translate(-50%, -50%)';
+        displaySpan.style.pointerEvents = 'none';
+        displaySpan.style.color = 'inherit';
+        displaySpan.id = 'today-label';
+        
+        // Remove existing label if any
+        const existingLabel = document.getElementById('today-label');
+        if (existingLabel) {
+            existingLabel.remove();
+        }
+        
+        datePicker.parentElement.appendChild(displaySpan);
+    } else {
+        // Remove "today" label if it exists
+        const existingLabel = document.getElementById('today-label');
+        if (existingLabel) {
+            existingLabel.remove();
+        }
+        datePicker.style.color = 'inherit';
+    }
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Date selector initialized'); // Debug
+    console.log('Date selector initialized');
     const datePicker = document.getElementById('date-picker');
     
     if (!datePicker) {
@@ -65,20 +84,11 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Set default date to today:', selectedDate);
     }
     
-    // Make the day-selection clickable to focus the date input
-    const daySelection = document.getElementById('day-selection');
-    if (daySelection) {
-        daySelection.addEventListener('click', function(e) {
-            // Don't trigger if clicking on the date input itself
-            if (e.target.id !== 'date-picker') {
-                datePicker.focus();
-                try {
-                    datePicker.showPicker();
-                } catch (err) {
-                    // showPicker not supported in all browsers
-                    console.log('showPicker not supported');
-                }
-            }
-        });
-    }
+    // Format the date input on load
+    formatDateInput();
+    
+    // Add event listener for when the date changes
+    datePicker.addEventListener('change', function() {
+        formatDateInput();
+    });
 });

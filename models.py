@@ -23,6 +23,7 @@ class data(db.Model):
     date=db.Column(db.DATE, nullable=False, primary_key=True, default=current_date)
     categoryid=db.Column(db.BIGINT,ForeignKey("category.id"), nullable=True, primary_key=False)
     data=db.Column(db.Numeric(5,2), nullable=True)
+    maxhours=db.Column(db.Numeric(5,2), nullable=True)
 
 class category(db.Model):
     id=db.Column(db.BIGINT, primary_key=True, nullable=False)
