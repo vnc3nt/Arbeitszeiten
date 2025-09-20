@@ -18,10 +18,10 @@ class users(db.Model):
     username=db.Column(db.String(30), nullable=False)
     password=db.Column(db.String(128), nullable=False)
 
-class newdata(db.Model):
+class data(db.Model):
     userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
     date=db.Column(db.DATE, nullable=False, primary_key=True, default=current_date)
-    categoryId=db.Column(db.BIGINT,ForeignKey("category.id"), nullable=False, primary_key=True)
+    categoryId=db.Column(db.BIGINT,ForeignKey("category.id"), nullable=True, primary_key=False)
     data=db.Column(db.Numeric(5,2), nullable=True)
 
 class category(db.Model):
@@ -29,7 +29,6 @@ class category(db.Model):
     userId=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
     name=db.Column(db.String(30), nullable=False)
     color=db.Column(db.String(7), nullable=False)
-    unit=db.Column(db.String(3), nullable=True)
 
 class token(db.Model):
     userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False)
