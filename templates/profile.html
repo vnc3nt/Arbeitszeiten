@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+{% block title %}
+<title>profile</title>
+{% endblock title %}
+{% block head_tags %}
+<script src="{{ url_for('static', filename='script/profile_settings.js') }}" type="text/javascript"></script>
+{% endblock head_tags %}
+{% block content %}
+<a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="GAINS"></a>
+<div class="profile">
+    <details id="profile-menu-btn">
+        <summary>
+            <img class="profile-pic" src="{{url_for('static', filename='img/icons/512x512-profile.png')}}" alt="profile">
+        </summary>
+            {% include "snippets/profile_menu.html" %}
+    </details>
+</div>
+<a class="backbutton" href="{{ url_for('home') }}"> ❮ Profil</a>
+
+<div class="profile-content">
+    <button class="not-implemented" id="changeLanguage">Sprache ändern</button>
+    <button class="not-implemented" id="changeProfilePic">Profilbild ändern</button>
+    <button id="changeUsernameBtn">Benutzernamen ändern</button>
+    <button id="changePasswordBtn">Passwort ändern</button>
+    <button id="deleteAccountBtn" class="deleteAccountBtn">Account Löschen</button>
+
+    <div class="modal" id="modal-background"></div>
+
+    <dialog id="change-user-name-dialog">
+        <form action="" method="post">
+            <h2>Benutzernamen ändern</h2>
+            <input type="hidden" value="change-username" name="action" />
+            <input type="text" placeholder="Neuer Benutzername" name="new_username" /><br>
+            <input type="reset" value="Abbrechen" />
+            <input type="submit" value="Ändern" />
+        </form>
+    </dialog>
+    <dialog id="delete-account-dialog">
+        <form action="" method="post">
+            <h2>Account löschen</h2>
+            <input type="hidden" name="action" value="delete-account">
+            <input type="password" name="password" id="password" placeholder="Passwort">
+            <br>
+            <input type="reset" value="Abbrechen" />
+            <input type="submit" value="Löschen" class="deleteAccountBtn">
+        </form>
+    </dialog>
+    <dialog id="change-password-dialog">
+        <form action="" method="post">
+            <h2>Passwort ändern</h2>
+
+            <input type="hidden" name="action" value="change-password">
+            <input type="password" name="current-password" id="current_passwor" placeholder="Aktuelles Passwort" autocomplete="current-password" /><br><br>
+            <input type="password" name="new-password" placeholder="Neues Passwort" autocomplete="new-password" /><br>
+            <input type="password" name="new-password-confirmation" placeholder="Neues Passwort best&auml;tigen" autocomplete="new-password" /><br>
+            <input type="reset" value="Abbrechen" />
+            <input type="submit" value="Ändern" />
+        </form>
+    </dialog>
+</div>
+{% endblock content %}

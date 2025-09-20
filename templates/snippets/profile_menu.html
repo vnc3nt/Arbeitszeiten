@@ -1,0 +1,48 @@
+<menu id="profile-menu">
+    <ul>
+        <a href="{{ url_for('profile') }}">
+            <li>
+                <div class="username"> {{ get_username() }} </div>
+            </li>
+        </a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=CP7W77JA8GSUC">
+            <li>
+                <ul>
+                    <img class="icon" src="{{url_for('static', filename='img/icons/96x96-heart.png')}}" alt="donate">
+                </ul>
+                <ul>
+                    <div >Spenden</div>
+                </ul>
+            </li>
+        </a>
+        
+    
+
+        <a href="{{ url_for('logout') }}">
+            <li>
+                <ul>
+                    <img class="icon" src="{{url_for('static', filename='img/icons/96x96-logout.png')}}" alt="logout">
+                </ul>
+                <ul>
+                    <div class="logout">Abmelden</div>
+                </ul>
+            </li>
+        </a>
+
+        <div class="legal">
+            <a href="{{ url_for('impressum') }}">
+                <li>
+                    <ul class="first-ul-width">•</ul>
+                    <ul>Impressum</ul>
+                </li>
+            </a>
+            <a href="{{ url_for('dpa') }}" download>
+                <li>
+                    <ul class="first-ul-width">•</ul>
+                    <ul>Datenschutzerklärung</ul>
+                </li>
+            </a>
+        </div>
+        
+    </ul>
+</menu>

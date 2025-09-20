@@ -1,0 +1,84 @@
+{% extends "index.html" %}
+{% block title %}
+<title>Home</title>
+{% endblock title %}
+
+{% block content %}
+<a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="GAINS"></a>
+<div class="profile">
+    <details id="profile-menu-btn">
+        <summary>
+            <img class="profile-pic" src="{{url_for('static', filename='img/icons/512x512-profile.png')}}" alt="profile">
+        </summary>
+            {% include "snippets/profile_menu.html" %}
+    </details>
+</div>
+<div class="view">
+    <div class="view-options">
+        <input type="radio" id="week" value="week" name="view-options" checked/>
+        <label class="tab" for="week">Woche</label>
+        <input type="radio" id="month" value="month" name="view-options" />
+        <label class="tab" for="month">Monat</label>
+        <input type="radio" id="year" value="year" name="view-options" />
+        <label class="tab" for="year">Jahr</label>
+        <span class="glider"></span>
+    </div>
+</div>
+{% include "snippets/data.html" %}
+<br>
+<div class="button-menu">
+    <div class="bar-background">
+        <div class="bar"></div>
+    </div>
+    <div class="MainButtons" id="main-buttons">
+        <!-- Hier werden die dynamisch generierten Buttons eingefügt -->
+    </div>
+    <button class="more-menu-btn" id="more-menu-btn" onclick="expandButtonsDesktop(event)"> ▲ </button>
+</div>
+
+<div id="addCategoryModal" class="modal">
+    <div class="modal-content">
+        <h2>Neue Kategorie hinzufügen</h2>
+
+        <button class="cancle" id="cancelCategoryBtn">×</button>
+
+
+        <input type="text" id="categoryName" placeholder="Name">
+        <input type="text" id="categoryUnit" placeholder="Einheit">
+        <input type="color" id="categoryColor">
+        <div class="modal-buttons">
+            <button id="saveCategoryBtn">Speichern</button>
+        </div>
+    </div>
+</div>
+
+<div id="addEditCategoryModal" class="modal">
+    <div class="modal-content">
+        <h2 id="addEditCategoryModalTitle"> [category] bearbeiten</h2>
+
+        <button class="cancle" id="cancelEditCategoryBtn">×</button>
+
+        <input type="text" id="editCategoryName" placeholder="Name">
+        <input type="text" id="editCategoryUnit" placeholder="Einheit">
+        <input type="color" id="editCategoryColor">
+        <div class="modal-buttons">
+            <button id="deleteCategoryBtn">Löschen</button>
+            <button id="saveEditCategoryBtn">Speichern</button>
+        </div>
+    </div>
+</div>
+
+<div id="addFirstInfoModal" class="modal">
+    <div class="modal-content">
+        <h2>Hi {{ get_username() }}!</h2>
+        Um loszulegen füge unten mithilfe des [+] eine neue Kategorie hinzu, die du tracken möchtest. <br><br>
+        Sobald du deine ersten Daten eingibst, erscheint dein Graph. <br><br>
+        Wechsel mithilfe der Optionen oben rechts die Ansicht. <br><br>
+        Oben drüber findest du dein Profil.
+        <div class="modal-buttons">
+            <button id="okBtn" onclick="hideAddFirstInfoModal()">OK</button>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

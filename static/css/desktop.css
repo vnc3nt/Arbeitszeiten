@@ -1,0 +1,68 @@
+#profile-menu {
+    margin: 0px;
+    position: absolute;
+    overflow: auto;
+    z-index: 0;
+    top: 3.5rem;
+    right: .5rem;
+    background-color: var(--button-color);
+    padding: 0px;
+    border-radius: 10px;
+    border: solid 1px;
+    border-color: var(--selected-color);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+
+    .legal {
+      position: relative;
+      bottom: 0px;
+      
+    }
+  }
+
+
+.scrollwindow::-webkit-scrollbar {
+    width: 100px;
+    height: 10px;
+    position: absolute;
+    left: 0;
+}
+
+.bar {
+  display: none;
+}
+
+.more-menu-btn {
+  position: sticky;
+  width: 1.5rem;
+  height: 1.5rem;
+  top: 0px;
+  left: 98%;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  padding: .5rem;
+  background-color: var(--button-color);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border-radius: 5px;
+  border: solid 1px;
+  border-color: var(--selected-color);
+  z-index: 1;
+}
+
+.logo-pic {
+  width: 5rem;
+}
+
+.category-button img {
+  width: 2rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

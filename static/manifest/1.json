@@ -1,0 +1,20 @@
+{
+    "name": "GAINS",
+    "icons": [
+        {
+            "src": "../img/appicons/512x512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        },
+        {
+            "src": "../img/appicons/512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+          }
+    ],
+    "start_url": "https://my-gains.onrender.com/home",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#121212"
+}

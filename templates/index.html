@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+        <meta name="color-scheme" content="light dark" />
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='script/chart.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='script/buttons.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='script/regex.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='script/impressum.js') }}"></script>
+        <link rel="icon" href="{{ url_for('static', filename='img/appicons/favicon.png')}}">
+        <link rel="manifest" href="{{ url_for('static', filename='manifest/1.json')}}" >
+        <link rel="apple-touch-startup-image" href="../img/splashscreen/loadingscreen.png">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" >
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop.css') }}" media="not (max-width:600px)" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}" media="(max-width:600px)" />
+        <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Safari -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- Safari -->
+        <meta name="theme-color" content="var(--website-background-color)"> <!-- Chrome, Firefox OS and Opera -->
+        {% block head_tags %} <!-- TODO sometimes app is stuck when server shuts down even after reboot of server-->
+        {# use to add script-tags, link-tags etc. in other files into the head section #}
+        {% endblock head_tags %}
+
+        {% block title %}
+        {% if title %}
+            <title>{{ title }}</title>
+        {% else %}
+            <script type="text/javascript">
+                document.title = document.location.pathname;
+            </script>
+        {% endif %}
+        {% endblock title %}
+        <script>
+            function getUserId() {
+                return document.getElementById("user_id").value;
+            }
+        </script>
+    </head>
+    <body>
+        <input type="hidden" id="user_id" value="{{ user_id }}" />
+        <div id="content">
+            <main id="home-content">
+                {% block content required %}
+                {# put content html code into a content-block in html files extending index.html #}
+                {% endblock content %}
+            </main>
+        </div>
+    </body>
+</html>

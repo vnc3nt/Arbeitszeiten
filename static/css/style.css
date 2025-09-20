@@ -1,0 +1,711 @@
+@charset "UTF-8";
+
+/*TODO variables not working*/
+@media (prefers-color-scheme: light) {
+    html:not(.dark-mode) {
+      --text-color: black;
+      --website-background-color: #f3f3f3;
+      --color-scheme: light;
+      --button-color: #ffffffe3;
+      --selected-color: #e9e9e9;
+      --button-text-color: #ffffff;
+      --link-color: #69005a;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      filter: drop-shadow(0px 0px 1px black);
+    }
+
+
+    .category-button img {
+      filter: none;
+    }
+
+    .logo-pic{
+        filter: brightness(0.1) opacity(0.35);
+    }
+
+    .logo-pic-centered {
+      filter: brightness(1) ;
+    }
+
+  }
+  @media (prefers-color-scheme: dark) or (prefers-color-scheme: no-preference) {
+    html:not(.light-mode) {
+      --text-color: #f5f6fa;
+      --website-background-color: #000000;
+      --color-scheme: dark;
+      --button-color: #5050504a;
+      --selected-color: #6969694a;
+      --button-text-color: #ffffff;
+      --link-color: #ffd6f9;
+      height: 100%;
+    }
+  }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    touch-action: none;
+    overflow-y: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: var(--website-background-color);
+}
+
+.addButton {
+  background-color: var(--button-color);
+}
+
+
+.logo-pic {
+  position: absolute;
+  top: -.72rem;
+  left: -.72rem;
+  width: 3.14rem;
+  padding: 1rem;
+}
+.logo-pic-centered {
+  position: absolute;
+  top: -.72rem;
+  left: calc(50% - 3rem);
+  width: 6rem;
+  padding-top: 2rem;
+}
+
+.button-menu {
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  width: 100vw;
+  height: 20vh;
+  border-radius: 10px 10px 0 0;
+  border: solid 1px;
+  border-color: var(--selected-color);
+  margin: 0px;
+  overflow-y: scroll;
+  z-index: 0;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  padding: 0px;
+  animation: profile-menu .2s ease;
+  user-select: auto;
+  z-index: 3;
+  background-color: var(--website-background-color);
+}
+.button-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.MainButtons button {
+    touch-action: auto;
+    height: 90px;
+    width: 27%;
+    border: solid;
+    padding: 10px;
+    border-width: 3px;
+    border-radius: 10px;
+    color: var(--button-text-color);
+}
+
+.MainButtons {
+  touch-action: auto;
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  top: 10px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.category-button {
+  border-width: 1px;
+  border-style: solid;
+  font-size: 1.2rem;
+  white-space: nowrap; /* Verhindert Umbruch des Textes */
+  overflow: hidden; /* Versteckt den überlaufenden Text */
+  text-overflow: ellipsis; /* Setzt "..." am Ende des abgeschnittenen Textes */
+}
+
+.category-button img {
+  width: 2rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.google-visualization-tooltip {
+  border: solid 1px !important;
+  background-color: var(--button-color) !important;
+  border-radius: 10px !important;
+  border-color: var(--selected-color)!important;
+  box-shadow: none !important;
+  backdrop-filter: blur(7px) !important;
+  -webkit-backdrop-filter: blur(7px) !important;
+  padding: .5rem !important;
+  padding-bottom: 0rem !important;
+  min-width: 7rem !important;
+  z-index: 1 !important;
+}
+
+
+.google-visualization-tooltip > ul > li > span {
+  color: var(--text-color) !important;
+  font-size: 1rem !important;
+}
+
+.tooltipName {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.tooltipDate {
+  opacity: 80%;
+  font-size: .8rem;
+}
+
+.tooltipData {
+  display: flex;
+  justify-content: right;
+  font-size: 1rem;
+}
+
+.tooltipValue {
+  font-weight: bold;
+  display: inline;
+  justify-content: end;
+}
+
+
+.scrollwindow {
+    position: absolute;
+    top: calc(4rem + 35px);
+    position: absolute;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    touch-action: pan-x; /*no gummy-scrolleffect on mobile when scrolling up and down*/
+    width: 92.5%;
+    height: calc(100% - 4rem - 140px);
+    width: 100%;
+    left: 0px;
+    height: calc(100% - 4rem - 90px - 90px);
+    /*scroll-snap-type: x mandatory;
+    scroll-padding: 20px;*/
+}
+
+.scrollwindow:has(#curve_chart) {
+    overscroll-behavior: contain;
+}
+
+.scale {
+  position: absolute;
+  top: calc(4rem + 50px);
+  right: 20px;
+  height: calc(100% - 4rem - 90px - 90px);
+  width: 30px;
+  color: var(--text-color);
+  cursor: none;
+  user-select: none;
+}
+
+.max {
+  position: absolute;
+  top: calc(4rem - 40px);
+  right: 0px;
+  padding: 10px;
+  background-color: var(--button-color);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border-radius: 5px;
+  border: solid 1px;
+  border-color: var(--selected-color);
+  z-index: 1;
+}
+
+.min {
+  position: absolute;
+  bottom: 7vh;
+  right: 0px;
+  padding: 10px;
+  background-color: var(--button-color);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border-radius: 5px;
+  border: solid 1px;
+  border-color: var(--selected-color);
+}
+
+.login {
+    padding-top: 150px;
+    text-align: center;
+}
+
+
+
+input {
+    padding: 10px;
+    width: 60%;
+    margin-bottom: 10px;
+    margin-inline: 10px;
+    max-width: 200px;
+    color: var(--text-color);
+    border: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: rgba(120, 120, 120, .9);
+    align-content: center;
+    background-color: var(--selected-color);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+button, input[type=submit], input[type=reset] {
+    touch-action: auto;
+    margin: 10px;
+    color: var(--text-color);
+    background-color: var(--button-color);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border: solid;
+    padding: 10px;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    cursor: pointer;
+    border-width: 1px;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 200px;
+    border-color: rgba(120, 120, 120, .9);
+    white-space: nowrap; /* Verhindert Umbruch des Textes */
+    overflow: hidden; /* Versteckt den überlaufenden Text */
+    text-overflow: ellipsis; /* Setzt "..." am Ende des abgeschnittenen Textes */
+}
+
+.backbutton {
+    position: relative;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 2rem;
+    top: 6.6rem;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+
+
+.view {
+    position: absolute;
+    top: calc(4rem + 20px);
+    right: 20px;
+}
+
+.view-options {
+    border: solid 1px;
+    border-color: var(--selected-color);
+    display: flex;
+    position: relative;
+    background-color: var(--button-color);
+    padding: 0.75rem;
+    border-radius: 99px;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    width: 130px;
+}
+
+.view-options * {
+    z-index: 2;
+}
+
+input[type=radio] {
+    display: none;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    justify-content: space-around;
+    height: 7.5px;
+    width: 5rem;
+    font-size: .725rem;
+    font-weight: 500;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: color 0.15s ease-in;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.tab[for="week"] {
+  transform: translateX(-5px);
+}
+
+.tab[for="month"] {
+  transform: translateX(+3px);
+}
+
+.tab[for="year"] {
+  transform: translateX(+5px);
+}
+
+input[type=radio]:checked+label {
+    color: var(--text-color);
+}
+
+input[id=week]:checked~.glider {
+    transform: translateX(-18%) scaleX(95%);
+}
+
+input[id=month]:checked~.glider {
+    transform: translateX(72%) scaleX(90%);
+}
+
+input[id=year]:checked~.glider {
+    transform: translateX(158%) scaleX(85%);
+}
+
+.glider {
+    position: absolute;
+    display: flex;
+    box-sizing: border-box;
+    height: 1.6rem;
+    width: 36%;
+    top: 3px;
+    background-color: var(--selected-color);
+    z-index: 1;
+    border-radius: 99px;
+    transition: 0.25s ease-out;
+}
+
+
+.datalist {
+  position: relative;
+  top: 110px;
+  padding: 10px;
+  width: 100%;
+}
+
+/* scroll snap takes care of restoring scroll position */
+.swipe-container {
+  display: flex;
+  overflow: auto;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+}
+/* scrollbar should be hidden */
+.swipe-container::-webkit-scrollbar {
+  display: none;
+}
+/* main element should always snap into view */
+.swipe-element {
+  scroll-snap-align: start;
+  font-family: sans-serif;
+  padding: 16px;
+  background-color: var(--button-color);
+}
+/* actions and element should be 100% wide */
+.action,
+.swipe-element {
+  min-width: 100%;
+}
+.action {
+  display: flex;
+  align-items: center;
+}
+/* icon should remain sticky */
+i {
+  color: var(--text-color);
+  position: sticky;
+  left: 16px;
+  right: 16px;
+}
+/* action background colors */
+.left {
+  background-color: rgb(0, 27, 163);
+}
+.right {
+  justify-content: flex-end;
+  background-color: rgb(199, 0, 0);
+}
+
+
+
+.profile {
+  float: right;
+  position: relative;
+  top: 5px;
+  right: 20px;
+  z-index: 4
+}
+
+.profile summary::marker {
+  content: none;
+}
+
+details summary::-webkit-details-marker {
+  display:none;
+}
+
+details> summary {
+    list-style-type: none;
+}
+
+.profile .profile-pic {
+  cursor: pointer;
+}
+
+#profile-menu {
+  right: 26px;
+  min-width: 200px;
+  
+}
+
+.username {
+  font-weight: bold;
+}
+
+.profile-pic {
+  border: solid 1px;
+  border-radius: 50%;
+  width: 3rem;
+  border-color: var(--selected-color);
+  background-color: var(--button-color);
+}
+.profile-pic:active {
+  transform: scale(95%);
+}
+
+.logout {
+  color: red;
+}
+
+#profile-menu a {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+#profile-menu ul {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  display: grid;
+}
+
+#profile-menu ul li {
+  border-radius: 5px;
+  padding: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  display: flex;
+  align-items: center;
+  
+}
+#profile-menu ul li .submenu {
+  flex: 3;
+}
+#profile-menu ul li:first-child, #profile-menu ul li:last-child {
+  border-radius: 5px;
+}
+#profile-menu ul li:hover {
+  background-color: var(--selected-color);
+}
+
+a :hover :last-child{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 5;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: var(--button-color);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  margin: 20% auto;
+  padding: 1rem;
+  border-radius: 5px;
+  border: solid 1px;
+  border-color: var(--selected-color);
+  width: 70vw;
+  max-width: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+h2 {
+  width: 100%;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+button#deleteCategoryBtn, .deleteAccountBtn {
+  background-color: rgba(255, 0, 0, 0.35) !important;
+}
+
+button#cancelEditCategoryBtn,#cancelCategoryBtn {
+  width: 2rem;
+  height: 2rem;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 0px;
+  line-height: 1rem;
+  font-size: 1.5rem;
+}
+
+input#categoryUnit, #editCategoryUnit {
+  width: 20%;
+}
+
+input[type=color] {
+  width: 2rem;
+  height: 2rem;
+  padding: 0px;
+  border-radius: 50%;
+}
+
+input[type=color]::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+}
+
+input[type=color]::-webkit-color-swatch-wrapper {
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.modal-buttons{
+  display: inline;
+  width: 100%;
+  text-align: center;
+  margin-top: 1rem;
+  user-select: none;
+}
+
+.modal-buttons button{
+  width: 35%;
+}
+
+
+.disable-scroll {
+  overflow-y: hidden;
+}
+
+.enable-scroll {
+  overflow-y: auto;
+}
+
+.icon  {
+  height: 1.2rem;
+  padding-right: 0.5rem;
+}
+
+.profile-content {
+  position: absolute;
+  top: 180px;
+  width: 100vw;
+  display: grid;
+}
+
+.profile-content button {
+  width: 100%;
+  justify-self: center;
+}
+
+dialog {
+  background-color: var(--button-color);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  top: min(20%, 10rem);
+  left: 50%;
+  transform: translateX(-50%);
+  position: fixed;
+  margin: 0;
+  padding: 1rem;
+  border-radius: 5px;
+  border: solid 1px;
+  border-color: var(--selected-color);
+  width: 70vw;
+  max-width: 550px;
+  text-align: center;
+}
+
+.not-implemented {
+  filter: opacity(50%);
+}
+
+.regex {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  background-blend-mode: multiply;
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  position: relative;
+  top: 0.1rem;
+}
+
+.regex#usernameCheck,#firstPWCheck,#secondPWCheck {
+  background-color: green;
+  mask-image: url('../img/icons/check.png');
+  -webkit-mask-image: url('../img/icons/check.png');
+}
+
+.regex#usernameX,#firstPWX,#secondPWX {
+  background-color: red;
+  mask-image: url('../img/icons/x.png');
+  -webkit-mask-image: url('../img/icons/x.png');
+}
+
+.regexFeedback {
+  display: none;
+  margin-left: 0.5rem;
+}
+
+#passwordMin8 {
+  display: inline;
+}
+
+.legal {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  filter: invert(.3);
+}
+
+.impressum-content {
+  position: absolute;
+  top: 180px;
+  width: 100vw;
+  display: grid;
+}

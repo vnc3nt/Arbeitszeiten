@@ -1,0 +1,84 @@
+.scrollwindow {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scrollwindow::-webkit-scrollbar {
+    display: none;
+}
+
+#profile-menu {
+    position: absolute;
+    right: -0.8rem;
+    top: 4rem;
+    width: 100vw;
+    height: calc(110vh - 6.875rem);
+    border-radius: 10px 10px 0 0;
+    margin: 0px;
+    overflow: hidden;
+    z-index: 0;
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    padding: 0px;
+    border: solid 1px;
+    border-color: var(--selected-color);
+    animation: profile-menu .2s ease;
+    user-select: none;
+}
+
+#profile-menu ul li:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+@keyframes profile-menu {
+    0% {
+        transform: translateY(100%);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+
+    100%{
+        transform: translateY(0%);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+    }
+}
+
+
+.more-menu-btn {
+    display: none;
+}
+
+.bar {
+    width: 100%;
+    height: .15rem;
+    border-radius: 5px;
+    background-color: var(--selected-color);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    position: sticky;
+    top: .5rem;
+    transform: scaleX(.2);
+    z-index: 3;
+}
+
+.bar-background {
+    position: sticky;
+    background-color: var(--background-color);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    top: 0px;
+    width: 100%;
+    height: 1rem;
+    z-index: 2;
+}
+
+
+
+.backbutton {
+    top: 4rem;
+}
+
+.legal {
+    bottom: 100px;
+}

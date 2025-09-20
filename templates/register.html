@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+{% block title %}
+<title>register</title>
+{% endblock title %}
+{% block head_tags %}
+<style>
+    @media (prefers-color-scheme: dark), (prefers-color-scheme: no-preference) {
+        html:not(.light-mode) body {
+            background-image: conic-gradient(from var(--angle), #27002c, #000000, #27002c);
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        html:not(.dark-mode) body {
+            background-image: conic-gradient(from var(--angle), #660074, #ffffff, #660074);
+        }
+
+        .logo-pic {
+            filter: brightness(0.1) opacity(0.35);
+        }
+    }
+
+    body {
+                background-image: conic-gradient(from var(--angle),#27002c, #000000, #27002c );
+                animation: animation 15s ease-in-out infinite;
+                height: 100vh;
+                background-size: 200% 200%;
+                backdrop-filter: blur(150px);
+                background-position: bottom;
+                margin: 0;
+            }
+
+    @property --angle {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: false;
+    }
+
+    @keyframes animation {
+        0% {
+            --angle: -45deg;
+        }
+        50% {
+            --angle: 45deg;
+        }
+        100% {
+            --angle: -45deg;
+        }
+    }
+
+    
+</style>
+{% endblock head_tags %}
+{% block content %}
+<img class="logo-pic-centered" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="GAINS">
+<div class="login">
+    <form action="" method="post">
+        <input type="text" id="username_input" name="username_input" placeholder="Benutzername"><br>
+        <img class="regex" id="usernameCheck"><div class="regexFeedback" id="usernameAvailable">Benutzername ist verfügbar</div>
+        <img class="regex" id="usernameX"><div class="regexFeedback" id="usernameNotAvailable">Benutzername ist bereits vergeben</div><br><br>
+        <!--TODO add email-->
+        <input type="password" id="password_input_1" name="password_input_1" placeholder="Passwort"><br>
+        <input type="password" id="password_input_2" name="password_input_2" placeholder="Passwort wiederholen"><br>
+        <img class="regex" id="firstPWCheck"><img class="regex" id="firstPWX"><div class="regexFeedback" id="passwordMin8">Passwort muss mindestens 8 Zeichen lang sein</div><br>
+        <img class="regex" id="secondPWCheck"><img class="regex" id="secondPWX"><div class="regexFeedback" id="passwordNotTheSame">Passwort muss identisch sein</div><br><br>
+        <input type="checkbox">Ich habe die <a href="{{ url_for('dpa') }}" download>Datenschutzerklärung</a> und AGB gelesen und stimme Ihnen zu. <!--TODO muss auch was machen und abfragen ob die checkbox angeklickt wurde bevor man sich registrieren kann-->
+        <br><button name="register_btn">Registrieren</button>
+    </form>
+    <p>
+        <a href="/login">Abbrechen</a>
+    </p>
+</div>
+
+<div class="legal">
+    <a href="{{ url_for('impressum') }}">
+        <li>
+            <ul class="first-ul-width"></ul>
+            <ul>Impressum</ul>
+        </li>
+    </a>
+    <a href="{{ url_for('dpa') }}" download>
+        <li>
+            <ul class="first-ul-width"></ul>
+            <ul>Datenschutzerklärung</ul>
+        </li>
+    </a>
+</div>
+{% endblock content %}
