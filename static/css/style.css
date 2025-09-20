@@ -25,10 +25,12 @@
 
     .logo-pic{
         filter: brightness(0.1) opacity(0.35);
+        filter: invert(1);
     }
 
     .logo-pic-centered {
-      filter: brightness(1) ;
+      filter: brightness(1);
+      filter: invert(1);
     }
 
   }
