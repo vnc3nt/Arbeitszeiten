@@ -131,11 +131,14 @@ def home():
             try:
                 selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
                 
-                # Get current total hours for the date
-                current_total = db.session.query(func.sum(data.data)).filter(
+                # Get current entry for the date (including maxhours)
+                current_entry = db.session.query(data).filter(
                     data.userid == user_id,
                     data.date == selected_date
-                ).scalar() or Decimal('0')
+                ).first()
+                
+                current_total = current_entry.data if current_entry and current_entry.data else Decimal('0')
+                current_maxhours = current_entry.maxhours if current_entry else None
                 
                 # Calculate new total
                 if action == 'add_30':
@@ -151,13 +154,14 @@ def home():
                     data.date == selected_date
                 ).delete()
                 
-                # Add new entry with updated total (if > 0)
-                if new_total > 0:
+                # Add new entry if either hours > 0 OR maxhours is set
+                if new_total > 0 or current_maxhours is not None:
                     new_entry = data(
                         userid=user_id,
                         date=selected_date,
                         categoryid=None,  # You might want to use a default category
-                        data=new_total
+                        data=new_total if new_total > 0 else None,
+                        maxhours=current_maxhours
                     )
                     db.session.add(new_entry)
                 
@@ -209,10 +213,51 @@ def home():
     
     edit_time = format_hours(day_total_hours)
     
-    # Calculate total hours (all time)
-    total_hours_decimal = db.session.query(func.sum(data.data)).filter(
-        data.userid == user_id
-    ).scalar() or Decimal('0')
+    # Calculate cumulative deficit/surplus across all months
+    def calculate_total_deficit():
+        # Get all months with data for this user, ordered by date
+        months_with_data = db.session.query(
+            func.extract('year', data.date).label('year'),
+            func.extract('month', data.date).label('month')
+        ).filter(
+            data.userid == user_id
+        ).distinct().order_by('year', 'month').all()
+        
+        total_deficit = Decimal('0')
+        last_known_maxhours = None
+        
+        for year, month in months_with_data:
+            # Get maxhours for this month (last entry in the month with maxhours set)
+            month_maxhours_result = db.session.query(data.maxhours).filter(
+                data.userid == user_id,
+                func.extract('year', data.date) == year,
+                func.extract('month', data.date) == month,
+                data.maxhours.isnot(None)
+            ).order_by(data.date.desc()).first()
+            
+            # Use maxhours from this month if available, otherwise use last known value
+            if month_maxhours_result and month_maxhours_result[0]:
+                current_maxhours = month_maxhours_result[0]
+                last_known_maxhours = current_maxhours
+            else:
+                current_maxhours = last_known_maxhours
+            
+            # Only calculate deficit if we have maxhours (either current or inherited)
+            if current_maxhours is not None:
+                # Get sum of actual hours for this month
+                month_actual_hours = db.session.query(func.sum(data.data)).filter(
+                    data.userid == user_id,
+                    func.extract('year', data.date) == year,
+                    func.extract('month', data.date) == month
+                ).scalar() or Decimal('0')
+                
+                # Calculate deficit: actual - maxhours (negative = deficit, positive = surplus)
+                month_deficit = month_actual_hours - current_maxhours
+                total_deficit += month_deficit
+        
+        return total_deficit
+    
+    total_deficit = calculate_total_deficit()
     
     # Calculate month hours (for the selected date's month)
     month_hours_decimal = db.session.query(func.sum(data.data)).filter(
@@ -245,6 +290,21 @@ def home():
         else:
             return str(float(decimal_hours))
     
+    # Format total hours with sign (e.g., 3.5 -> "+3.5", -2.0 -> "-2", 0 -> "0")
+    def format_total_hours_with_sign(decimal_hours):
+        if decimal_hours == 0:
+            return "0"
+        elif decimal_hours > 0:
+            if decimal_hours == int(decimal_hours):
+                return f"+{int(decimal_hours)}"
+            else:
+                return f"+{float(decimal_hours)}"
+        else:  # negative
+            if decimal_hours == int(decimal_hours):
+                return str(int(decimal_hours))
+            else:
+                return str(float(decimal_hours))
+    
     return render_template('home.html', 
                          user_id=user_id, 
                          get_username=get_username,
@@ -252,8 +312,11 @@ def home():
                          selected_date_display=selected_date_display,
                          selected_month_name=selected_month_name,
                          current_max_hours=str(float(current_max_hours)) if current_max_hours else None,
-                         total_hours=format_decimal_hours(total_hours_decimal),
+                         current_max_hours_numeric=float(current_max_hours) if current_max_hours else 0,
+                         total_hours=format_total_hours_with_sign(total_deficit),
+                         total_hours_numeric=float(total_deficit),
                          month_hours=format_decimal_hours(month_hours_decimal),
+                         month_hours_numeric=float(month_hours_decimal),
                          edit_time=edit_time
                          )
 

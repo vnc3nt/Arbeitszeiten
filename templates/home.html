@@ -2,6 +2,7 @@
 
 {% block head_tags %}
 <script type="text/javascript" src="{{ url_for('static', filename='script/date_selector.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='script/card_background.js') }}"></script>
 {% endblock head_tags %}
 
 {% block title %}
@@ -22,13 +23,18 @@
 
 <div class="container">
   <div class="top-cards">
-    <div class="card card-red">
+    <div class="card card-red" id="total-hours-card" data-hours="{{ total_hours_numeric }}">
       <div class="card-title">Insgesamt</div>
       <div class="card-value">{{ total_hours }}h</div>
     </div>
-    <div class="card card-gray" onclick="openMaxHoursModal()">
-      <div class="card-title">{{ selected_month_name }}</div>
-      <div class="card-value">{{ month_hours }}h</div>
+    <div class="card card-gray" onclick="openMaxHoursModal()" id="month-card" 
+         data-current-hours="{{ month_hours_numeric }}" 
+         data-max-hours="{{ current_max_hours_numeric }}">
+      <div class="progress-background"></div>
+      <div class="card-content">
+        <div class="card-title">{{ selected_month_name }}</div>
+        <div class="card-value">{{ month_hours }}h</div>
+      </div>
     </div>
   </div>
 
@@ -78,6 +84,5 @@
     </form>
   </div>
 </div>
-
 
 {% endblock content %}

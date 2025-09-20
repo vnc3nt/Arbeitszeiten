@@ -123,11 +123,36 @@
     background: #444;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .card.gray:hover, .card-gray:hover {
     background: #555;
     transform: translateY(-2px);
+}
+
+/* Progress background for month card */
+.progress-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #777;
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+/* Card content wrapper */
+.card-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
 
 /* Überschrift in Karte */
