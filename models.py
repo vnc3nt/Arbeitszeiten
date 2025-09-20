@@ -33,4 +33,4 @@ class category(db.Model):
 class token(db.Model):
     userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False)
     token=db.Column(db.String(128), nullable=False, primary_key=True)
-    expireTime=db.Column(db.BIGINT, nullable=False, default=update_expire_time)
+    expiretime=db.Column(db.BIGINT, nullable=False, default=update_expire_time)

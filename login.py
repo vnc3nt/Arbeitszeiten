@@ -97,7 +97,7 @@ def loginChecker(func):
     def wrapper(*args, **kwargs):
         existingToken = db.session.query(token).filter(token.userid == session.get(USERID)).first()
         if existingToken:
-            existingToken.expireTime = update_expire_time()
+            existingToken.expiretime = update_expire_time()
             db.session.commit()
             return redirect("/home")
         else:
@@ -109,7 +109,7 @@ def validTokenChecker(func):
     def wrapper(*args, **kwargs):
         existingToken = db.session.query(token).filter(token.userid == session.get(USERID)).first()
         if existingToken:
-            existingToken.expireTime = update_expire_time()
+            existingToken.expiretime = update_expire_time()
             db.session.commit()
             return func(*args, **kwargs)
         else:
@@ -119,7 +119,7 @@ def validTokenChecker(func):
 
 def logoutUser(currentToken):
     # token cleanup
-    for everySession in db.session.query(token).filter(token.expireTime < time()):
+    for everySession in db.session.query(token).filter(token.expiretime < time()):
         db.session.delete(everySession)
 
     if currentToken is None:
