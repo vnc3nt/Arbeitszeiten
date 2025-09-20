@@ -558,3 +558,115 @@ h2 {
   font-size: 2rem;
   padding: 0.5rem;
 }
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background-color: var(--website-background-color);
+  margin: 10% auto;
+  border: 1px solid var(--selected-color);
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--selected-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.modal-close:hover {
+  opacity: 1;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body input[type="text"] {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid var(--selected-color);
+  border-radius: 6px;
+  background-color: var(--button-color);
+  color: var(--text-color);
+  box-sizing: border-box;
+}
+
+.modal-body input[type="text"]:focus {
+  outline: none;
+  border-color: var(--link-color);
+  box-shadow: 0 0 0 2px rgba(105, 0, 90, 0.2);
+}
+
+.modal-body input[type="text"]::placeholder {
+  color: var(--text-color);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--selected-color);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-cancel, .btn-save {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel {
+  background-color: var(--selected-color);
+  color: var(--text-color);
+}
+
+.btn-cancel:hover {
+  background-color: var(--button-color);
+}
+
+.btn-save {
+  background-color: var(--link-color);
+  color: white;
+}
+
+.btn-save:hover {
+  opacity: 0.9;
+}

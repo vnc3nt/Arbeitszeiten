@@ -83,12 +83,51 @@ def home():
     
     user_id = session.get(USERID)
     
-    # Handle +30min/-30min actions
+    # Handle +30min/-30min actions and max hours setting
     if request.method == "POST":
         action = request.form.get('action')
         selected_date_str = request.form.get('selected_date')
         
-        if action and selected_date_str:
+        if action == 'set_max_hours' and selected_date_str:
+            max_hours_str = request.form.get('max_hours', '').replace(',', '.')
+            try:
+                selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+                max_hours = Decimal(max_hours_str) if max_hours_str else None
+                
+                # Clear all maxhours entries for this month
+                db.session.query(data).filter(
+                    data.userid == user_id,
+                    func.extract('month', data.date) == selected_date.month,
+                    func.extract('year', data.date) == selected_date.year
+                ).update({data.maxhours: None})
+                
+                # Check if entry exists for selected date
+                existing_entry = db.session.query(data).filter(
+                    data.userid == user_id,
+                    data.date == selected_date
+                ).first()
+                
+                if existing_entry:
+                    existing_entry.maxhours = max_hours
+                else:
+                    # Create new entry with maxhours
+                    new_entry = data(
+                        userid=user_id,
+                        date=selected_date,
+                        categoryid=None,
+                        data=Decimal('0'),
+                        maxhours=max_hours
+                    )
+                    db.session.add(new_entry)
+                
+                db.session.commit()
+                return redirect(f"/home?date={selected_date_str}")
+                
+            except (ValueError, Exception) as e:
+                print(f"Error setting max hours: {e}")
+                db.session.rollback()
+        
+        elif action and selected_date_str and action in ['add_30', 'sub_30']:
             try:
                 selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
                 
@@ -190,6 +229,14 @@ def home():
     }
     selected_month_name = german_months[selected_date.month]
     
+    # Find current maxhours - look for the most recent non-null maxhours entry by date
+    current_max_hours_result = db.session.query(data.maxhours).filter(
+        data.userid == user_id,
+        data.maxhours.isnot(None)
+    ).order_by(data.date.desc()).first()
+    
+    current_max_hours = current_max_hours_result[0] if current_max_hours_result else None
+    
     # Format decimal hours for display (e.g., 3.5 -> "3.5", 4.0 -> "4")
     def format_decimal_hours(decimal_hours):
         if decimal_hours == int(decimal_hours):
@@ -203,6 +250,7 @@ def home():
                          selected_date=selected_date_str,
                          selected_date_display=selected_date_display,
                          selected_month_name=selected_month_name,
+                         current_max_hours=str(float(current_max_hours)) if current_max_hours else None,
                          total_hours=format_decimal_hours(total_hours_decimal),
                          month_hours=format_decimal_hours(month_hours_decimal),
                          edit_time=edit_time

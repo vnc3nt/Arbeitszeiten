@@ -119,8 +119,15 @@
 }
 
 /* graue Karte */
-.card.gray {
+.card.gray, .card-gray {
     background: #444;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.card.gray:hover, .card-gray:hover {
+    background: #555;
+    transform: translateY(-2px);
 }
 
 /* Überschrift in Karte */

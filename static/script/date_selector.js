@@ -92,3 +92,29 @@ document.addEventListener('DOMContentLoaded', function() {
         formatDateInput();
     });
 });
+
+// MaxHours Modal functions
+function openMaxHoursModal() {
+    const modal = document.getElementById('maxHoursModal');
+    const input = document.getElementById('maxHoursInput');
+    
+    if (modal && input) {
+        modal.style.display = 'block';
+        input.focus();
+    }
+}
+
+function closeMaxHoursModal() {
+    const modal = document.getElementById('maxHoursModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('maxHoursModal');
+    if (modal && event.target === modal) {
+        closeMaxHoursModal();
+    }
+});
