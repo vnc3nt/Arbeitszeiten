@@ -229,10 +229,11 @@ def home():
     }
     selected_month_name = german_months[selected_date.month]
     
-    # Find current maxhours - look for the most recent non-null maxhours entry by date
+    # Find current maxhours - look for the most recent non-null maxhours entry before the selected date
     current_max_hours_result = db.session.query(data.maxhours).filter(
         data.userid == user_id,
-        data.maxhours.isnot(None)
+        data.maxhours.isnot(None),
+        data.date <= selected_date  # Only entries before the selected date
     ).order_by(data.date.desc()).first()
     
     current_max_hours = current_max_hours_result[0] if current_max_hours_result else None
