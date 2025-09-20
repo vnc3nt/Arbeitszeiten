@@ -47,7 +47,7 @@ class Data(Resource):
         user_id = session.get(USERID)
         
         # Abfrage der Kategorien für den Nutzer
-        categories = db.session.query(category).filter(category.userId == user_id).all()
+        categories = db.session.query(category).filter(category.userid == user_id).all()
         category_map = {categ.id: categ.name for categ in categories}
         
         # Abfrage der Daten
@@ -58,17 +58,17 @@ class Data(Resource):
         output = []
         for i in existing_data:
             entry = {
-                'userId': i.userid,
+                'userid': i.userid,
                 'date': datetime.strftime(i.date, "%d-%m-%Y")
             }
-            if i.categoryId in category_map:
-                entry[category_map[i.categoryId]] = float(i.data) if i.data is not None else None
+            if i.categoryid in category_map:
+                entry[category_map[i.categoryid]] = float(i.data) if i.data is not None else None
             output.append(entry)
         
         # Maximalwerte für jede Kategorie berechnen
         max_values = {}
         for categ_id, categ_name in category_map.items():
-            max_value = db.session.query(func.max(data.data)).filter(data.userid == user_id, data.categoryId == categ_id).scalar()
+            max_value = db.session.query(func.max(data.data)).filter(data.userid == user_id, data.categoryid == categ_id).scalar()
             max_values[categ_name] = float(max_value) if max_value is not None else None
         
         return jsonify({
@@ -87,7 +87,7 @@ class Data(Resource):
             # Kategorie-ID für den gegebenen Kategorienamen abrufen
             category_name = given_data["category"]
             value = given_data["data"]
-            category_obj = db.session.query(category).filter(category.userId == user_id, category.name == category_name).first()
+            category_obj = db.session.query(category).filter(category.userid == user_id, category.name == category_name).first()
             
             if not category_obj:
                 print("Error: No such category found.")
@@ -95,11 +95,11 @@ class Data(Resource):
                 category_id = category_obj.id
             
             # Bestehende Daten für den aktuellen Tag und die Kategorie abrufen
-            existing_data = db.session.query(data).filter(data.userid == user_id, data.date == current_date(), data.categoryId == category_id).first()
+            existing_data = db.session.query(data).filter(data.userid == user_id, data.date == current_date(), data.categoryid == category_id).first()
             
             if existing_data is None:
                 # Neue Datenzeile einfügen
-                new_data = data(userid=user_id, date=current_date(), categoryId=category_id, data=value)
+                new_data = data(userid=user_id, date=current_date(), categoryid=category_id, data=value)
                 db.session.add(new_data)
             else:
                 # Vorhandene Datenzeile aktualisieren

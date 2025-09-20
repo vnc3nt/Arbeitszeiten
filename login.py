@@ -29,7 +29,7 @@ def delete_account(pw: Optional[str]):
 def delete_user_data(id: int):
     data.query.filter_by(userid=id).delete()
     token.query.filter_by(userid=id).delete()
-    category.query.filter_by(userId=id).delete()
+    category.query.filter_by(userid=id).delete()
     users.query.filter_by(id=id).delete()
 
     db.session.commit()

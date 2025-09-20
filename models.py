@@ -21,12 +21,12 @@ class users(db.Model):
 class data(db.Model):
     userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
     date=db.Column(db.DATE, nullable=False, primary_key=True, default=current_date)
-    categoryId=db.Column(db.BIGINT,ForeignKey("category.id"), nullable=True, primary_key=False)
+    categoryid=db.Column(db.BIGINT,ForeignKey("category.id"), nullable=True, primary_key=False)
     data=db.Column(db.Numeric(5,2), nullable=True)
 
 class category(db.Model):
     id=db.Column(db.BIGINT, primary_key=True, nullable=False)
-    userId=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
+    userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
     name=db.Column(db.String(30), nullable=False)
     color=db.Column(db.String(7), nullable=False)
 

@@ -39,10 +39,10 @@ patch_arguments = post_arguments.copy()
 
 class Categories(Resource):
     def get(self):
-        categories = category.query.filter_by(userId = session.get(USERID)).all()  # Query zur Datenbank für alle Kategorien
+        categories = category.query.filter_by(userid = session.get(USERID)).all()  # Query zur Datenbank für alle Kategorien
         return jsonify([{
             'id': categ.id,
-            'userId': categ.userId,
+            'userid': categ.userid,
             'name': categ.name,
             'color': categ.color,
             'unit': categ.unit
@@ -64,13 +64,13 @@ class Categories(Resource):
             print(category_name)
             
             # Bestehende Daten für den aktuellen Tag und die Kategorie abrufen
-            existing_category = db.session.query(category).filter(category.userId == user_id, category.name == category_name).first()
+            existing_category = db.session.query(category).filter(category.userid == user_id, category.name == category_name).first()
             
             if existing_category is None:
                 # Neue Datenzeile einfügen
                 new_category = category(
                     id=category_id,
-                    userId=user_id,
+                    userid=user_id,
                     name=category_name,
                     unit=category_unit,
                     color=category_color
@@ -101,7 +101,7 @@ class Categories(Resource):
             user_id = user.id
             print(f"Benutzer gefunden: {user_id}")
 
-            existing_category = db.session.query(category).filter(category.userId == user_id, category.id == category_id).first()
+            existing_category = db.session.query(category).filter(category.userid == user_id, category.id == category_id).first()
             
             if existing_category:
                 print(f"Kategorie gefunden: {existing_category.name}")
@@ -124,11 +124,11 @@ class Categories(Resource):
         
         if user:
             user_id = user.id
-            category_to_delete = db.session.query(category).filter(category.userId == user_id, category.id == category_id).delete()
+            category_to_delete = db.session.query(category).filter(category.userid == user_id, category.id == category_id).delete()
             
             if category_to_delete:
                 # Löschen aller verknüpften Daten
-                db.session.query(data).filter(data.userid == user_id, data.categoryId == category_id).delete()
+                db.session.query(data).filter(data.userid == user_id, data.categoryid == category_id).delete()
                 
                 # Löschen der Kategorie
                 db.session.commit()

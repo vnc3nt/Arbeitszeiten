@@ -13,28 +13,8 @@
             {% include "snippets/profile_menu.html" %}
     </details>
 </div>
-<div class="view">
-    <div class="view-options">
-        <input type="radio" id="week" value="week" name="view-options" checked/>
-        <label class="tab" for="week">Woche</label>
-        <input type="radio" id="month" value="month" name="view-options" />
-        <label class="tab" for="month">Monat</label>
-        <input type="radio" id="year" value="year" name="view-options" />
-        <label class="tab" for="year">Jahr</label>
-        <span class="glider"></span>
-    </div>
-</div>
 {% include "snippets/data.html" %}
 <br>
-<div class="button-menu">
-    <div class="bar-background">
-        <div class="bar"></div>
-    </div>
-    <div class="MainButtons" id="main-buttons">
-        <!-- Hier werden die dynamisch generierten Buttons eingefügt -->
-    </div>
-    <button class="more-menu-btn" id="more-menu-btn" onclick="expandButtonsDesktop(event)"> ▲ </button>
-</div>
 
 <div id="addCategoryModal" class="modal">
     <div class="modal-content">

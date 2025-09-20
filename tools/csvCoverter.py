@@ -13,7 +13,7 @@ categories = {
 
 with open(input_file, mode='r', newline='') as infile, open(output_file, mode='w', newline='') as outfile:
     reader = csv.DictReader(infile)
-    fieldnames = ['userId', 'date', 'categoryId', 'data']
+    fieldnames = ['userid', 'date', 'categoryid', 'data']
     writer = csv.DictWriter(outfile, fieldnames=fieldnames)
 
     writer.writeheader()
@@ -27,6 +27,6 @@ with open(input_file, mode='r', newline='') as infile, open(output_file, mode='w
                 writer.writerow({
                     'userid': user_id,
                     'date': date,
-                    'categoryId': category_id,
+                    'categoryid': category_id,
                     'data': row[category]
                 })
