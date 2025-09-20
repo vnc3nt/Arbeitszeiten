@@ -1,5 +1,5 @@
 {
-    "name": "GAINS",
+    "name": "Arbeoitszeiten",
     "icons": [
         {
             "src": "../img/appicons/512x512.png",
@@ -13,7 +13,7 @@
             "purpose": "maskable"
           }
     ],
-    "start_url": "https://my-gains.onrender.com/home",
+    "start_url": "https://arbeitszeiten.onrender.com/home",
     "display": "standalone",
     "background_color": "#121212",
     "theme_color": "#121212"
