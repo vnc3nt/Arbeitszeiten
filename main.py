@@ -15,9 +15,8 @@ with open(".env", "r") as f:
             os.environ[attr] = val.rstrip("\n")
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.{}:{}@{}:{}/{}".format(
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.zypxdvkahiqiipzxthyg:{}@{}:{}/{}".format(
     os.environ.get("uname"),
-    os.environ.get("db"),
     os.environ.get("password"),
     os.environ.get("host"),
     os.environ.get("port"),
