@@ -323,34 +323,46 @@ def home():
     
     # Calculate cumulative deficit/surplus across all months
     def calculate_total_deficit():
-        # Get all months with data OR maxhours for this user, ordered by date
-        months_with_data_or_maxhours = db.session.query(
-            func.extract('year', data.date).label('year'),
-            func.extract('month', data.date).label('month')
-        ).filter(
+        # Get the earliest entry date to determine the start of calculations
+        earliest_entry = db.session.query(func.min(data.date)).filter(
             data.userid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
-        ).distinct().order_by('year', 'month').all()
+        ).scalar()
+        
+        if earliest_entry is None:
+            return Decimal('0')
+        
+        # Get current date to determine the end of calculations
+        current_date = date.today()
         
         total_deficit = Decimal('0')
         
-        for year, month in months_with_data_or_maxhours:
-            # Create a date for this month to use with get_maxhours_for_month
-            month_date = date(int(year), int(month), 1)
-            current_maxhours = get_maxhours_for_month(month_date)
+        # Iterate through all months from earliest entry to current month
+        current_month = earliest_entry.replace(day=1)
+        end_month = current_date.replace(day=1)
+        
+        while current_month <= end_month:
+            # Get maxhours for this month using our helper function
+            current_maxhours = get_maxhours_for_month(current_month)
             
             # Only calculate deficit if we have maxhours
             if current_maxhours is not None:
                 # Get sum of actual hours for this month
                 month_actual_hours = db.session.query(func.sum(data.data)).filter(
                     data.userid == user_id,
-                    func.extract('year', data.date) == year,
-                    func.extract('month', data.date) == month
+                    func.extract('year', data.date) == current_month.year,
+                    func.extract('month', data.date) == current_month.month
                 ).scalar() or Decimal('0')
                 
                 # Calculate deficit: actual - maxhours (negative = deficit, positive = surplus)
                 month_deficit = month_actual_hours - current_maxhours
                 total_deficit += month_deficit
+            
+            # Move to next month
+            if current_month.month == 12:
+                current_month = current_month.replace(year=current_month.year + 1, month=1)
+            else:
+                current_month = current_month.replace(month=current_month.month + 1)
         
         return total_deficit
     
@@ -401,7 +413,16 @@ def home():
     
     # Create overview data for total hours modal
     def create_overview_data():
-        # Get all data entries for user (including entries with only maxhours), ordered by date desc
+        # Get the earliest entry date to determine the start of overview
+        earliest_entry = db.session.query(func.min(data.date)).filter(
+            data.userid == user_id,
+            (data.data.isnot(None) | data.maxhours.isnot(None))
+        ).scalar()
+        
+        if earliest_entry is None:
+            return {}
+        
+        # Get all actual data entries for user (including entries with only maxhours), ordered by date desc
         all_entries = db.session.query(data).filter(
             data.userid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
@@ -414,40 +435,57 @@ def home():
             9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
         }
         
-        for entry in all_entries:
-            year = entry.date.year
-            month = entry.date.month
+        # Get current date to determine the end of overview
+        current_date = date.today()
+        
+        # First, create overview data for all months from earliest to current
+        current_month = earliest_entry.replace(day=1)
+        end_month = current_date.replace(day=1)
+        
+        while current_month <= end_month:
+            year = current_month.year
+            month = current_month.month
             month_name = german_months[month]
             
             if year not in overview_data:
                 overview_data[year] = {}
             
-            if month not in overview_data[year]:
-                # Get maxhours for this month using our helper function
-                month_maxhours = get_maxhours_for_month(entry.date)
-                
-                # Calculate total hours for this month
-                month_total = db.session.query(func.sum(data.data)).filter(
-                    data.userid == user_id,
-                    func.extract('year', data.date) == year,
-                    func.extract('month', data.date) == month
-                ).scalar() or Decimal('0')
-                
-                # Calculate surplus/deficit for month
-                month_difference = None
-                if month_maxhours:
-                    month_difference = month_total - month_maxhours
-                
-                overview_data[year][month] = {
-                    'name': month_name,
-                    'total_hours': month_total,
-                    'max_hours': month_maxhours,
-                    'difference': month_difference,
-                    'entries': []
-                }
+            # Get maxhours for this month using our helper function
+            month_maxhours = get_maxhours_for_month(current_month)
             
-            # Add entry if it has actual hours worked
-            if entry.data and entry.data > 0:
+            # Calculate total hours for this month
+            month_total = db.session.query(func.sum(data.data)).filter(
+                data.userid == user_id,
+                func.extract('year', data.date) == year,
+                func.extract('month', data.date) == month
+            ).scalar() or Decimal('0')
+            
+            # Calculate surplus/deficit for month
+            month_difference = None
+            if month_maxhours:
+                month_difference = month_total - month_maxhours
+            
+            overview_data[year][month] = {
+                'name': month_name,
+                'total_hours': month_total,
+                'max_hours': month_maxhours,
+                'difference': month_difference,
+                'entries': []
+            }
+            
+            # Move to next month
+            if current_month.month == 12:
+                current_month = current_month.replace(year=current_month.year + 1, month=1)
+            else:
+                current_month = current_month.replace(month=current_month.month + 1)
+        
+        # Now add the actual entries to their respective months
+        for entry in all_entries:
+            year = entry.date.year
+            month = entry.date.month
+            
+            # Add entry if it has actual hours worked and the month exists in overview_data
+            if entry.data and entry.data > 0 and year in overview_data and month in overview_data[year]:
                 overview_data[year][month]['entries'].append({
                     'date': entry.date,
                     'hours': entry.data
