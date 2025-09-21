@@ -73,7 +73,7 @@
         <input type="text" 
                id="maxHoursInput" 
                name="max_hours" 
-               placeholder="{{ suggested_max_hours or '' }}"
+               placeholder="{{ suggested_max_hours or '' }}h"
                pattern="[0-9]+([,.][0-9]+)?"
                title="Bitte geben Sie die Stundenanzahl pro Monat ein (z.B. 35, 35.5 oder 35,5)"
                required>
@@ -108,9 +108,9 @@
                 <span class="month-name">{{ month_data.name }}</span>
                 {% if month_data.difference is not none %}
                   {% if month_data.difference > 0 %}
-                    <span class="month-surplus">+{{ month_data.difference }}h</span>
+                    <span class="month-surplus">+{{ month_data.difference|decimal_comma }}h</span>
                   {% elif month_data.difference < 0 %}
-                    <span class="month-deficit">{{ month_data.difference }}h</span>
+                    <span class="month-deficit">{{ month_data.difference|decimal_comma }}h</span>
                   {% else %}
                     <span class="month-neutral">0h</span>
                   {% endif %}
@@ -120,7 +120,7 @@
               {% for entry in month_data.entries %}
                 <div class="overview-entry">
                   <span class="entry-date">{{ entry.date.strftime('%d.%m.%Y') }}</span>
-                  <span class="entry-hours">{{ entry.hours }}h</span>
+                  <span class="entry-hours">{{ entry.hours|decimal_comma }}h</span>
                 </div>
               {% endfor %}
             </div>

@@ -33,6 +33,15 @@ app.config.update(
 
 app.register_blueprint(api_app)
 
+# Jinja2-Filter für deutsche Zahlenformatierung
+@app.template_filter('decimal_comma')
+def decimal_comma_filter(value):
+    """Ersetzt Punkt mit Komma als Dezimaltrennzeichen für deutsche Zahlenformatierung"""
+    if value is None:
+        return value
+    # Konvertiere zu String und ersetze Punkt mit Komma
+    return str(value).replace('.', ',')
+
 db.init_app(app)
 
 @app.route('/')
@@ -367,14 +376,14 @@ def home():
     # Get suggested maxhours for modal (current value or last known value)
     suggested_max_hours = current_max_hours
     
-    # Format decimal hours for display (e.g., 3.5 -> "3.5", 4.0 -> "4")
+    # Format decimal hours for display (e.g., 3.5 -> "3,5", 4.0 -> "4")
     def format_decimal_hours(decimal_hours):
         if decimal_hours == int(decimal_hours):
             return str(int(decimal_hours))
         else:
-            return str(float(decimal_hours))
+            return str(float(decimal_hours)).replace('.', ',')
     
-    # Format total hours with sign (e.g., 3.5 -> "+3.5", -2.0 -> "-2", 0 -> "0")
+    # Format total hours with sign (e.g., 3.5 -> "+3,5", -2.0 -> "-2", 0 -> "0")
     def format_total_hours_with_sign(decimal_hours):
         if decimal_hours == 0:
             return "0"
@@ -382,12 +391,12 @@ def home():
             if decimal_hours == int(decimal_hours):
                 return f"+{int(decimal_hours)}"
             else:
-                return f"+{float(decimal_hours)}"
+                return f"+{float(decimal_hours)}".replace('.', ',')
         else:  # negative
             if decimal_hours == int(decimal_hours):
                 return str(int(decimal_hours))
             else:
-                return str(float(decimal_hours))
+                return str(float(decimal_hours)).replace('.', ',')
     
     # Create overview data for total hours modal
     def create_overview_data():
@@ -452,9 +461,9 @@ def home():
                          selected_date=selected_date_str,
                          selected_date_display=selected_date_display,
                          selected_month_name=selected_month_name,
-                         current_max_hours=str(float(current_max_hours)) if current_max_hours else None,
+                         current_max_hours=str(float(current_max_hours)).replace('.', ',') if current_max_hours else None,
                          current_max_hours_numeric=float(current_max_hours) if current_max_hours else 0,
-                         suggested_max_hours=str(float(suggested_max_hours)) if suggested_max_hours else "",
+                         suggested_max_hours=str(float(suggested_max_hours)).replace('.', ',') if suggested_max_hours else "",
                          total_hours=format_total_hours_with_sign(total_deficit),
                          total_hours_numeric=float(total_deficit),
                          month_hours=format_decimal_hours(month_hours_decimal),

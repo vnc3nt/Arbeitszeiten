@@ -1,80 +1,188 @@
+/* Desktop-spezifische Styles für Bildschirme >= 766px */
+@media (min-width: 766px) {
+
+/* Body und Container Layout */
+body {
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Container mit zentriertem Layout für Desktop */
+.container {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 3rem;
+    min-height: calc(100vh - 120px);
+    gap: 3rem;
+}
+
+/* Header-Bereich optimiert für Desktop */
+.logo-pic {
+    width: 4rem;
+    margin: 1rem 2rem;
+}
+
+/* Profil-Menü für Desktop */
 #profile-menu {
     margin: 0px;
     position: absolute;
     overflow: auto;
-    z-index: 0;
-    top: 3.5rem;
-    right: .5rem;
+    z-index: 1000;
+    top: 4.5rem;
+    right: 1rem;
+    width: 280px;
+    max-height: 400px;
     background-color: var(--button-color);
-    padding: 0px;
+    padding: 1rem;
     border-radius: 10px;
     border: solid 1px;
     border-color: var(--selected-color);
-    backdrop-filter: blur(7px);
-    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: desktop-profile-menu 0.2s ease-out;
+}
 
-    .legal {
-      position: relative;
-      bottom: 0px;
-      
+@keyframes desktop-profile-menu {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
     }
-  }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
+#profile-menu .legal {
+    position: relative;
+    bottom: 0px;
+    margin-top: 1rem;
+}
 
-.scrollwindow::-webkit-scrollbar {
-    width: 100px;
-    height: 10px;
+/* Profile Button */
+.profile {
     position: absolute;
+    top: 1rem;
+    right: 2rem;
+    z-index: 1001;
+}
+
+.profile-pic {
+    width: 2.5rem;
+    height: 2.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.profile-pic:hover {
+    transform: scale(1.1);
+}
+
+/* Statistik-Karten für Desktop */
+.top-cards {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: #442223;
+    color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 2rem 2.5rem;
+    text-align: center;
+    min-width: 200px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-overall {
+    cursor: pointer;
+}
+
+.card-overall:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.card.month, .card-month {
+    background: #444;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.card.month:hover, .card-month:hover {
+    background: #555;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.progress-background {
+    position: absolute;
+    top: 0;
     left: 0;
+    height: 100%;
+    background: #777;
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 20px;
+    z-index: 1;
 }
 
-.bar {
-  display: none;
+.card-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
 
-.more-menu-btn {
-  position: sticky;
-  width: 1.5rem;
-  height: 1.5rem;
-  top: 0px;
-  left: 98%;
-  font-size: 1rem;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  box-sizing: border-box;
-  padding: .5rem;
-  background-color: var(--button-color);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  border-radius: 5px;
-  border: solid 1px;
-  border-color: var(--selected-color);
-  z-index: 1;
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.03em;
 }
 
-.logo-pic {
-  width: 5rem;
+.card-value {
+    font-size: 2.8rem;
+    font-weight: bold;
 }
 
-.category-button img {
-  width: 2rem;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+/* Edit-Bereich für Desktop */
+.edit-section {
+    margin-top: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
 }
 
 .day-selection {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
     cursor: pointer;
+    background-color: #222222;
     transition: background-color 0.2s ease;
     padding: 0;
-    border-radius: 6px;
+    border-radius: 10px;
     display: inline-block;
     position: relative;
 }
+
 
 .day-selection:hover {
     background-color: rgba(255, 255, 255, 0.1);
@@ -88,14 +196,8 @@
     color: inherit;
     cursor: pointer;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 10px;
     font-family: inherit;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.styled-date-picker:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
 }
 
 .styled-date-picker::-webkit-calendar-picker-indicator {
@@ -106,4 +208,322 @@
     top: 0;
     left: 0;
     cursor: pointer;
+}
+
+.edit-time-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.edit-btn {
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: 8rem;
+    height: 4rem;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: #555;
+    transform: translateY(-2px);
+}
+
+.edit-btn:active {
+    background: #2a2a2a;
+    transform: translateY(0px);
+}
+
+.edit-time-value {
+    background: #222;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    padding: 1rem 2.5rem;
+    width: 8rem;
+    height: 2rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-time-value:hover {
+    background: #333;
+}
+
+/* Scrollbar für Desktop */
+.scrollwindow::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.scrollwindow::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.scrollwindow::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.scrollwindow::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Hide mobile-specific elements */
+.bar {
+    display: none;
+}
+
+.more-menu-btn {
+    display: none;
+}
+
+/* Modal-Dialoge für Desktop */
+.modal {
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: absolute;
+    top: 15rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--button-color);
+    border-radius: 16px;
+    border: 1px solid var(--selected-color);
+    box-shadow: 0 16px 64px rgba(0,0,0,0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    animation: modal-appear 0.3s ease-out;
+}
+
+@keyframes modal-appear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.maxHours-modal {
+    width: 400px;
+    padding: 2rem;
+}
+
+.overview-modal {
+    width: 600px;
+    padding: 2rem;
+    overflow-y: auto;
+    top: 40%;
+}
+
+.modal-header h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.modal-close:hover {
+    opacity: 1;
+}
+
+.modal-body input[type="text"] {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: 1px solid var(--selected-color);
+    background-color: var(--website-background-color);
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-cancel, .btn-save {
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background-color: #666;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #777;
+    transform: translateY(-1px);
+}
+
+.btn-save {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+}
+
+/* Overview Modal spezifische Styles */
+.overview-year h4 {
+    margin: 2rem 0 1rem 0;
+    font-size: 1.3rem;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--selected-color);
+    padding-bottom: 0.5rem;
+}
+
+.overview-month {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: 10px;
+}
+
+.month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+
+.month-surplus {
+    color: #4CAF50;
+}
+
+.month-deficit {
+    color: #f44336;
+}
+
+.month-neutral {
+    color: #999;
+}
+
+.overview-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.overview-entry:last-child {
+    border-bottom: none;
+}
+
+} /* Ende Desktop Media Query */
+
+/* Zusätzliche Desktop-Optimierungen für größere Bildschirme */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1400px;
+        padding: 3rem 4rem;
+        gap: 4rem;
+    }
+    
+    .top-cards {
+        gap: 4rem;
+    }
+    
+    .card {
+        min-width: 240px;
+        min-height: 160px;
+        padding: 2.5rem 3rem;
+    }
+    
+    .card-title {
+        font-size: 1.6rem;
+    }
+    
+    .card-value {
+        font-size: 3.2rem;
+    }
+}
+
+/* Ultra-wide Desktop Optimierungen */
+@media (min-width: 1440px) {
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+            "cards cards"
+            "edit edit";
+        max-width: 1600px;
+        gap: 5rem;
+    }
+    
+    .top-cards {
+        grid-area: cards;
+        gap: 5rem;
+        margin-bottom: 0;
+    }
+    
+    .edit-section {
+        grid-area: edit;
+        margin-top: 0;
+    }
+}
+
+/* Hover-Effekte für Desktop */
+@media (hover: hover) {
+    button:hover, input[type=submit]:hover, input[type=reset]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    
+    .profile-pic:hover {
+        transform: scale(1.15);
+        filter: brightness(1.1);
+    }
+    
+    .logo-pic:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+    }
 }
