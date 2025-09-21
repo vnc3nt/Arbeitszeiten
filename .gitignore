@@ -2,3 +2,9 @@
 __pycache__
 venv
 .venv
+node_modules/
+.parcel-cache/
+instance/
+*.db
+.env.sqlite
+main.py.original
