@@ -545,8 +545,9 @@ dialog {
 .impressum-content {
   position: absolute;
   top: 180px;
-  width: 100vw;
-  display: grid;
+  width: 80%;
+  display: block;
+  left: 2.5rem
 }
 
 h2 {
