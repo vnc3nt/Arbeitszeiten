@@ -104,6 +104,41 @@ input {
     -webkit-backdrop-filter: blur(7px);
 }
 
+/* Checkbox styling */
+input[type="checkbox"] {
+    width: auto;
+    margin: 0 8px 0 0;
+    padding: 0;
+    transform: scale(1.2);
+}
+
+.terms-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 15px 10px;
+    text-align: left;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.terms-container label {
+    line-height: 1.4;
+    font-size: 0.9rem;
+}
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff4444;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
 button, input[type=submit], input[type=reset] {
     touch-action: auto;
     margin: 10px;

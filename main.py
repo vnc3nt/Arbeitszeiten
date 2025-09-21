@@ -64,6 +64,13 @@ def register():
         username_input = request.form.get("username_input")
         password_1 = request.form.get("password_input_1")
         password_2 = request.form.get("password_input_2")
+        terms_checkbox = request.form.get("terms_checkbox")
+        
+        # Check if terms checkbox is checked
+        if not terms_checkbox:
+            # You could add a flash message here for better UX
+            return render_template('register.html', error="Sie müssen den Datenschutzbestimmungen zustimmen.")
+        
         if username_input is not None and password_1 is not None and password_2 is not None and checkRegistration(username_input, password_1, password_2) and check_username(username_input):
             # successful logged in
             # token cleanup

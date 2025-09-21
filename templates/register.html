@@ -53,7 +53,11 @@
 {% endblock head_tags %}
 {% block content %}
 <img class="logo-pic-centered" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="Arbeitszeiten">
+<br><br>
 <div class="login">
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
     <form action="" method="post">
         <input type="text" id="username_input" name="username_input" placeholder="Benutzername"><br>
         <img class="regex" id="usernameCheck"><div class="regexFeedback" id="usernameAvailable">Benutzername ist verfügbar</div>
@@ -63,8 +67,11 @@
         <input type="password" id="password_input_2" name="password_input_2" placeholder="Passwort wiederholen"><br>
         <img class="regex" id="firstPWCheck"><img class="regex" id="firstPWX"><div class="regexFeedback" id="passwordMin8">Passwort muss mindestens 8 Zeichen lang sein</div><br>
         <img class="regex" id="secondPWCheck"><img class="regex" id="secondPWX"><div class="regexFeedback" id="passwordNotTheSame">Passwort muss identisch sein</div><br><br>
-        <input type="checkbox">Ich habe die <a href="{{ url_for('dpa') }}" download>Datenschutzerklärung</a> und AGB gelesen und stimme Ihnen zu. <!--TODO muss auch was machen und abfragen ob die checkbox angeklickt wurde bevor man sich registrieren kann-->
-        <br><button name="register_btn">Registrieren</button>
+        <div class="terms-container">
+            <input type="checkbox" id="terms_checkbox" name="terms_checkbox" required>
+            <label for="terms_checkbox">Ich habe die <a href="{{ url_for('dpa') }}" download>Datenschutzerklärung</a> und AGB gelesen und stimme Ihnen zu.</label>
+        </div>
+        <br><button name="register_btn" type="submit">Registrieren</button>
     </form>
     <p>
         <a href="/login">Abbrechen</a>
