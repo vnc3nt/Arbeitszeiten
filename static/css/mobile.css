@@ -322,5 +322,17 @@
         background: #555;
         transform: translateY(-2px);
     }
+    
+    /* Hide bullet points in mobile profile menu */
+    .first-ul-width {
+        display: none !important;
+    }
+}
+
+/* Global mobile styles - hide bullet points on smaller screens */
+@media (max-width: 768px) {
+    #profile-menu .first-ul-width {
+        display: none !important;
+    }
 }
 
