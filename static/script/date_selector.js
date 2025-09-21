@@ -125,8 +125,8 @@ function closeOverviewModal() {
     }
 }
 
-// Close modal when clicking outside
-window.addEventListener('click', function(event) {
+// Close modal when clicking or touching outside
+function handleModalClose(event) {
     const maxHoursModal = document.getElementById('maxHoursModal');
     const overviewModal = document.getElementById('overviewModal');
     
@@ -137,4 +137,8 @@ window.addEventListener('click', function(event) {
     if (overviewModal && event.target === overviewModal) {
         closeOverviewModal();
     }
-});
+}
+
+// Add both click and touch event listeners for modal closing
+window.addEventListener('click', handleModalClose);
+window.addEventListener('touchend', handleModalClose);
