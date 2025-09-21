@@ -546,6 +546,8 @@ dialog {
   position: absolute;
   top: 180px;
   width: 80%;
+  height: calc(100vh - 8rem - 3rem - 5rem);
+  overflow-y: scroll;
   display: block;
   left: 2.5rem
 }
