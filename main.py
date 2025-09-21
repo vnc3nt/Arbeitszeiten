@@ -450,7 +450,7 @@ def home():
             if year not in overview_data:
                 overview_data[year] = {}
             
-            # Get maxhours for this month using our helper function
+# Get maxhours for this month using our helper function
             month_maxhours = get_maxhours_for_month(current_month)
             
             # Calculate total hours for this month
