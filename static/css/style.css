@@ -83,6 +83,10 @@ body {
 .login {
     padding-top: 150px;
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 80%;
+    
 }
 
 
@@ -118,7 +122,6 @@ input[type="checkbox"] {
     justify-content: center;
     margin: 15px 10px;
     text-align: left;
-    max-width: 400px;
     margin-left: auto;
     margin-right: auto;
 }
