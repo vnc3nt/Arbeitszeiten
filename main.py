@@ -83,6 +83,44 @@ def home():
     
     user_id = session.get(USERID)
     
+    # Helper function to get maxhours for a specific month
+    def get_maxhours_for_month(target_date):
+        """
+        Get maxhours for a specific month by looking for the latest maxhours
+        entry on or before the target month (stored on 1st of each month)
+        """
+        # Look for maxhours entry on 1st of target month
+        first_of_target_month = target_date.replace(day=1)
+        
+        current_maxhours = db.session.query(data.maxhours).filter(
+            data.userid == user_id,
+            data.date == first_of_target_month,
+            data.maxhours.isnot(None)
+        ).scalar()
+        
+        if current_maxhours:
+            return current_maxhours
+        
+        # If not found, look backwards month by month until we find maxhours
+        current_date = first_of_target_month
+        for _ in range(12):  # Limit search to 12 months back
+            # Go to previous month
+            if current_date.month == 1:
+                current_date = current_date.replace(year=current_date.year - 1, month=12)
+            else:
+                current_date = current_date.replace(month=current_date.month - 1)
+            
+            prev_maxhours = db.session.query(data.maxhours).filter(
+                data.userid == user_id,
+                data.date == current_date,
+                data.maxhours.isnot(None)
+            ).scalar()
+            
+            if prev_maxhours:
+                return prev_maxhours
+        
+        return None
+    
     # Handle +30min/-30min actions and max hours setting
     if request.method == "POST":
         action = request.form.get('action')
@@ -94,28 +132,24 @@ def home():
                 selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
                 max_hours = Decimal(max_hours_str) if max_hours_str else None
                 
-                # Clear all maxhours entries for this month
-                db.session.query(data).filter(
-                    data.userid == user_id,
-                    func.extract('month', data.date) == selected_date.month,
-                    func.extract('year', data.date) == selected_date.year
-                ).update({data.maxhours: None})
+                # Always store maxhours on the 1st of the month
+                first_of_month = selected_date.replace(day=1)
                 
-                # Check if entry exists for selected date
+                # Check if entry exists for 1st of the month
                 existing_entry = db.session.query(data).filter(
                     data.userid == user_id,
-                    data.date == selected_date
+                    data.date == first_of_month
                 ).first()
                 
                 if existing_entry:
                     existing_entry.maxhours = max_hours
                 else:
-                    # Create new entry with maxhours
+                    # Create new entry with maxhours on 1st of month
                     new_entry = data(
                         userid=user_id,
-                        date=selected_date,
+                        date=first_of_month,
                         categoryid=None,
-                        data=Decimal('0'),
+                        data=None,  # No hours worked on this date
                         maxhours=max_hours
                     )
                     db.session.add(new_entry)
@@ -224,25 +258,13 @@ def home():
         ).distinct().order_by('year', 'month').all()
         
         total_deficit = Decimal('0')
-        last_known_maxhours = None
         
         for year, month in months_with_data:
-            # Get maxhours for this month (last entry in the month with maxhours set)
-            month_maxhours_result = db.session.query(data.maxhours).filter(
-                data.userid == user_id,
-                func.extract('year', data.date) == year,
-                func.extract('month', data.date) == month,
-                data.maxhours.isnot(None)
-            ).order_by(data.date.desc()).first()
+            # Create a date for this month to use with get_maxhours_for_month
+            month_date = date(int(year), int(month), 1)
+            current_maxhours = get_maxhours_for_month(month_date)
             
-            # Use maxhours from this month if available, otherwise use last known value
-            if month_maxhours_result and month_maxhours_result[0]:
-                current_maxhours = month_maxhours_result[0]
-                last_known_maxhours = current_maxhours
-            else:
-                current_maxhours = last_known_maxhours
-            
-            # Only calculate deficit if we have maxhours (either current or inherited)
+            # Only calculate deficit if we have maxhours
             if current_maxhours is not None:
                 # Get sum of actual hours for this month
                 month_actual_hours = db.session.query(func.sum(data.data)).filter(
@@ -274,14 +296,11 @@ def home():
     }
     selected_month_name = german_months[selected_date.month]
     
-    # Find current maxhours - look for the most recent non-null maxhours entry before the selected date
-    current_max_hours_result = db.session.query(data.maxhours).filter(
-        data.userid == user_id,
-        data.maxhours.isnot(None),
-        data.date <= selected_date  # Only entries before the selected date
-    ).order_by(data.date.desc()).first()
+    # Get current maxhours for the selected month using new logic
+    current_max_hours = get_maxhours_for_month(selected_date)
     
-    current_max_hours = current_max_hours_result[0] if current_max_hours_result else None
+    # Get suggested maxhours for modal (current value or last known value)
+    suggested_max_hours = current_max_hours
     
     # Format decimal hours for display (e.g., 3.5 -> "3.5", 4.0 -> "4")
     def format_decimal_hours(decimal_hours):
@@ -305,6 +324,63 @@ def home():
             else:
                 return str(float(decimal_hours))
     
+    # Create overview data for total hours modal
+    def create_overview_data():
+        # Get all data entries for user, ordered by date desc
+        all_entries = db.session.query(data).filter(
+            data.userid == user_id
+        ).order_by(data.date.desc()).all()
+        
+        overview_data = {}
+        german_months = {
+            1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
+            5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
+            9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
+        }
+        
+        for entry in all_entries:
+            year = entry.date.year
+            month = entry.date.month
+            month_name = german_months[month]
+            
+            if year not in overview_data:
+                overview_data[year] = {}
+            
+            if month not in overview_data[year]:
+                # Get maxhours for this month using our helper function
+                month_maxhours = get_maxhours_for_month(entry.date)
+                
+                # Calculate total hours for this month
+                month_total = db.session.query(func.sum(data.data)).filter(
+                    data.userid == user_id,
+                    func.extract('year', data.date) == year,
+                    func.extract('month', data.date) == month
+                ).scalar() or Decimal('0')
+                
+                # Calculate surplus/deficit for month
+                month_difference = None
+                if month_maxhours:
+                    month_difference = month_total - month_maxhours
+                
+                overview_data[year][month] = {
+                    'name': month_name,
+                    'total_hours': month_total,
+                    'max_hours': month_maxhours,
+                    'difference': month_difference,
+                    'entries': []
+                }
+            
+            # Add entry if it has actual hours worked
+            if entry.data and entry.data > 0:
+                overview_data[year][month]['entries'].append({
+                    'date': entry.date,
+                    'hours': entry.data
+                })
+        
+        return overview_data
+    
+    overview_data = create_overview_data()
+    
     return render_template('home.html', 
                          user_id=user_id, 
                          get_username=get_username,
@@ -313,10 +389,12 @@ def home():
                          selected_month_name=selected_month_name,
                          current_max_hours=str(float(current_max_hours)) if current_max_hours else None,
                          current_max_hours_numeric=float(current_max_hours) if current_max_hours else 0,
+                         suggested_max_hours=str(float(suggested_max_hours)) if suggested_max_hours else "",
                          total_hours=format_total_hours_with_sign(total_deficit),
                          total_hours_numeric=float(total_deficit),
                          month_hours=format_decimal_hours(month_hours_decimal),
                          month_hours_numeric=float(month_hours_decimal),
+                         overview_data=overview_data,
                          edit_time=edit_time
                          )
 

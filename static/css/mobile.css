@@ -118,8 +118,18 @@
     justify-content: center;
 }
 
-/* graue Karte */
-.card.gray, .card-gray {
+/* Insgesamt Karte - klickbar */
+.card-overall {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.card-overall:hover {
+    transform: translateY(-2px);
+}
+
+/* Monats Karte */
+.card.month, .card-month {
     background: #444;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
@@ -127,7 +137,7 @@
     overflow: hidden;
 }
 
-.card.gray:hover, .card-gray:hover {
+.card.month:hover, .card-month:hover {
     background: #555;
     transform: translateY(-2px);
 }
@@ -227,14 +237,21 @@
     padding: 0.5rem 1.2rem;
     font-size: 1.05rem;
     font-weight: 500;
-    transition: background 0.15s;
+    transition: background-color 0.2s ease, transform 0.1s ease;
     margin: 0 -1rem;
     width: 5rem;
     height: 5rem;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: #555;
+    transform: translateY(-2px);
 }
 
 .edit-btn:active {
     background: #2a2a2a;
+    transform: translateY(0px);
 }
 
 .edit-time-value {
@@ -293,6 +310,12 @@
         border-radius: 8px;
         font-family: inherit;
         width: 100%;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    
+    .styled-date-picker:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
     }
     
     .styled-date-picker::-webkit-calendar-picker-indicator {
@@ -312,5 +335,24 @@
     .edit-btn {
         font-size: 0.95rem;
         padding: 0.4rem 0.85rem;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    
+    .edit-btn:hover {
+        background: #555;
+        transform: translateY(-2px);
+    }
+}
+
+/* Mobile adjustments for overview modal */
+@media (max-width: 500px) {
+    .overview-modal {
+        margin: 2% auto;
+        max-height: 90vh;
+        width: 95%;
+    }
+    
+    .overview-body {
+        max-height: 75vh;
     }
 }

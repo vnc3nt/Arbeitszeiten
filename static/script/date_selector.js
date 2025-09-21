@@ -111,10 +111,30 @@ function closeMaxHoursModal() {
     }
 }
 
+function openOverviewModal() {
+    const modal = document.getElementById('overviewModal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+function closeOverviewModal() {
+    const modal = document.getElementById('overviewModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // Close modal when clicking outside
 window.addEventListener('click', function(event) {
-    const modal = document.getElementById('maxHoursModal');
-    if (modal && event.target === modal) {
+    const maxHoursModal = document.getElementById('maxHoursModal');
+    const overviewModal = document.getElementById('overviewModal');
+    
+    if (maxHoursModal && event.target === maxHoursModal) {
         closeMaxHoursModal();
+    }
+    
+    if (overviewModal && event.target === overviewModal) {
+        closeOverviewModal();
     }
 });
