@@ -323,17 +323,18 @@ def home():
     
     # Calculate cumulative deficit/surplus across all months
     def calculate_total_deficit():
-        # Get all months with data for this user, ordered by date
-        months_with_data = db.session.query(
+        # Get all months with data OR maxhours for this user, ordered by date
+        months_with_data_or_maxhours = db.session.query(
             func.extract('year', data.date).label('year'),
             func.extract('month', data.date).label('month')
         ).filter(
-            data.userid == user_id
+            data.userid == user_id,
+            (data.data.isnot(None) | data.maxhours.isnot(None))
         ).distinct().order_by('year', 'month').all()
         
         total_deficit = Decimal('0')
         
-        for year, month in months_with_data:
+        for year, month in months_with_data_or_maxhours:
             # Create a date for this month to use with get_maxhours_for_month
             month_date = date(int(year), int(month), 1)
             current_maxhours = get_maxhours_for_month(month_date)
@@ -400,9 +401,10 @@ def home():
     
     # Create overview data for total hours modal
     def create_overview_data():
-        # Get all data entries for user, ordered by date desc
+        # Get all data entries for user (including entries with only maxhours), ordered by date desc
         all_entries = db.session.query(data).filter(
-            data.userid == user_id
+            data.userid == user_id,
+            (data.data.isnot(None) | data.maxhours.isnot(None))
         ).order_by(data.date.desc()).all()
         
         overview_data = {}
