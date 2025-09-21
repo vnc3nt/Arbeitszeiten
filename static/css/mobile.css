@@ -346,13 +346,5 @@
 
 /* Mobile adjustments for overview modal */
 @media (max-width: 500px) {
-    .overview-modal {
-        margin: 2% auto;
-        max-height: 90vh;
-        width: 95%;
-    }
-    
-    .overview-body {
-        max-height: 75vh;
-    }
+
 }
