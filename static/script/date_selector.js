@@ -139,6 +139,76 @@ function handleModalClose(event) {
     }
 }
 
+// Time input functions
+function openTimeInput() {
+    const timeDisplay = document.getElementById('edit-time-display');
+    const timePicker = document.getElementById('time-picker');
+    
+    if (timeDisplay && timePicker) {
+        timeDisplay.style.display = 'none';
+        timePicker.style.display = 'inline-block';
+        timePicker.focus();
+        
+        // Add blur event listener to hide when clicking outside
+        timePicker.addEventListener('blur', function() {
+            closeTimeInput();
+        });
+    }
+}
+
+function closeTimeInput() {
+    const timeDisplay = document.getElementById('edit-time-display');
+    const timePicker = document.getElementById('time-picker');
+    
+    if (timeDisplay && timePicker) {
+        timeDisplay.style.display = 'inline-block';
+        timePicker.style.display = 'none';
+    }
+}
+
+function updateTime(timeValue) {
+    if (!timeValue) return;
+    
+    // Round time to nearest 15 minutes
+    function roundToQuarterHour(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const totalMinutes = hours * 60 + minutes;
+        const roundedMinutes = Math.round(totalMinutes / 15) * 15;
+        const roundedHours = Math.floor(roundedMinutes / 60);
+        const remainingMinutes = roundedMinutes % 60;
+        return `${String(roundedHours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}`;
+    }
+    
+    const roundedTime = roundToQuarterHour(timeValue);
+    const selectedDate = document.getElementById('date-picker').value;
+    
+    // Send time update to server
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.style.display = 'none';
+    
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = 'set_time';
+    form.appendChild(actionInput);
+    
+    const dateInput = document.createElement('input');
+    dateInput.type = 'hidden';
+    dateInput.name = 'selected_date';
+    dateInput.value = selectedDate;
+    form.appendChild(dateInput);
+    
+    const timeInput = document.createElement('input');
+    timeInput.type = 'hidden';
+    timeInput.name = 'time_value';
+    timeInput.value = roundedTime;
+    form.appendChild(timeInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
 // Add both click and touch event listeners for modal closing
 window.addEventListener('click', handleModalClose);
 window.addEventListener('touchend', handleModalClose);

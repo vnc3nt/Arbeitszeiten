@@ -207,6 +207,54 @@ def home():
             except (ValueError, Exception) as e:
                 print(f"Error processing time adjustment: {e}")
                 db.session.rollback()
+
+        elif action == 'set_time' and selected_date_str:
+            try:
+                selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+                time_value = request.form.get('time_value')
+                
+                if time_value:
+                    # Parse time value (HH:MM format)
+                    time_parts = time_value.split(':')
+                    if len(time_parts) == 2:
+                        hours = int(time_parts[0])
+                        minutes = int(time_parts[1])
+                        
+                        # Convert to decimal hours
+                        decimal_hours = Decimal(hours) + Decimal(minutes) / Decimal(60)
+                        
+                        # Get current maxhours to preserve it
+                        current_entry = db.session.query(data).filter(
+                            data.userid == user_id,
+                            data.date == selected_date
+                        ).first()
+                        current_maxhours = current_entry.maxhours if current_entry else None
+                        
+                        # Delete existing entries for this date
+                        db.session.query(data).filter(
+                            data.userid == user_id,
+                            data.date == selected_date
+                        ).delete()
+                        
+                        # Add new entry if either hours > 0 OR maxhours is set
+                        if decimal_hours > 0 or current_maxhours is not None:
+                            new_entry = data(
+                                userid=user_id,
+                                date=selected_date,
+                                categoryid=None,
+                                data=decimal_hours if decimal_hours > 0 else None,
+                                maxhours=current_maxhours
+                            )
+                            db.session.add(new_entry)
+                        
+                        db.session.commit()
+                        
+                        # Redirect to avoid form resubmission
+                        return redirect(f"/home?date={selected_date_str}")
+                        
+            except (ValueError, Exception) as e:
+                print(f"Error setting time: {e}")
+                db.session.rollback()
     
     # Get the selected date from query parameter or use today as default
     selected_date_str = request.args.get('date', '')
@@ -246,6 +294,16 @@ def home():
         return f"{hours}:{minutes:02d}"
     
     edit_time = format_hours(day_total_hours)
+    
+    # Format time for HTML time input (24-hour format HH:MM)
+    def format_time_24h(decimal_hours):
+        if decimal_hours == 0:
+            return "00:00"
+        hours = int(decimal_hours)
+        minutes = int((decimal_hours - hours) * 60)
+        return f"{hours:02d}:{minutes:02d}"
+    
+    edit_time_24h = format_time_24h(day_total_hours)
     
     # Calculate cumulative deficit/surplus across all months
     def calculate_total_deficit():
@@ -395,7 +453,8 @@ def home():
                          month_hours=format_decimal_hours(month_hours_decimal),
                          month_hours_numeric=float(month_hours_decimal),
                          overview_data=overview_data,
-                         edit_time=edit_time
+                         edit_time=edit_time,
+                         edit_time_24h=edit_time_24h
                          )
 
 @app.route('/edit')

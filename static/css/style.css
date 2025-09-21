@@ -700,12 +700,35 @@ h2 {
 
 #maxHoursInput {
   width: 5em;
+  text-align: center;
   padding: 0.5rem;
   border: 1px solid var(--selected-color);
   border-radius: 4px;
   background-color: var(--background-color);
   color: var(--text-color);
   font-size: 1rem;
+}
+
+/* Time input styles */
+.edit-time-value {
+  cursor: pointer;
+  user-select: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.edit-time-value:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.styled-time-picker {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--selected-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: inherit;
 }
 
 /* Overview Modal Styles */
