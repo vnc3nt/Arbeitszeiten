@@ -534,12 +534,25 @@ dialog {
   bottom: 30px;
   left: 0;
   right: 0;
+  display: flex;
   flex-direction: column;
   text-align: center;
   justify-content: center;
   align-items: center;
   list-style: none;
   filter: invert(.3);
+}
+
+.legal a {
+  text-decoration: none;
+  color: var(--text-color);
+  margin: 0.25rem 0;
+}
+
+.legal li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .impressum-content {
