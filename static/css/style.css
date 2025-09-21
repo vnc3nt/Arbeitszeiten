@@ -67,10 +67,8 @@ body {
 
 .logo-pic {
   position: absolute;
-  top: -.72rem;
-  left: -.72rem;
   width: 3.14rem;
-  padding: 1rem;
+  margin: 5px;
   filter: invert(1);
 }
 .logo-pic-centered {
@@ -283,9 +281,9 @@ i {
 
 .profile {
   float: right;
-  position: relative;
-  top: 5px;
-  right: 20px;
+  position: absolute;
+  right: 0px;
+  margin: 5px;
   z-index: 4
 }
 
@@ -306,7 +304,6 @@ details> summary {
 }
 
 #profile-menu {
-  right: 26px;
   min-width: 200px;
   
 }
