@@ -9,12 +9,11 @@
 
 #profile-menu {
     position: absolute;
-    top: 4rem;
-    right: -0.8rem;
-    width: 90vw;
+    top: 3rem;
+    right: -1rem;
+    width: 100vw;
     height: calc(110vh - 6.875rem);
     border-radius: 10px 10px 0 0;
-    margin: auto;
     overflow: hidden;
     z-index: 0;
     backdrop-filter: blur(7px);
