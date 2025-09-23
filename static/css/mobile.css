@@ -336,5 +336,14 @@
     #profile-menu .first-ul-width {
         display: none !important;
     }
+    
+    /* Erhöhte Randabstände für Logo und Profil-Bild auf Mobile */
+    .logo-pic {
+        margin: 15px;
+    }
+    
+    .profile {
+        margin: 15px;
+    }
 }
 

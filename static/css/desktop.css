@@ -20,8 +20,8 @@ body {
 
 /* Header-Bereich optimiert für Desktop */
 .logo-pic {
-    width: 4rem;
-    margin: 1rem 2rem;
+    width: 3rem;
+    margin: 1rem 1rem;
 }
 
 /* Profil-Menü für Desktop */
@@ -30,25 +30,24 @@ body {
     position: absolute;
     overflow: auto;
     z-index: 1000;
-    top: 4.5rem;
-    right: 1rem;
+    top: 3.5rem;
+    right: 0;
     width: 280px;
     max-height: 400px;
     background-color: var(--button-color);
-    padding: 1rem;
-    border-radius: 10px;
-    border: solid 1px;
-    border-color: var(--selected-color);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--selected-color);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    animation: desktop-profile-menu 0.2s ease-out;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.4);
+    animation: desktop-profile-menu 0.3s ease-out;
 }
 
 @keyframes desktop-profile-menu {
     0% {
         opacity: 0;
-        transform: translateY(-10px) scale(0.95);
+        transform: translateY(-10px) scale(0.9);
     }
     100% {
         opacity: 1;
@@ -66,19 +65,18 @@ body {
 .profile {
     position: absolute;
     top: 1rem;
-    right: 2rem;
+    right: 1rem;
     z-index: 1001;
 }
 
 .profile-pic {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3rem;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
 .profile-pic:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 /* Statistik-Karten für Desktop */
@@ -518,8 +516,7 @@ body {
     }
     
     .profile-pic:hover {
-        transform: scale(1.15);
-        filter: brightness(1.1);
+        transform: scale(1.05);
     }
     
     .logo-pic:hover {
