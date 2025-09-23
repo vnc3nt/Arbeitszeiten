@@ -10,11 +10,11 @@
 #profile-menu {
     position: absolute;
     top: 4rem;
-    right: 0px;
-    width: 100vw;
+    right: -0.8rem;
+    width: 90vw;
     height: calc(110vh - 6.875rem);
     border-radius: 10px 10px 0 0;
-    margin: -5px;
+    margin: auto;
     overflow: hidden;
     z-index: 0;
     backdrop-filter: blur(7px);
@@ -339,11 +339,11 @@
     
     /* Erhöhte Randabstände für Logo und Profil-Bild auf Mobile */
     .logo-pic {
-        margin: 15px;
+        margin: 1rem;
     }
     
     .profile {
-        margin: 15px;
+        margin: 1rem;
     }
 }
 
