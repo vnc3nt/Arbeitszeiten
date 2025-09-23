@@ -72,7 +72,7 @@ body {
 .profile-pic {
     width: 3rem;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.3s ease;
 }
 
 .profile-pic:hover {
@@ -100,7 +100,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-overall {
@@ -173,7 +173,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     background-color: #222222;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease;
     padding: 0;
     border-radius: 10px;
     display: inline-block;
@@ -223,7 +223,7 @@ body {
     padding: 1rem 2rem;
     font-size: 1.2rem;
     font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     width: 8rem;
     height: 4rem;
     cursor: pointer;
@@ -250,7 +250,7 @@ body {
     height: 2rem;
     margin: 0 0.5rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -353,7 +353,7 @@ body {
     cursor: pointer;
     color: var(--text-color);
     opacity: 0.7;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.3s ease;
 }
 
 .modal-close:hover {
@@ -385,7 +385,7 @@ body {
     cursor: pointer;
     font-size: 1rem;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .btn-cancel {

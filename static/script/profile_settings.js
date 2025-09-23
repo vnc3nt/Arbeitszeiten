@@ -105,3 +105,122 @@ window.addEventListener("DOMContentLoaded", (e) => {
         change_password_dialog.querySelector("input").focus();
     });
 })
+
+// Touch-Funktionalität für das Profil-Menü
+window.addEventListener("DOMContentLoaded", (e) => {
+    const profileMenu = document.getElementById('profile-menu');
+    const profileButton = document.querySelector('.profile');
+    
+    if (!profileMenu || !profileButton) return;
+    
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+    
+    // Touch-Events für das Profil-Menü
+    profileMenu.addEventListener('touchstart', function(e) {
+        // Prüfen ob das Menü sichtbar ist
+        const details = profileButton.querySelector('details');
+        if (!details || !details.open) return;
+        
+        startY = e.touches[0].clientY;
+        currentY = startY;
+        isDragging = true;
+        
+        // Animation während des Drags deaktivieren
+        profileMenu.style.transition = 'none';
+        
+        e.preventDefault();
+    }, { passive: false });
+    
+    profileMenu.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+        
+        // Nur nach unten wischen erlauben (positive deltaY)
+        if (deltaY > 0) {
+            const translateY = Math.min(deltaY, window.innerHeight);
+            profileMenu.style.transform = `translateY(${translateY}px)`;
+        }
+        
+        e.preventDefault();
+    }, { passive: false });
+    
+    profileMenu.addEventListener('touchend', function(e) {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        const deltaY = currentY - startY;
+        const threshold = window.innerHeight * 0.25; // 25% der Bildschirmhöhe
+        
+        // Animation wieder aktivieren
+        profileMenu.style.transition = 'transform 0.3s ease-out';
+        
+        if (deltaY > threshold) {
+            // Menü schließen - nach unten ausblenden
+            profileMenu.style.transform = `translateY(100%)`;
+            
+            // Nach der Animation das Menü verstecken
+            setTimeout(() => {
+                const details = profileButton.querySelector('details');
+                if (details) {
+                    details.removeAttribute('open');
+                }
+                profileMenu.style.transform = '';
+                profileMenu.style.transition = '';
+            }, 300);
+        } else {
+            // Menü zurück zur ursprünglichen Position
+            profileMenu.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                profileMenu.style.transition = '';
+            }, 300);
+        }
+        
+        e.preventDefault();
+    }, { passive: false });
+    
+    // Überschreibung des Klick-Verhaltens für animiertes Schließen
+    const profileDetails = profileButton.querySelector('details');
+    const profileSummary = profileButton.querySelector('summary');
+    
+    if (profileDetails && profileSummary) {
+        // Verhindere das Standard-toggle-Verhalten
+        profileSummary.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (profileDetails.open) {
+                // Menü ist offen - Animation zum Schließen
+                profileMenu.classList.add('closing');
+                
+                // Nach der Animation das details-Element schließen
+                setTimeout(() => {
+                    profileDetails.removeAttribute('open');
+                    profileMenu.classList.remove('closing');
+                }, 300);
+            } else {
+                // Menü ist geschlossen - normal öffnen
+                profileDetails.setAttribute('open', '');
+                profileMenu.classList.remove('closing');
+                setTimeout(() => {
+                    profileMenu.style.transform = '';
+                    profileMenu.style.transition = '';
+                }, 50);
+            }
+        });
+        
+        // Fallback für toggle-Event (für andere Schließ-Methoden)
+        profileDetails.addEventListener('toggle', function() {
+            if (this.open) {
+                // Menü wird geöffnet - sicherstellen dass closing-Klasse entfernt ist
+                profileMenu.classList.remove('closing');
+                setTimeout(() => {
+                    profileMenu.style.transform = '';
+                    profileMenu.style.transition = '';
+                }, 50);
+            }
+        });
+    }
+})
