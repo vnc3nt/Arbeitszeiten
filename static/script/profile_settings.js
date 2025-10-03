@@ -195,11 +195,15 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 // Menü ist offen - Animation zum Schließen
                 profileMenu.classList.add('closing');
                 
+                // Desktop: kürzere Verzögerung, Mobile: längere für Touch-Animation
+                const isDesktop = window.innerWidth >= 766;
+                const delay = isDesktop ? 150 : 300;
+                
                 // Nach der Animation das details-Element schließen
                 setTimeout(() => {
                     profileDetails.removeAttribute('open');
                     profileMenu.classList.remove('closing');
-                }, 300);
+                }, delay);
             } else {
                 // Menü ist geschlossen - normal öffnen
                 profileDetails.setAttribute('open', '');
