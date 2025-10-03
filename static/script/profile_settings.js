@@ -123,6 +123,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
         const details = profileButton.querySelector('details');
         if (!details || !details.open) return;
         
+        // Wenn auf einen Link oder Button geklickt wurde, nicht verhindern
+        const target = e.target;
+        const isInteractive = target.closest('a, button, [role="button"]');
+        if (isInteractive) {
+            isDragging = false;
+            return;
+        }
+        
         startY = e.touches[0].clientY;
         currentY = startY;
         isDragging = true;
@@ -139,13 +147,15 @@ window.addEventListener("DOMContentLoaded", (e) => {
         currentY = e.touches[0].clientY;
         const deltaY = currentY - startY;
         
-        // Nur nach unten wischen erlauben (positive deltaY)
-        if (deltaY > 0) {
-            const translateY = Math.min(deltaY, window.innerHeight);
-            profileMenu.style.transform = `translateY(${translateY}px)`;
+        // Nur bei signifikanter Bewegung als Drag behandeln (>10px)
+        if (Math.abs(deltaY) > 10) {
+            // Nur nach unten wischen erlauben (positive deltaY)
+            if (deltaY > 0) {
+                const translateY = Math.min(deltaY, window.innerHeight);
+                profileMenu.style.transform = `translateY(${translateY}px)`;
+            }
+            e.preventDefault();
         }
-        
-        e.preventDefault();
     }, { passive: false });
     
     profileMenu.addEventListener('touchend', function(e) {

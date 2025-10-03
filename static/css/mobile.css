@@ -21,11 +21,18 @@
     padding: 0px;
     border: solid 1px;
     border-color: var(--selected-color);
-    user-select: none;
     touch-action: pan-y;
     opacity: 0;
     transform: translateY(100%);
     transition: all 0.3s ease-out;
+}
+
+/* Links und interaktive Elemente müssen anklickbar sein */
+#profile-menu a,
+#profile-menu button {
+    user-select: auto;
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 /* Wenn das details-Element geöffnet ist */
