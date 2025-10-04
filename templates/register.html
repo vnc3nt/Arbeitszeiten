@@ -71,11 +71,8 @@
             <input type="checkbox" id="terms_checkbox" name="terms_checkbox" required>
             <label for="terms_checkbox">Ich habe die <a href="{{ url_for('dpa') }}" download>Datenschutzerklärung</a> und AGB gelesen und stimme Ihnen zu.</label>
         </div>
-        <br><button name="register_btn" type="submit">Registrieren</button>
+        <br><a class="sec_button_style" href="/login">Abbrechen</a><button class="prim_button_style" name="register_btn" type="submit">Registrieren</button>
     </form>
-    <p>
-        <a href="/login">Abbrechen</a>
-    </p>
 </div>
 
 <div class="legal">
