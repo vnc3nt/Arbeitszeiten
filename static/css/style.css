@@ -907,7 +907,7 @@ h2 {
     border-color: rgba(120, 120, 120, .9);
     padding: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
     width: 10rem;
     height: 2.5rem;
     line-height: 1rem;
@@ -923,7 +923,7 @@ h2 {
     border-color: rgba(120, 120, 120, .9);
     padding: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
     width: 10rem;
     height: 2.5rem;
     line-height: 1rem;

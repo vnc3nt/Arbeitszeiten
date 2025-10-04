@@ -166,7 +166,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
         const threshold = window.innerHeight * 0.25; // 25% der Bildschirmhöhe
         
         // Animation wieder aktivieren
-        profileMenu.style.transition = 'transform 0.3s ease-out';
+        profileMenu.style.transition = 'transform 0.2s ease-out';
         
         if (deltaY > threshold) {
             // Menü schließen - nach unten ausblenden
@@ -180,13 +180,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 }
                 profileMenu.style.transform = '';
                 profileMenu.style.transition = '';
-            }, 300);
+            }, 200);
         } else {
             // Menü zurück zur ursprünglichen Position
             profileMenu.style.transform = 'translateY(0)';
             setTimeout(() => {
                 profileMenu.style.transition = '';
-            }, 300);
+            }, 200);
         }
         
         e.preventDefault();

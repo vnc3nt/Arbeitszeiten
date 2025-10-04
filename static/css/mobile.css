@@ -24,7 +24,7 @@
     touch-action: pan-y;
     opacity: 0;
     transform: translateY(100%);
-    transition: all 0.3s ease-out;
+    transition: all 0.2s ease-out;
 }
 
 /* Links und interaktive Elemente müssen anklickbar sein */
@@ -49,7 +49,7 @@
     transform: translateY(100%) !important;
     backdrop-filter: blur(0px) !important;
     -webkit-backdrop-filter: blur(0px) !important;
-    transition: all 0.3s ease-out !important;
+    transition: all 0.2s ease-out !important;
 }
 
 #profile-menu ul li:hover {
@@ -133,7 +133,7 @@
 /* Insgesamt Karte - klickbar */
 .card-overall {
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .card-overall:hover {
@@ -144,7 +144,7 @@
 .card.month, .card-month {
     background: #444;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     position: relative;
     overflow: hidden;
 }
@@ -162,7 +162,7 @@
     height: 100%;
     background: #777;
     width: 0%;
-    transition: width 0.3s ease;
+    transition: width 0.2s ease;
     border-radius: 10px;
     z-index: 1;
 }
@@ -202,7 +202,7 @@
     margin-bottom: 2rem;
     cursor: pointer;
     background-color: #222222;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
     padding: 0;
     border-radius: 10px;
     display: inline-block;
@@ -251,7 +251,7 @@
     padding: 0.5rem 0.5rem;
     font-size: 0.85rem;
     font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     margin: 0 -1rem;
     width: 5rem;
     height: 5rem;
@@ -328,7 +328,7 @@
     .edit-btn {
         font-size: 0.95rem;
         padding: 0.4rem 0.85rem;
-        transition: background-color 0.3s ease, transform 0.3s ease;
+        transition: background-color 0.2s ease, transform 0.2s ease;
     }
     
     .edit-btn:hover {
@@ -359,7 +359,7 @@
     
     /* Modal-Animationen für Mobile */
     .modal-content {
-        animation: mobile-modal-appear 0.3s ease-out;
+        animation: mobile-modal-appear 0.2s ease-out;
     }
     
     @keyframes mobile-modal-appear {

@@ -41,7 +41,7 @@ body {
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     box-shadow: 0 16px 64px rgba(0,0,0,0.4);
-    animation: desktop-profile-menu 0.3s ease-out;
+    animation: desktop-profile-menu 0.2s ease-out;
     transition: all 0.2s ease-out;
 }
 
@@ -49,7 +49,7 @@ body {
 #profile-menu.closing {
     opacity: 0 !important;
     transform: translateY(-10px) scale(0.95) !important;
-    transition: all 0.15s ease-out !important;
+    transition: all 0.2s ease-out !important;
 }
 
 @keyframes desktop-profile-menu {
@@ -80,7 +80,7 @@ body {
 .profile-pic {
     width: 3rem;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .profile-pic:hover {
@@ -108,7 +108,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-overall {
@@ -140,7 +140,7 @@ body {
     height: 100%;
     background: #777;
     width: 0%;
-    transition: width 0.3s ease;
+    transition: width 0.2s ease;
     border-radius: 20px;
     z-index: 1;
 }
@@ -181,7 +181,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     background-color: #222222;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
     padding: 0;
     border-radius: 10px;
     display: inline-block;
@@ -231,7 +231,7 @@ body {
     padding: 1rem 2rem;
     font-size: 1.2rem;
     font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     width: 8rem;
     height: 4rem;
     cursor: pointer;
@@ -258,7 +258,7 @@ body {
     height: 2rem;
     margin: 0 0.5rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -321,7 +321,7 @@ body {
     box-shadow: 0 16px 64px rgba(0,0,0,0.4);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    animation: modal-appear 0.3s ease-out;
+    animation: modal-appear 0.2s ease-out;
 }
 
 @keyframes modal-appear {
@@ -361,7 +361,7 @@ body {
     cursor: pointer;
     color: var(--text-color);
     opacity: 0.7;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
 .modal-close:hover {
@@ -393,7 +393,7 @@ body {
     cursor: pointer;
     font-size: 1rem;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .btn-cancel {
