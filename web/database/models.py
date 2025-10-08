@@ -28,29 +28,38 @@ class WorkTimeFormat(Enum):
 
 
 class Users(db.Model):
+    __tablename__ = "Users"
     id = db.Column(db.BIGINT, primary_key=True, nullable=False)
     username = db.Column(db.String(30), nullable=False, unique=True, index=True)
     password = db.Column(db.String(128), nullable=False)
     salt = db.Column(db.String(32), nullable=False)
-    picture_path = db.Column(db.String(10), nullable=False, server_default=text("NULL"))
-    setting = db.Column(db.JSON, nullable=False, server_default=text("{}"))
+    picture_path = db.Column(db.String(10), nullable=True, server_default=text("NULL"))
+    setting = db.Column(db.JSON, nullable=False, server_default=text("'{}'"))
 
 class Profile(db.Model):
+    __tablename__ = "Profile"
     __table_args__ = (
         UniqueConstraint("userId", "name"),  # prevents duplicate name on database
     )
 
     id = db.Column(db.BIGINT, primary_key=True, nullable=False)
-    userId = db.Column(db.BIGINT, ForeignKey("users.id", ondelete="cascade"), nullable=False)
+    userId = db.Column(db.BIGINT, ForeignKey("Users.id", ondelete="cascade"), nullable=False)
     name = db.Column(db.String(64), nullable=False)
     color = db.Column(db.String(6), nullable=True, server_default=text("NULL"))
-    workTime = db.Column(db.Integer, CheckConstraint("workTime > 0"),  nullable=False)
-    workTimeFormat = db.Column(db.Enum(WorkTimeFormat), nullable=False)
     removeVacationTimeEveryPeriod = db.Column(db.Boolean, nullable=False, server_default=text("true"))
     workStart = db.Column(db.Date, nullable=False)  # TODO: dates are weird because of timezones
 
+class WorkTime(db.Model):
+    __tablename__ = "WorkTime"
+    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
+    profileId = db.Column(db.BIGINT, ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
+    profileCategoryId = db.Column(db.BIGINT, ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=True)
+    workTime = db.Column(db.Integer, CheckConstraint("workTime >= 0"),  nullable=False)
+    workTimeFormat = db.Column(db.Enum(WorkTimeFormat), nullable=False)
+
 
 class ProfileCategory(db.Model):
+    __tablename__ = "ProfileCategory"
     __table_args__ = (
         UniqueConstraint("profileId", "name"),  # prevents duplicate name on database
     )
@@ -60,6 +69,7 @@ class ProfileCategory(db.Model):
     color = db.Column(db.String(6), nullable=False)
 
 class WorkTimeEntry(db.Model):
+    __tablename__ = "WorkTimeEntry"
     id = db.Column(db.BIGINT, primary_key=True, nullable=False)
     profileCategoryId = db.Column(db.BIGINT, ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=False)
     duration = db.Column(db.Integer, CheckConstraint("duration > 0"), nullable=False)
@@ -69,7 +79,8 @@ class WorkTimeEntry(db.Model):
 
 
 class Token(db.Model):
-    userId = db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False)
+    __tablename__ = "Token"
+    userId = db.Column(db.BIGINT, ForeignKey("Users.id"), nullable=False)
     token = db.Column(db.String(128), nullable=False, primary_key=True)
     expiretime = db.Column(db.BIGINT, nullable=False, default=update_expire_time)
     tokenType = db.Column(db.Enum(TokenType), nullable=True)
