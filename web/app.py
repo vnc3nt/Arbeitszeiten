@@ -1,13 +1,7 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, session, send_file
-from flask_migrate import Migrate
-from database.models import db, users, token, data, category
 import os
+from flask import Flask
+from database import db
 from blueprints.api import app as api_app
-from shared.login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw
-import secrets
-from shared.constants import USERID, TOKEN
-from time import time
-from sqlalchemy import func, distinct
 from database.migrations import migrate
 
 app = Flask(__name__)
