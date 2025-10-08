@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser
-from models import users
+from database.models import users
 
 post_arguments = RequestParser()
 post_arguments.add_argument(

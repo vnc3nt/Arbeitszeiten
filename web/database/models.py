@@ -7,6 +7,7 @@ from time import time
 EXPIRE_TIME = 3600*24*7 #eine woche hält das token
 
 db = SQLAlchemy()
+
 def current_date():
     time = datetime.now(timezone.utc)
     return datetime(day=time.day, month=time.month, year=time.year)

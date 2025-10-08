@@ -2,11 +2,11 @@ from flask_restful import Resource, reqparse
 from flask_restful.reqparse import RequestParser
 from flask import json, jsonify, session
 from sqlalchemy import func
-from models import db, users, current_date, token, data, category #data und category statt data implementieren
+from database.models import db, users, current_date, token, data, category #data und category statt data implementieren
 
 from datetime import datetime
 from decimal import Decimal
-from constants import USERID
+from shared.constants import USERID
 
 #TODO export und import der Daten -> Backup
 
