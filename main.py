@@ -1,12 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, session, send_file
-from models import db, users, token, data, category
-import os
-from api import app as api_app
-from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw
-import secrets
-from constants import USERID, TOKEN
-from time import time
-from sqlalchemy import func, distinct
+import dotenv
 
 with open(".env", "r") as f:
     for line in f.readlines():
@@ -497,8 +489,8 @@ def home():
     
     overview_data = create_overview_data()
     
-    return render_template('home.html', 
-                         user_id=user_id, 
+    return render_template('home.html',
+                         user_id=user_id,
                          get_username=get_username,
                          selected_date=selected_date_str,
                          selected_date_display=selected_date_display,
@@ -572,7 +564,7 @@ def impressum():
 @app.route('/dpa')
 def dpa():
     try:
-        return send_file('static/docs/dpa.pdf', 
+
                          as_attachment=True)
     except Exception as e:
         return str(e)
