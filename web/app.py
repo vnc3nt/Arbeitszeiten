@@ -1,13 +1,22 @@
 import os
-from flask import Flask
+from flask import Flask, g
 from database import db
 from blueprints.api import app as api_app
 from database.migrations import migrate
+from shared.constants import G_USER
 
 app = Flask(__name__)
 app.config.from_pyfile("config/flask_settings.py")
 db.init_app(app)
 migrate.init_app(app, db)
+
+
+# called when request is canceled/finished
+@app.teardown_appcontext
+def teardown_appcontext(_):
+    # clear g cachehello
+    g.pop(G_USER, None)
+
 
 app.register_blueprint(api_app)
 

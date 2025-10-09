@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 from enum import Enum, auto
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint, ForeignKey, Index, UniqueConstraint, func, text
-from sqlalchemy.orm import relationship
+from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint, func, text, BigInteger
+from sqlalchemy.dialects import sqlite
 from time import time
+
 
 EXPIRE_TIME = 3600*24*7 #eine woche hält das token
 
@@ -29,7 +30,7 @@ class WorkTimeFormat(Enum):
 
 class Users(db.Model):
     __tablename__ = "Users"
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
+    id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
     username = db.Column(db.String(30), nullable=False, unique=True, index=True)
     password = db.Column(db.String(128), nullable=False)
     salt = db.Column(db.String(32), nullable=False)
@@ -42,18 +43,18 @@ class Profile(db.Model):
         UniqueConstraint("userId", "name"),  # prevents duplicate name on database
     )
 
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
-    userId = db.Column(db.BIGINT, ForeignKey("Users.id", ondelete="cascade"), nullable=False)
+    id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
+    userId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Users.id", ondelete="cascade"), nullable=False)
     name = db.Column(db.String(64), nullable=False)
     color = db.Column(db.String(6), nullable=True, server_default=text("NULL"))
-    removeVacationTimeEveryPeriod = db.Column(db.Boolean, nullable=False, server_default=text("true"))
     workStart = db.Column(db.Date, nullable=False)  # TODO: dates are weird because of timezones
+    last_viewed = db.Column(db.TIMESTAMP, nullable=False)
 
 class WorkTime(db.Model):
     __tablename__ = "WorkTime"
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
-    profileId = db.Column(db.BIGINT, ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
-    profileCategoryId = db.Column(db.BIGINT, ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=True)
+    id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
+    profileId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
+    profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=True)
     workTime = db.Column(db.Integer, CheckConstraint("workTime >= 0"),  nullable=False)
     workTimeFormat = db.Column(db.Enum(WorkTimeFormat), nullable=False)
 
@@ -63,26 +64,26 @@ class ProfileCategory(db.Model):
     __table_args__ = (
         UniqueConstraint("profileId", "name"),  # prevents duplicate name on database
     )
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
-    profileId = db.Column(db.BIGINT, ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
+    id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
+    profileId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
     name = db.Column(db.String(64), nullable=False)
     color = db.Column(db.String(6), nullable=False)
 
 class WorkTimeEntry(db.Model):
     __tablename__ = "WorkTimeEntry"
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
-    profileCategoryId = db.Column(db.BIGINT, ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=False)
+    id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
+    profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=False)
     duration = db.Column(db.Integer, CheckConstraint("duration > 0"), nullable=False)
-    workDate = db.Column(db.Date, nullable=False)
+    workStart = db.Column(db.TIMESTAMP, nullable=False)
     entryTime = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     note = db.Column(db.Text, nullable=False, server_default="")
 
 
 class Token(db.Model):
     __tablename__ = "Token"
-    userId = db.Column(db.BIGINT, ForeignKey("Users.id"), nullable=False)
+    userId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Users.id", ondelete="cascade"), nullable=False)
     token = db.Column(db.String(128), nullable=False, primary_key=True)
-    expiretime = db.Column(db.BIGINT, nullable=False, default=update_expire_time)
+    expiretime = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), nullable=False, default=update_expire_time)
     tokenType = db.Column(db.Enum(TokenType), nullable=True)
 
 
