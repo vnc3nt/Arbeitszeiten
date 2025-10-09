@@ -1,9 +1,9 @@
-from flask import abort
+from flask import abort, request
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser
-from shared.constants import AUTH_TYPE_LOGIN, AUTH_TYPE_REGISTER, POST_LOCATIONS
-from api_resources.util import format_error
-from shared.login import login_user, register_user
+from shared.constants import AUTH_TYPE_LOGIN, AUTH_TYPE_LOGOUT, AUTH_TYPE_REGISTER, POST_LOCATIONS
+from api_resources.util import format_error, token_param
+from shared.login import login_user, logout, register_user
 
 
 # register user account
@@ -55,6 +55,8 @@ class Authentication(Resource):
             return self.register()
         elif auth_type == AUTH_TYPE_LOGIN:
             return self.login()
+        elif auth_type == AUTH_TYPE_LOGOUT:
+            return self.logout()
         abort(404)
 
     def register(self):
@@ -70,4 +72,10 @@ class Authentication(Resource):
         if error_message.is_error:
             return format_error(error_message.value, 403)
         return {"token": error_message.value}
+
+    def logout(self):
+        json = token_param.parse_args()
+        res = logout(json["token"])
+        print(f"Deleted {res} tokens")
+        return "", 204
 

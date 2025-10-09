@@ -1,5 +1,7 @@
 from time import time
 from typing import Optional
+
+from sqlalchemy import or_
 from shared.messages import MESSAGE_INVALID_LOGIN_CREDENTIALS, MESSAGE_PASSWORD_DOES_NOT_MATCH, MESSAGE_USERNAME_ALREADY_TAKEN
 from database.models import EXPIRE_TIME, Token, Users, db, TokenType
 import hashlib
@@ -62,3 +64,11 @@ def create_user_token(user: Users) -> Token:
         expiretime = time() + EXPIRE_TIME,
         tokenType = TokenType.API
     )
+
+def logout(token: str) -> bool:
+    token_obj = Token.query.filter(Token.token == token).first()
+    if token_obj is None:
+        return False
+    deleted = Token.query.filter(or_(Token.token == token, Token.expiretime < time())).delete() > 0
+    db.session.commit()
+    return deleted
