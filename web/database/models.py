@@ -48,15 +48,19 @@ class Profile(db.Model):
     name = db.Column(db.String(64), nullable=False)
     color = db.Column(db.String(6), nullable=True, server_default=text("NULL"))
     workStart = db.Column(db.Date, nullable=False)  # TODO: dates are weird because of timezones
-    last_viewed = db.Column(db.TIMESTAMP, nullable=False)
+    lastViewed = db.Column(db.TIMESTAMP, nullable=False)
 
 class WorkTime(db.Model):
     __tablename__ = "WorkTime"
+    __table_args__ = (
+        UniqueConstraint("profileId", "workStart"),  # prevents duplicate name on database
+    )
     id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
     profileId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
     profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=True)
     workTime = db.Column(db.Integer, CheckConstraint("workTime >= 0"),  nullable=False)
     workTimeFormat = db.Column(db.Enum(WorkTimeFormat), nullable=False)
+    workStart = db.Column(db.Date, nullable=False)
 
 
 class ProfileCategory(db.Model):
