@@ -40,7 +40,7 @@ def register_user(username: str, password: str, confirm_password: str) -> Option
     return None
 
 
-def login_user(username: str, password: str) -> Result:
+def login_user(username: str, password: str) -> Result[str, str]:
     user = get_user_by_name(username)
     if user is None:
         return Result(error=MESSAGE_INVALID_LOGIN_CREDENTIALS)
@@ -65,10 +65,26 @@ def create_user_token(user: Users) -> Token:
         tokenType = TokenType.API
     )
 
-def logout(token: str) -> bool:
+def logout(token: str) -> int:
     token_obj = Token.query.filter(Token.token == token).first()
     if token_obj is None:
-        return False
+        return 0
     deleted = Token.query.filter(or_(Token.token == token, Token.expiretime < time())).delete() > 0
     db.session.commit()
     return deleted
+
+
+def is_valid_token(token: str, refresh: bool = True) -> bool:
+    t = Token.query.filter(Token.token == token, Token.expiretime > time()).first()
+    if t is None:
+        return False
+    if refresh:
+        Token.query.filter(Token.token == token).update({"expiretime": time() + EXPIRE_TIME})
+        db.session.commit()
+    return True
+
+def get_user(token: str) -> Users:
+    return Users.query.join(Token).filter(Token.token == token).first()
+
+
+

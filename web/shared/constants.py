@@ -19,6 +19,15 @@ AUTH_TYPE_REGISTER = "register"
 AUTH_TYPE_LOGIN = "login"
 AUTH_TYPE_LOGOUT = "logout"
 
+HEADER_LOGIN_TOKEN = "Authorization"
+
+API_DATE_FORMAT = "%Y-%m-%d"
+API_DATETIME_FORMAT = "%Y-%m-%dT%H.%M.%S.%f"
+
+# database
+CONSTRAINT_UNIQUE_PROFILE_CATEGORY = "UniqueProfileCategory"
+CONSTRAINT_UNIQUE_PROFILE_WORK_PERIOD = "UniqueProfileWorkPeriod"
+CONSTRAINT_UNIQUE_PROFILE_NAME = "UniqueProfileName"
 
 # G Cache
 G_USER = "user_cache"

@@ -2,3 +2,8 @@
 MESSAGE_PASSWORD_DOES_NOT_MATCH = "password.no_match"
 MESSAGE_USERNAME_ALREADY_TAKEN = "username.taken"
 MESSAGE_INVALID_LOGIN_CREDENTIALS = "invalid_login"
+MESSAGE_INVALID_ACCESS_TOKEN = "token.invalid"
+
+# PROFILE
+MESSAGE_PROFILE_NAME_IN_USE = "profile.name_used"
+MESSAGE_PROFILE_NOT_FOUND = "profile.not_found"
