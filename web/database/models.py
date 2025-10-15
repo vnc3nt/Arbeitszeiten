@@ -86,13 +86,10 @@ class WorkTime(db.Model):
     workStart = db.Column(db.Date, nullable=False)
 
     def to_json(self):
-        category_id = None
-        if self.profileCategoryId is not None:
-            category_id = ProfileCategory.query.filter(ProfileCategory.profileId==self.profileId, ProfileCategory.id == self.profileCategoryId).first().id
         return {
                 "id": self.id,
                 "profileId": self.profileId,
-                "profileCategoryId": category_id,
+                "profileCategoryId": self.profileCategoryId,
                 "workTime": self.workTime,
                 "workTimeFormat": self.workTimeFormat.to_json(),
                 "workStart": self.workStart.strftime(API_DATE_FORMAT)
@@ -109,14 +106,39 @@ class ProfileCategory(db.Model):
     name = db.Column(db.String(64), nullable=False)
     color = db.Column(db.String(6), nullable=False)
 
+    def to_json(self, *, include_profile_id: bool = True):
+        data = {
+                "id": self.id,
+                "name": self.name,
+                "color": self.color
+        }
+        if include_profile_id:
+            data["profileId"] = self.profileId
+        return data
+
 class WorkTimeEntry(db.Model):
     __tablename__ = "WorkTimeEntry"
     id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
-    profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=False)
+    profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="restrict"), nullable=False)
     duration = db.Column(db.Integer, CheckConstraint("duration > 0"), nullable=False)
     workStart = db.Column(db.TIMESTAMP, nullable=False)
     entryTime = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     note = db.Column(db.Text, nullable=False, server_default="")
+
+    def to_json(self, *, expandCategory: bool = True):
+        data = {
+                "id": self.id,
+                "duration": self.duration,
+                "workStart": self.workStart.strftime(API_DATE_FORMAT),
+                "entryTime": self.entryTime.strftime(API_DATE_FORMAT),
+                "note": self.note
+        }
+        if expandCategory:
+            data["category"] = ProfileCategory.query.filter(ProfileCategory.id == self.profileCategoryId).first().to_json()
+        else:
+            data["categoryId"] = self.profileCategoryId
+        return data
+
 
 
 class Token(db.Model):

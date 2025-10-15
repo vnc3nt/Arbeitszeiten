@@ -26,3 +26,5 @@ SECRET_KEY = os.urandom(40)
 SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = "Strict"
 DEBUG=os.environ.get("DEBUG") == "True"
+
+SQLALCHEMY_ECHO = True

@@ -14,7 +14,7 @@ token_param.add_argument(
     location="headers",
     help="Login token required")
 
-def format_error(msg: str, code: int) -> Tuple[Dict, int]:
+def format_error(msg: Any, code: int) -> Tuple[Dict, int]:
     return {"error": msg}, code
 
 def format_data(data: Any, code: int = 200) -> Tuple[Dict, int]:

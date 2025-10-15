@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from api_resources.util import color_type, enum_type, format_data, int_or, token_param, unsigned_int, format_error
 from database.models import Profile, WorkTimeFormat
-from shared.constants import GET_LOCATIONS, PATCH_LOCATIONS, POST_LOCATIONS, HEADER_LOGIN_TOKEN
+from shared.constants import DELETE_LOCATIONS, GET_LOCATIONS, PATCH_LOCATIONS, POST_LOCATIONS, HEADER_LOGIN_TOKEN
 from shared.messages import MESSAGE_INVALID_ACCESS_TOKEN, MESSAGE_PROFILE_NOT_FOUND
 from shared.login import get_user, is_valid_token
 from shared.profiles import create_profile, delete_profile, get_all_user_profiles, get_last_viewed_user_profile, get_user_profile_by_id, update_user_profile
@@ -121,7 +121,7 @@ profile_delete.add_argument(
     type=int,
     nullable=False,
     required=True,
-    location=PATCH_LOCATIONS,
+    location=DELETE_LOCATIONS,
     help="The id of the profile to delete"
 )
 
@@ -160,7 +160,8 @@ class Profiles(Resource):
             return format_error(MESSAGE_INVALID_ACCESS_TOKEN, 401)
         user = get_user(token)
         result = create_profile(user.id, json["name"], json["color"], json["work_start"], json["work_period"], json["work_time"])
-
+        if result.is_error:
+            return format_error(result.error, 409)
         return format_data(result.value.to_json(), 201)
 
     def patch(self):
@@ -175,12 +176,12 @@ class Profiles(Resource):
         return format_data(result.value.to_json(), 200)
 
     def delete(self):
-        data = profile_patch.parse_args()
+        data = profile_delete.parse_args()
         token = data[HEADER_LOGIN_TOKEN]
         if not is_valid_token(token):
             return format_error(MESSAGE_INVALID_ACCESS_TOKEN, 401)
         user = get_user(token)
         success = delete_profile(user.id, data["id"])
-        return {}, 204 if success else 404
+        return ({}, 204) if success else format_error(MESSAGE_PROFILE_NOT_FOUND, 404)
         
 

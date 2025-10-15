@@ -14,6 +14,7 @@ GET_LOCATIONS = ["args"]
 POST_LOCATIONS = ["json", "form"]
 DELETE_LOCATIONS = ["json", "form"]
 PATCH_LOCATIONS = ["json", "form"]
+PUT_LOCATIONS = ["json", "form"]
 
 AUTH_TYPE_REGISTER = "register"
 AUTH_TYPE_LOGIN = "login"
@@ -22,7 +23,7 @@ AUTH_TYPE_LOGOUT = "logout"
 HEADER_LOGIN_TOKEN = "Authorization"
 
 API_DATE_FORMAT = "%Y-%m-%d"
-API_DATETIME_FORMAT = "%Y-%m-%dT%H.%M.%S.%f"
+API_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S:%f"
 
 # database
 CONSTRAINT_UNIQUE_PROFILE_CATEGORY = "UniqueProfileCategory"
@@ -31,3 +32,6 @@ CONSTRAINT_UNIQUE_PROFILE_NAME = "UniqueProfileName"
 
 # G Cache
 G_USER = "user_cache"
+
+# App behaviour
+DEFAULT_CATEGORIES = [("Work", "ff6961"), ("Vacation", "A4D8D8")]  # needs to contain at least 1 element

@@ -1,6 +1,6 @@
-
+import itertools
 from datetime import datetime, date, timedelta
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, Iterable, Optional, TypeVar, Union
 
 from database.models import WorkTimeFormat
 
@@ -9,8 +9,15 @@ E = TypeVar("E")
 
 class Result(Generic[T, E]):
     def __init__(self, value: Optional[T] = None, error: Optional[E] = None):
+        assert value is None or error is None, "Result can either be a value or an error, but not both"
         self.__data = value, error
         self.__error = error is not None
+
+    def __repr__(self):
+        if self.is_error:
+            return f"Result(error={self.error})"
+        else:
+            return f"Result(value={self.value})"
 
     @property
     def value(self) -> T:
@@ -19,7 +26,7 @@ class Result(Generic[T, E]):
 
     @property
     def error(self) -> E:
-        assert self.is_value, "cannot retrieve error of an value Result"
+        assert self.is_error, "cannot retrieve error of an value Result"
         return self.__data[1]  # type: ignore
 
     @property
@@ -40,3 +47,7 @@ def get_period_start(intervall_date: Union[datetime, date], work_period: WorkTim
         week_start = intervall_date - timedelta(days=intervall_date.weekday())
         return week_start if isinstance(week_start, date) else week_start.date()
     raise NotImplementedError("unknown work period:", work_period)  # exists if we ever implement other work periods
+
+
+def flatten(nested_iterable: Iterable[Iterable[T]]) -> Iterable[T]:
+    return itertools.chain.from_iterable(nested_iterable)
