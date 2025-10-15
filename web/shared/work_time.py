@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 from sqlalchemy import and_, not_, or_
 
@@ -30,20 +30,11 @@ def add_new_work(user_id: int, category_id: int, work_start: datetime, work_dura
 
 
 def work_overlaps(user_id: int, work_start: datetime, work_end: datetime) -> Optional[WorkTimeEntry]:
-    return WorkTimeEntry.query \
-        .select_from(WorkTimeEntry) \
-        .join(ProfileCategory) \
-        .join(Profile) \
-        .filter(
-                Profile.userId == user_id,
-                (and_(
-                    WorkTimeEntry.workStart < work_end,
-                    WorkTimeEntry.duration + WorkTimeEntry.workStart > work_start
-                ))
-        ) \
-        .first()
+    entries = list(filter_work_times(user_id, None, None, None, (work_start, work_end)))
+    return entries[0] if entries else None
 
-def filter_work_times(user_id: int, work_time_id: Optional[int], profile_id: Optional[int], category_id: Optional[int], time_range: Optional[Tuple[datetime, datetime]]) -> List[WorkTimeEntry]:
+
+def filter_work_times(user_id: int, work_time_id: Optional[int], profile_id: Optional[int], category_id: Optional[int], time_range: Optional[Tuple[datetime, datetime]]) -> Iterable[WorkTimeEntry]:
     query = WorkTimeEntry.query.select_from(WorkTimeEntry).join(ProfileCategory).join(Profile)
     query = query.filter(Profile.userId == user_id)
     if work_time_id:
@@ -56,12 +47,14 @@ def filter_work_times(user_id: int, work_time_id: Optional[int], profile_id: Opt
         query = query.filter(ProfileCategory.id == category_id)
 
     if time_range:
-        query = query.filter(
-            and_(
-                WorkTimeEntry.workStart < time_range[1],
-                WorkTimeEntry.duration * timedelta(seconds=1) + WorkTimeEntry.workStart > time_range[0]
-            )
-        )
+        entries = query.all()
+        result = []
+        for entry in entries:
+            entry_workStart = entry.workStart.replace(tzinfo=timezone.utc)
+            entry_workEnd = entry_workStart + timedelta(seconds=entry.duration)
+            if entry_workStart < time_range[1] and entry_workEnd > time_range[0]:
+                yield entry
 
-    return query.all()
+    else:
+        return query.all()
 
