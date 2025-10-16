@@ -121,7 +121,7 @@ class WorkTimeEntry(db.Model):
     id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
     profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="restrict"), nullable=False)
     duration = db.Column(db.Integer, CheckConstraint("duration > 0"), nullable=False)
-    workStart = db.Column(db.TIMESTAMP, nullable=False)
+    workStart = db.Column(db.TIMESTAMP(), nullable=False)
     entryTime = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     note = db.Column(db.Text, nullable=False, server_default="")
 

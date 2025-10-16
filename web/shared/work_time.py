@@ -48,7 +48,6 @@ def filter_work_times(user_id: int, work_time_id: Optional[int], profile_id: Opt
 
     if time_range:
         entries = query.all()
-        result = []
         for entry in entries:
             entry_workStart = entry.workStart.replace(tzinfo=timezone.utc)
             entry_workEnd = entry_workStart + timedelta(seconds=entry.duration)

@@ -109,4 +109,7 @@ class WorkTime(Resource):
             return format_error(result.error, 409)
         return format_data(result.value.to_json(), 201)
 
+    def delete(self):
+        ... # TODO add deleting of entries
+
 

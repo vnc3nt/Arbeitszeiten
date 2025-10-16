@@ -1,5 +1,5 @@
 import os
-from flask import Flask, g
+from flask import Flask, g, redirect
 from database import db
 from blueprints.api import app as api_app
 from database.migrations import migrate
@@ -25,9 +25,10 @@ def main():
         db.create_all()
     app.run(host="0.0.0.0", port=8080)
 
+
 @app.route("/")
 def index():
-    return "Test"
+    return redirect("/auth/login")
 
 # Jinja2-Filter für deutsche Zahlenformatierung
 @app.template_filter('decimal_comma')
