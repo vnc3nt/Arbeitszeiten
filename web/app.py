@@ -1,15 +1,24 @@
 import os
-from flask import Flask, g, redirect
+from flask import Flask, g, redirect, url_for, request
 from database import db
 from blueprints.api import app as api_app
 from database.migrations import migrate
 from shared.constants import G_USER
+from blueprints.auth import auth as auth_app
+from flask_babel import Babel, lazy_gettext
 
 app = Flask(__name__)
 app.config.from_pyfile("config/flask_settings.py")
 db.init_app(app)
 migrate.init_app(app, db)
 
+def get_locale():
+    locale = request.accept_languages.best_match(app.config['BABEL_LANGUAGES'])
+    print("Locale:", locale)
+    return locale
+
+babel = Babel(app, locale_selector=get_locale)
+app.jinja_env.globals["get_locale"] = get_locale
 
 # called when request is canceled/finished
 @app.teardown_appcontext
@@ -19,6 +28,7 @@ def teardown_appcontext(_):
 
 
 app.register_blueprint(api_app)
+app.register_blueprint(auth_app)
 
 def main():
     with app.app_context():
@@ -28,7 +38,7 @@ def main():
 
 @app.route("/")
 def index():
-    return redirect("/auth/login")
+    return redirect(url_for("auth.login"))
 
 # Jinja2-Filter für deutsche Zahlenformatierung
 @app.template_filter('decimal_comma')
