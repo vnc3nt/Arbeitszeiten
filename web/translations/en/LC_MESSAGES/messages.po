@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-30 17:18+0100\n"
+"POT-Creation-Date: 2025-11-30 20:45+0100\n"
 "PO-Revision-Date: 2025-11-30 17:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,15 +18,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: web/templates/login.html:8
+#: web/templates/base.html:10
+msgid "website.kw"
+msgstr ""
+
+#: web/templates/base.html:11
+msgid "website.desc"
+msgstr ""
+
+#: web/templates/login.html:3 web/templates/login.html:7
+#: web/templates/login.html:12
+msgid "login"
+msgstr "Login"
+
+#: web/templates/login.html:8 web/templates/register.html:3
+#: web/templates/register.html:7 web/templates/register.html:12
+msgid "register"
+msgstr "Register"
+
+#: web/templates/login.html:10 web/templates/register.html:9
 msgid "username"
 msgstr "Username"
 
-#: web/templates/login.html:9
+#: web/templates/login.html:11 web/templates/register.html:10
 msgid "password"
 msgstr "Password"
 
-#: web/templates/login.html:10
-msgid "login"
-msgstr "Login2"
+#: web/templates/register.html:11
+msgid "password.confirm"
+msgstr "Confirm password"
 
