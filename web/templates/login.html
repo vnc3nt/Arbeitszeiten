@@ -4,8 +4,8 @@
 {% endblock title %}
 {% block content %}
 <div class="container">
-    <h1>{{ _('login') }}</h1>
     <a href="{{ url_for('auth.register') }}" id="register-link">{{ _('register')}}</a>
+    <h1>{{ _('login') }}</h1>
     <form action="" method="post">
         <input type=text placeholder="{{ _('username') }}" value="{{ username }}" autocapitalize="false" autocomplete="username" required />
         <input type=password placeholder="{{ _('password') }}" value="" required />
