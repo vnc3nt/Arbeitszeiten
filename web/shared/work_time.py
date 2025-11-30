@@ -4,8 +4,8 @@ from typing import Dict, Iterable, List, Optional, Tuple, Union
 from sqlalchemy import and_, not_, or_
 
 from database.models import Profile, ProfileCategory, WorkTimeEntry, db
-from shared.messages import MESSAGE_CATEGORY_NOT_FOUND
-from shared.util import Result
+from shared.messages import MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_NO_WORK_TIME_FOUND
+from shared.util import Result, flatten
 
 
 def add_new_work(user_id: int, category_id: int, work_start: datetime, work_duration: timedelta, note: str) -> Result[WorkTimeEntry, Union[str, Dict]]:
@@ -57,3 +57,18 @@ def filter_work_times(user_id: int, work_time_id: Optional[int], profile_id: Opt
     else:
         return query.all()
 
+
+def delete_work_time(user_id, id: int) -> Result[WorkTimeEntry, str]:
+    entry = WorkTimeEntry.query.select_from(WorkTimeEntry).join(ProfileCategory).join(Profile).filter(Profile.userId == user_id, WorkTimeEntry.id == id).first()
+    if entry is None:
+        return Result(error=MESSAGE_NO_WORK_TIME_FOUND)
+    return Result(value=entry)
+
+
+def delete_work_time_by_category(user_id: int, category_id: int) -> Result[List[WorkTimeEntry], str]:
+    if category_id not in flatten(db.session.query(ProfileCategory.id).join(Profile).filter(Profile.userId == user_id)):
+        return Result(error=MESSAGE_CATEGORY_NOT_FOUND)
+    entries = WorkTimeEntry.query.select_from(WorkTimeEntry).join(ProfileCategory).join(Profile).filter(Profile.userId == user_id, ProfileCategory.id == category_id).all()
+    for entry in entries:
+        db.session.delete(entry)
+    return Result(value=entries)

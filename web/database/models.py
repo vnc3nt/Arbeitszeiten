@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta, timezone
 from enum import Enum, auto
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint, func, text, BigInteger
+from sqlalchemy import CheckConstraint, ForeignKey, MetaData, UniqueConstraint, func, text, BigInteger
 from sqlalchemy.dialects import sqlite
 from time import time
 
 from shared.constants import API_DATE_FORMAT, API_DATETIME_FORMAT, CONSTRAINT_UNIQUE_PROFILE_CATEGORY, CONSTRAINT_UNIQUE_PROFILE_NAME, CONSTRAINT_UNIQUE_PROFILE_WORK_PERIOD
+from config.flask_settings import SQLALCHEMY_NAMING_CONVENTION
 
 
 EXPIRE_TIME = 3600*24*7 #eine woche hält das token

@@ -8,7 +8,7 @@ from shared.login import get_user, is_valid_token
 from shared.profiles import create_profile, delete_profile, get_all_user_profiles, get_last_viewed_user_profile, get_user_profile_by_id, update_user_profile
 from flask_restful.inputs import boolean, date as flask_date, iso8601interval as flask_timeinterval
 
-from shared.work_time import add_new_work, filter_work_times
+from shared.work_time import add_new_work, delete_work_time, delete_work_time_by_category, filter_work_times
 
 
 work_time_get = token_param.copy()
@@ -72,6 +72,24 @@ new_work_time_entry.add_argument(
         help="The note of the time"
 )
 
+work_time_delete = token_param.copy()
+work_time_delete.add_argument(
+        name="id",
+        type=int,
+        required=False,
+        nullable=False,
+        location=GET_LOCATIONS,
+        help="The id of an specific entry"
+)
+work_time_delete.add_argument(
+        name="categoryId",
+        type=int,
+        required=False,
+        nullable=False,
+        location=GET_LOCATIONS,
+        help="The id of an specific entry"
+)
+
 
 class WorkTime(Resource):
     def get(self):
@@ -110,6 +128,28 @@ class WorkTime(Resource):
         return format_data(result.value.to_json(), 201)
 
     def delete(self):
-        ... # TODO add deleting of entries
+        data = work_time_delete.parse_args()
+        token = data[HEADER_LOGIN_TOKEN]
+        if not is_valid_token(token):
+            return format_error(MESSAGE_INVALID_ACCESS_TOKEN, 401)
+        user = get_user(token)
+        wt_id = data.get("id")
+        category_id = data.get("categoryId")
+        if wt_id is None and category_id is None:
+            return format_error("Either entry id or category id is required", 400)
+        if wt_id is not None:
+            result = delete_work_time(user.id, wt_id)
+            if result.is_error:
+                return format_error(result.error, 404)
+            return format_data(result.value.to_json(), 200)
+        if category_id is not None:
+            result = delete_work_time_by_category(user.id, category_id)
+            if not result:
+                return format_error(MESSAGE_NO_WORK_TIME_FOUND, 404)
+            return format_data([
+                    x.to_json()
+                    for x in result.value
+            ])
+        
 
 
