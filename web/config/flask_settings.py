@@ -36,3 +36,8 @@ SQLALCHEMY_NAMING_CONVENTION = {
   "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
   "pk": "pk_%(table_name)s"
 }
+
+
+BABEL_DEFAULT_LOCALE = "de"
+BABEL_TRANSLATION_DIRECTORIES = "translations"  # default value
+BABEL_LANGUAGES = ["en", "de"]
