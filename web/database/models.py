@@ -11,7 +11,7 @@ from config.flask_settings import SQLALCHEMY_NAMING_CONVENTION
 
 EXPIRE_TIME = 3600*24*7 #eine woche hält das token
 
-db = SQLAlchemy()
+db = SQLAlchemy(metadata=MetaData(naming_convention=SQLALCHEMY_NAMING_CONVENTION))
 
 def current_date():
     time = datetime.now(timezone.utc)
@@ -82,7 +82,7 @@ class WorkTime(db.Model):
     id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
     profileId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
     profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=True)
-    workTime = db.Column(db.Integer, CheckConstraint("workTime >= 0"),  nullable=False)
+    workTime = db.Column(db.Integer, CheckConstraint("workTime >= 0", name="positiveWorktime"),  nullable=False)
     workTimeFormat = db.Column(db.Enum(WorkTimeFormat), nullable=False)
     workStart = db.Column(db.Date, nullable=False)
 
@@ -121,7 +121,7 @@ class WorkTimeEntry(db.Model):
     __tablename__ = "WorkTimeEntry"
     id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
     profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="restrict"), nullable=False)
-    duration = db.Column(db.Integer, CheckConstraint("duration > 0"), nullable=False)
+    duration = db.Column(db.Integer, CheckConstraint("duration > 0", name="positiveDuration"), nullable=False)
     workStart = db.Column(db.TIMESTAMP(), nullable=False)
     entryTime = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     note = db.Column(db.Text, nullable=False, server_default="")
