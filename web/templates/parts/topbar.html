@@ -1,0 +1,18 @@
+<header>
+    <div id="app-icon">
+        <img src="{{ url_for('static', filename='img/appicons/512x512.png') }}" alt="Logo">
+        <span>Arbeitszeiten</span>
+    </div>
+</header>
+{% with category, messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<ul id=flash-msg>
+    {% for message in messages %}
+    <li class="category" popover="manual" id="fm-{{loop.index}}">
+        <span class="message">{{ msg }}</span>
+        <button popovertarget="fm-{{loop.index}}" popovertargetaction="hide">X</button>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
