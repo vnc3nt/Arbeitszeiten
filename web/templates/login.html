@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}
+{{ _('login') }}
+{% endblock title %}
+{% block content %}
+<div class="container">
+    <h1>{{ _('login') }}</h1>
+    <a href="{{ url_for('auth.register') }}" id="register-link">{{ _('register')}}</a>
+    <form action="" method="post">
+        <input type=text placeholder="{{ _('username') }}" value="{{ username }}" autocapitalize="false" autocomplete="username" required />
+        <input type=password placeholder="{{ _('password') }}" value="" required />
+        <input type="submit" value="{{ _('login') }}">
+    </form>
+</div>
+{% endblock content %}
