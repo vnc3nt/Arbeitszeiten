@@ -3,5 +3,11 @@
 Arbeitszeit
 {% endblock %}
 {% block content %}
+{% if profile %}
 <h1>Home</h1>
+{{ profile.to_json() }}
+{% else %}
+<h1>{{ _('profile.missing.headline') }}</h1>
+{% include "parts/create_profile.html" %}
+{% endif %}
 {% endblock %}
