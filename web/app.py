@@ -28,6 +28,7 @@ def teardown_appcontext(_):
 
 app.register_blueprint(api_app)
 app.register_blueprint(auth_app)
+app.register_blueprint(account_app)
 
 def main():
     with app.app_context():
