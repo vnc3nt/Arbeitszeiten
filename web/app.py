@@ -3,7 +3,7 @@ from flask import Flask, g, redirect, url_for, request
 from database import db
 from blueprints.api import app as api_app
 from database.migrations import migrate
-from shared.constants import G_USER_TOKEN
+from shared.constants import SESSION_USER_TOKEN, G_USER, G_FORM_DATA
 from blueprints.auth import auth as auth_app
 from blueprints.account import account as account_app
 from flask_babel import Babel, lazy_gettext

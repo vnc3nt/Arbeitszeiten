@@ -1,10 +1,10 @@
-from flask import g, redirect, url_for
+from flask import session, g, redirect, url_for
 from time import time
 from typing import Optional
 
 from sqlalchemy import or_
 from shared.messages import MESSAGE_INVALID_LOGIN_CREDENTIALS, MESSAGE_PASSWORD_DOES_NOT_MATCH, MESSAGE_USERNAME_ALREADY_TAKEN
-from shared.constants import G_USER, G_USER_TOKEN
+from shared.constants import G_USER, SESSION_USER_TOKEN
 from database.models import EXPIRE_TIME, Token, Users, db, TokenType
 import hashlib
 import secrets
@@ -90,7 +90,7 @@ def get_user(token: str) -> Users:
 
 
 def redirect_to_login_when_logged_out():
-    token = getattr(g, G_USER_TOKEN, None)
+    token = session.get(SESSION_USER_TOKEN, None)
     if token is None or not is_valid_token(token):
         return redirect(url_for("auth.login"))
     

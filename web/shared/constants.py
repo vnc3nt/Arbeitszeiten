@@ -1,8 +1,9 @@
 import re
 
-# G cache
-G_USER_TOKEN = "currentToken"
+# G and session cache
+SESSION_USER_TOKEN = "currentToken"
 G_USER = "user"
+G_FORM_DATA = "form-data"
 
 # Patterns
 USERNAME_PATTERN = "[^ ]{8,}"
@@ -39,6 +40,12 @@ DEFAULT_CATEGORIES = [("Work", "ff6961"), ("Vacation", "A4D8D8")]  # needs to co
 FORM_USERNAME = "username"
 FORM_PASSWORD = "password"
 FORM_CONFIRM_PASSWORD = "confirm-password"
+
+FORM_PROFILE_NAME = "profile-name"
+FORM_PROFILE_COLOR = "profile-color"
+FORM_WORK_START = "work-start"
+FORM_WORK_FORMAT = "work-format"
+FORM_WORK_TIME = "work-time"
 
 # flash categories
 FLASH_ERROR = "error"
