@@ -14,7 +14,7 @@ def check_login_state():
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
-    username = None
+    username = ""
     if request.method == "POST":
         username = request.form.get(FORM_USERNAME)
         password = request.form.get(FORM_PASSWORD)
