@@ -60,3 +60,24 @@ def assert_non_null_values(*values, abort_code: int = 400):
         abort(abort_code)
     print("Passed")
     
+    
+def assert_datetime(value: str, abort_code: int = 400):
+    print("Assert date:", value)
+    try:
+        return datetime.strptime(value, "%Y-%m-%d")
+    except ValueError as e:
+        print("Assert date:", e)
+        abort(abort_code)
+
+
+def assert_enum(e, value, abort_code: int = 400):
+    print("Assert enum (%r):" % e._value2member_map_, value)
+    if not e._value2member_map_.get(value):
+        abort(abort_code)
+    return e._value2member_map_.get(value)
+
+
+def assert_color(value):
+    print("Assert color:", value)
+    # FIXME make assertion
+    return color[1:]
