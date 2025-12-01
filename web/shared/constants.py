@@ -3,7 +3,7 @@ import re
 # G and session cache
 SESSION_USER_TOKEN = "currentToken"
 G_USER = "user"
-G_FORM_DATA = "form-data"
+SESSION_FORM_DATA = "form-data"
 
 # Patterns
 USERNAME_PATTERN = "[^ ]{8,}"

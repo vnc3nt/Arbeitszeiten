@@ -1,9 +1,9 @@
 import os
-from flask import Flask, g, redirect, url_for, request
+from flask import Flask, g, redirect, url_for, request, session
 from database import db, WorkTimeFormat
 from blueprints.api import app as api_app
 from database.migrations import migrate
-from shared.constants import SESSION_USER_TOKEN, G_USER, G_FORM_DATA
+from shared.constants import SESSION_USER_TOKEN, G_USER, SESSION_FORM_DATA
 from blueprints.auth import auth as auth_app
 from blueprints.account import account as account_app
 from blueprints.forms import forms as form_handler
@@ -22,6 +22,8 @@ def get_locale():
 babel = Babel(app, locale_selector=get_locale)
 app.jinja_env.globals["get_locale"] = get_locale
 app.jinja_env.globals["WORK_TIME_FORMATS"] = WorkTimeFormat
+app.jinja_env.globals["gget"] = lambda key: session.get(SESSION_FORM_DATA, {}).get(key, "")
+
 
 for variable in dir(__consts):
     app.jinja_env.globals[variable] = getattr(__consts, variable)
@@ -31,7 +33,6 @@ for variable in dir(__consts):
 def teardown_appcontext(_):
     # clear g cachehello
     g.pop(G_USER, None)
-    g.pop(G_FORM_DATA, None)
 
 
 app.register_blueprint(api_app)

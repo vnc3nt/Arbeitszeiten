@@ -1,5 +1,5 @@
-from flask import Blueprint, request, redirect, g, flash
-from shared.constants import G_USER, FORM_PROFILE_NAME, FORM_PROFILE_COLOR, FORM_WORK_FORMAT, FORM_WORK_START, FORM_WORK_TIME, FLASH_ERROR, G_FORM_DATA
+from flask import Blueprint, request, redirect, g, flash, session
+from shared.constants import G_USER, FORM_PROFILE_NAME, FORM_PROFILE_COLOR, FORM_WORK_FORMAT, FORM_WORK_START, FORM_WORK_TIME, FLASH_ERROR, SESSION_FORM_DATA
 from shared.login import redirect_to_login_when_logged_out
 from shared.util import assert_non_null_values, assert_datetime, assert_enum, assert_color
 from shared.profiles import create_profile
@@ -10,7 +10,7 @@ forms = Blueprint("form", __name__, url_prefix="/form")
 forms.before_request(redirect_to_login_when_logged_out)
 @forms.before_request
 def before_request():
-    setattr(g, G_FORM_DATA, request.form)
+    session[SESSION_FORM_DATA] = dict(request.form)
 
 @forms.errorhandler(404)
 def error404():
