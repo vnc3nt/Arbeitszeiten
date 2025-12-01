@@ -3,7 +3,6 @@ from typing import Any, Dict, Tuple
 from flask_restful.reqparse import RequestParser
 
 from shared.constants import COLOR_REGEX, HEADER_LOGIN_TOKEN
-from shared.util import Result
 
 token_param = RequestParser()
 token_param.add_argument(
