@@ -1,8 +1,10 @@
 import re
 
-USERID = "currentUserId"
-TOKEN = "currentToken"
+# G cache
+G_USER_TOKEN = "currentToken"
+G_USER = "user"
 
+# Patterns
 USERNAME_PATTERN = "[^ ]{8,}"
 USERNAME_REGEX = re.compile(USERNAME_PATTERN)
 
@@ -35,3 +37,6 @@ G_USER = "user_cache"
 
 # App behaviour
 DEFAULT_CATEGORIES = [("Work", "ff6961"), ("Vacation", "A4D8D8")]  # needs to contain at least 1 element
+
+# flash categories
+FLASH_ERROR = "error"
