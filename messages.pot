@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-30 20:45+0100\n"
+"POT-Creation-Date: 2025-12-01 01:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,54 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
+
+#: web/shared/messages.py:4
+msgid "password.no_match"
+msgstr ""
+
+#: web/shared/messages.py:5
+msgid "username.taken"
+msgstr ""
+
+#: web/shared/messages.py:6
+msgid "invalid_login"
+msgstr ""
+
+#: web/shared/messages.py:7
+msgid "token.invalid"
+msgstr ""
+
+#: web/shared/messages.py:8
+msgid "register.successfully"
+msgstr ""
+
+#: web/shared/messages.py:11
+msgid "profile.name_used"
+msgstr ""
+
+#: web/shared/messages.py:12
+msgid "profile.not_found"
+msgstr ""
+
+#: web/shared/messages.py:15
+msgid "category.name_used"
+msgstr ""
+
+#: web/shared/messages.py:16
+msgid "category.not_found"
+msgstr ""
+
+#: web/shared/messages.py:17
+msgid "category.one_needed"
+msgstr ""
+
+#: web/shared/messages.py:20
+msgid "work_time.noone_matching"
+msgstr ""
+
+#: web/shared/messages.py:24
+msgid "param.filter.missing"
+msgstr ""
 
 #: web/templates/base.html:10
 msgid "website.kw"
@@ -25,25 +73,29 @@ msgstr ""
 msgid "website.desc"
 msgstr ""
 
-#: web/templates/login.html:3 web/templates/login.html:7
-#: web/templates/login.html:12
+#: web/templates/login.html:3 web/templates/login.html:8
+#: web/templates/login.html:12 web/templates/register.html:7
 msgid "login"
 msgstr ""
 
-#: web/templates/login.html:8 web/templates/register.html:3
-#: web/templates/register.html:7 web/templates/register.html:12
+#: web/templates/login.html:7 web/templates/register.html:3
+#: web/templates/register.html:8 web/templates/register.html:13
 msgid "register"
 msgstr ""
 
-#: web/templates/login.html:10 web/templates/register.html:9
+#: web/templates/login.html:10 web/templates/register.html:10
 msgid "username"
 msgstr ""
 
-#: web/templates/login.html:11 web/templates/register.html:10
+#: web/templates/login.html:11 web/templates/register.html:11
 msgid "password"
 msgstr ""
 
-#: web/templates/register.html:11
+#: web/templates/register.html:12
 msgid "password.confirm"
+msgstr ""
+
+#: web/templates/parts/topbar.html:13
+msgid "flash.dismiss"
 msgstr ""
 
