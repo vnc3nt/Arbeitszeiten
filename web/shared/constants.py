@@ -32,11 +32,13 @@ CONSTRAINT_UNIQUE_PROFILE_CATEGORY = "UniqueProfileCategory"
 CONSTRAINT_UNIQUE_PROFILE_WORK_PERIOD = "UniqueProfileWorkPeriod"
 CONSTRAINT_UNIQUE_PROFILE_NAME = "UniqueProfileName"
 
-# G Cache
-G_USER = "user_cache"
-
 # App behaviour
 DEFAULT_CATEGORIES = [("Work", "ff6961"), ("Vacation", "A4D8D8")]  # needs to contain at least 1 element
+
+# form names
+FORM_USERNAME = "username"
+FORM_PASSWORD = "password"
+FORM_CONFIRM_PASSWORD = "confirm-password"
 
 # flash categories
 FLASH_ERROR = "error"

@@ -3,9 +3,11 @@ from flask import Flask, g, redirect, url_for, request
 from database import db
 from blueprints.api import app as api_app
 from database.migrations import migrate
-from shared.constants import G_USER
+from shared.constants import G_USER_TOKEN
 from blueprints.auth import auth as auth_app
+from blueprints.account import account as account_app
 from flask_babel import Babel, lazy_gettext
+import shared.constants as __consts
 
 app = Flask(__name__)
 app.config.from_pyfile("config/flask_settings.py")
@@ -19,11 +21,14 @@ def get_locale():
 babel = Babel(app, locale_selector=get_locale)
 app.jinja_env.globals["get_locale"] = get_locale
 
+for variable in dir(__consts):
+    app.jinja_env.globals[variable] = getattr(__consts, variable)
+    
 # called when request is canceled/finished
 @app.teardown_appcontext
 def teardown_appcontext(_):
     # clear g cachehello
-    g.pop(G_USER, None)
+    g.pop(G_USER_TOKEN, None)
 
 
 app.register_blueprint(api_app)
