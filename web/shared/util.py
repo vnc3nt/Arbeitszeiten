@@ -59,8 +59,8 @@ def assert_non_null_values(*values, abort_code: int = 400):
         print("Failed")
         abort(abort_code)
     print("Passed")
-    
-    
+
+
 def assert_datetime(value: str, abort_code: int = 400):
     print("Assert date:", value)
     try:
@@ -80,4 +80,4 @@ def assert_enum(e, value, abort_code: int = 400):
 def assert_color(value):
     print("Assert color:", value)
     # FIXME make assertion
-    return color[1:]
+    return value[1:]
