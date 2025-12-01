@@ -4,15 +4,14 @@
         <span>Arbeitszeiten</span>
     </div>
 </header>
-{% with category, messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
+{% with messages = get_flashed_messages(with_categories=true) %}
 <ul id=flash-msg>
-    {% for message in messages %}
-    <li class="category" popover="manual" id="fm-{{loop.index}}">
+    {% for cat, msg in messages %}
+    <li class="{{ cat }}" id="\f\m-{{loop.index}}">
+        <input type="checkbox" id="fm-{{loop.index}}" class="flash-msg-toggle" checked />
         <span class="message">{{ msg }}</span>
-        <button popovertarget="fm-{{loop.index}}" popovertargetaction="hide">X</button>
+        <label for="fm-{{loop.index}}">{{ _('flash.dismiss') }}</button>
     </li>
     {% endfor %}
 </ul>
-{% endif %}
 {% endwith %}
