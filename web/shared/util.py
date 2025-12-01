@@ -1,3 +1,4 @@
+from flask import abort
 import itertools
 from datetime import datetime, date, timedelta
 from typing import Any, Generic, Iterable, Optional, TypeVar, Union
@@ -51,3 +52,11 @@ def get_period_start(intervall_date: Union[datetime, date], work_period: WorkTim
 
 def flatten(nested_iterable: Iterable[Iterable[T]]) -> Iterable[T]:
     return itertools.chain.from_iterable(nested_iterable)
+
+def assert_non_null_values(*values, abort_code: int = 400):
+    print("Assert ", values, "for None value: ", end="")
+    if values and not all(values):
+        print("Failed")
+        abort(abort_code)
+    print("Passed")
+    
