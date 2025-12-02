@@ -1,6 +1,6 @@
 from flask import abort
 import itertools
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from typing import Any, Generic, Iterable, Optional, TypeVar, Union, Tuple
 
 from database.models import WorkTimeFormat
@@ -67,29 +67,30 @@ def assert_non_null_values(*values, abort_code: int = 400):
     print("Passed")
 
 
-def assert_datetime(value: str, abort_code: int = 400):
+def assert_datetime(value: str, abort_code: int = 400) -> datetime:
     print("Assert datetime:", value)
     try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M")
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M").replace(tzinfo=timezone.utc)
     except ValueError as e:
         print("Assert datetime:", e)
         abort(abort_code)
 
-def assert_date(value: str, abort_code: int = 400):
+def assert_date(value: str, abort_code: int = 400) -> datetime:
     print("Assert date:", value)
     try:
-        return datetime.strptime(value, "%Y-%m-%d")
+        return datetime.strptime(value, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     except ValueError as e:
         print("Assert date:", e)
         abort(abort_code)
 
-def try_date(value: Optional[str], default: date) -> date:
+def try_datetime(value: Optional[str], default: date) -> date:
     print("Try date:", value)
     if value is None:
         print("Try date: Defaulting to", default)
         return default
     try:
-        return datetime.strptime(value, "%Y-%m-%d")
+        return datetime.strptime(value, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+
     except ValueError as e:
         print("Try date:", e)
     print("Try date: Defaulting to", default)
@@ -102,12 +103,12 @@ def assert_enum(e, value: str, abort_code: int = 400):
     return e._value2member_map_.get(value)
 
 
-def assert_color(value: str):
+def assert_color(value: str) -> str:
     print("Assert color:", value)
     # FIXME make assertion
     return value[1:]
 
-def assert_int(value: str, r: Optional[Iterable[int]] = None, abort_code: int = 400):
+def assert_int(value: str, r: Optional[Iterable[int]] = None, abort_code: int = 400) -> int:
     print("Assert int:", value)
     try:
         v = int(value)
