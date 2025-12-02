@@ -30,7 +30,7 @@ class TokenType(Enum):
 class WorkTimeFormat(Enum):
     MONTH = msgid("month")
     WEEK = msgid("week")
-
+    
     def to_json(self):
         return self.name
 

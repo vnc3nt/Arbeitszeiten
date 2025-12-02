@@ -36,6 +36,9 @@ CONSTRAINT_UNIQUE_PROFILE_NAME = "UniqueProfileName"
 # App behaviour
 DEFAULT_CATEGORIES = [("Work", "ff6961"), ("Vacation", "A4D8D8")]  # needs to contain at least 1 element
 
+# query params
+ARGS_DATE = "date"
+
 # form names
 FORM_USERNAME = "username"
 FORM_PASSWORD = "password"
@@ -46,6 +49,11 @@ FORM_PROFILE_COLOR = "profile-color"
 FORM_WORK_START = "work-start"
 FORM_WORK_FORMAT = "work-format"
 FORM_WORK_TIME = "work-time"
+
+FORM_WORK_CATEGROY = "work-category"
+FORM_WORK_BEGIN = "work-begin"
+FORM_WORK_END = "work-end"
+FORM_WORK_NOTE = "work-note"
 
 # flash categories
 FLASH_ERROR = "error"

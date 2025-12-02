@@ -4,8 +4,58 @@ Arbeitszeit
 {% endblock %}
 {% block content %}
 {% if profile %}
-<h1>Home</h1>
-{{ profile.to_json() }}
+<dialog popover id="add-work-time-dialog">
+    <h2>{{ _('work.time.add') }}</h2>
+    <button class="close" popovertarget="add-work-time-dialog" popovertargetaction="hide">
+        Close
+    </button>
+    <form action="{{ url_for('form.add_work_time_web') }}" method="post">
+        <div class="input-box">
+            <label for="work-time-category">{{ _('work.category') }}</label>
+            <select name="{{ FORM_WORK_CATEGROY }}" id="" autofocus>
+                {% for category in categories %}
+                <option data-color="#{{category.color}}" value="{{category.id}}" {{ 'selected' if not loop.index0}}>{{category.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-box">
+            <label for="work-begin-time">{{ _('work.time.begin') }}</label>
+            <input id="work-begin-time" type="datetime-local" name="{{ FORM_WORK_BEGIN }}" value="now" required>
+        </div>
+        <div class="input-box">
+            <label for="work-end-time">{{ _('work.time.end') }}</label>
+            <input type="datetime-local" id="work-end-time" name="{{ FORM_WORK_END }}" required>
+        </div>
+        <div class="input-box">
+            <textarea name="{{ FORM_WORK_NOTE }}" rows="3" value="" spellcheck="true" placeholder="{{ _('note') }}">
+            </textarea>
+        </div>
+        <button>{{ _('work.time.add') }}</button>
+    </form>
+</dialog>
+<h1 data-color="#{{ profile.color }}">{{ profile.name }}</h1>
+{{profile.to_json(include_entries=True)}}
+<form action="" method="get">
+    <input type="hidden" name="{{ ARGS_DATE }}" value="{{ prev_date }}">
+    <button type="submit">{{ _('previous.month') }}</button>
+</form>
+<form action="" method="get">
+    <input type="date" name="{{ ARGS_DATE }}">
+    <button type="submit">{{ _('goto.date') }}</button>
+</form>
+<form action="" method="get">
+    <input type="hidden" name="{{ ARGS_DATE }}" value="{{ next_date }}">
+    <button type="submit">{{ _('next.month') }}</button>
+</form>
+<div class="basic-stats">
+    <div id="work-balance">
+        <span class="text">{{ total_work }}h / {{ worktime }}</span>
+        <meter id="work-balance" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
+    </div>
+</div>
+<div class="record">
+    <button popovertargetaction="show" popovertarget="add-work-time-dialog">{{ _('work.time.add') }}</button>
+</div>
 {% else %}
 <h1>{{ _('profile.missing.headline') }}</h1>
 {% include "parts/create_profile.html" %}

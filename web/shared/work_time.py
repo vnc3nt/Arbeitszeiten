@@ -1,11 +1,12 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 from typing import Dict, Iterable, List, Optional, Tuple, Union
 
-from sqlalchemy import and_, not_, or_
+from sqlalchemy import and_, not_, or_, text, func
 
 from database.models import Profile, ProfileCategory, WorkTimeEntry, db
 from shared.messages import MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_NO_WORK_TIME_FOUND
-from shared.util import Result, flatten
+from shared.constants import API_DATETIME_FORMAT, API_DATE_FORMAT
+from shared.util import Result, flatten, get_period_start
 
 
 def add_new_work(user_id: int, category_id: int, work_start: datetime, work_duration: timedelta, note: str) -> Result[WorkTimeEntry, Union[str, Dict]]:
@@ -34,7 +35,7 @@ def work_overlaps(user_id: int, work_start: datetime, work_end: datetime) -> Opt
     return entries[0] if entries else None
 
 
-def filter_work_times(user_id: int, work_time_id: Optional[int], profile_id: Optional[int], category_id: Optional[int], time_range: Optional[Tuple[datetime, datetime]]) -> Iterable[WorkTimeEntry]:
+def filter_work_times(user_id: int, work_time_id: Optional[int] = None, profile_id: Optional[int] = None, category_id: Optional[int] = None, time_range: Optional[Tuple[datetime, datetime]] = None) -> Iterable[WorkTimeEntry]:
     query = WorkTimeEntry.query.select_from(WorkTimeEntry).join(ProfileCategory).join(Profile)
     query = query.filter(Profile.userId == user_id)
     if work_time_id:
@@ -72,3 +73,16 @@ def delete_work_time_by_category(user_id: int, category_id: int) -> Result[List[
     for entry in entries:
         db.session.delete(entry)
     return Result(value=entries)
+
+def get_balance(profile_id: int, begin: Union[datetime, date], end: Union[date, datetime]):
+    if isinstance(begin, date):
+        begin = datetime(year=begin.year, month=begin.month, day=begin.day)
+    if isinstance(end, date):
+        end = datetime(year=end.year, month=end.month, day=end.day)
+
+    subquery = db.session.query(ProfileCategory.id).filter(ProfileCategory.profileId == profile_id).subquery()
+    value = db.session.query(func.sum(WorkTimeEntry.duration)).filter(WorkTimeEntry.workStart >= begin, WorkTimeEntry.workStart < end, WorkTimeEntry.profileCategoryId.in_(subquery)).all()
+    
+    if value[0][0] is None:
+        return 0.0
+    return value[0][0] / 60.0

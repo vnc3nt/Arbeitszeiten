@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, date
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Union
 
-from sqlalchemy import desc
+from sqlalchemy import desc, asc
 
 from database.models import ProfileCategory, WorkTime, WorkTimeFormat, db, Profile
 from shared.util import Result, flatten, get_period_start
@@ -40,6 +40,12 @@ def get_user_profile_ids(user_id) -> Iterable[int]:
 
 def get_user_profiles(user_id) -> List[Profile]:
     return Profile.query.filter(Profile.userId == user_id).all()
+
+def get_work_period(profile_id: int, time: Union[date, datetime]) -> WorkTime:
+    work_time = WorkTime.query.filter(WorkTime.profileId == profile_id, WorkTime.workStart <= time).order_by(desc(WorkTime.workStart)).first()
+    if work_time is None:
+        return WorkTime.query.filter(WorkTime.profileId == profile_id).order_by(asc(WorkTime.workStart)).first()
+    return work_time
 
 def set_work_period(profile_id: int, work_time: int, period_start: date, work_period: WorkTimeFormat, category_id: Optional[int] = None) -> Result[WorkTime, str]:
     """
@@ -134,6 +140,7 @@ def get_profile_categories(user_id: int, profile_id: int) -> Result[List[Profile
 def get_categories(user_id: int, profile_id: Optional[int] = None, category_id: Optional[int] = None) -> Result[List[ProfileCategory], str]:
     if profile_id is None and category_id is None:
         return Result(error=MESSAGE_NOT_ENOUGH_FILTERS_GIVEN)
+
     query = ProfileCategory.query
     if profile_id is not None:
         if profile_id not in get_user_profile_ids(user_id):
