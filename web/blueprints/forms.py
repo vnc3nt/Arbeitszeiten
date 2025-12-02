@@ -4,6 +4,7 @@ from shared.login import redirect_to_login_when_logged_out
 from shared.util import assert_int, assert_non_null_values, assert_datetime, assert_enum, assert_color, assert_date
 from shared.profiles import create_profile, get_categories
 from database.models import WorkTimeFormat
+from datetime import timedelta
 from flask_babel import _
 
 from shared.work_time import add_new_work
@@ -55,4 +56,6 @@ def add_work_time_web():
     end = assert_datetime(end)
 
     result = add_new_work(user.id, category, start, end - start, note)
+    if result.is_error:
+        flash(_(result.error), category=FLASH_ERROR)
     return redirect(request.referrer)

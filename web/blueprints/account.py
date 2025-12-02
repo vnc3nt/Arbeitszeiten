@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from datetime import timedelta
 from flask import Blueprint, render_template, request, g, url_for, flash, redirect
-from shared.util import assert_non_null_values, try_date, get_period_length, get_period_start
+from shared.util import assert_non_null_values, try_datetime, get_period_length, get_period_start
 from shared.constants import SESSION_USER_TOKEN, FLASH_ERROR, G_USER, ARGS_DATE
 from shared.login import redirect_to_login_when_logged_out
 from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period
@@ -16,7 +16,7 @@ account.before_request(redirect_to_login_when_logged_out)
 @account.route("/home")
 def home():
     user = g.get(G_USER)
-    interval = try_date(request.args.get(ARGS_DATE), default=current_date())
+    interval = try_datetime(request.args.get(ARGS_DATE), default=current_date())
     profile = get_last_viewed_user_profile(user.id)
     
     category_result = get_categories(user.id, profile.id)

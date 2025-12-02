@@ -18,7 +18,7 @@ MESSAGE_CATEGORY_ONE_NEEDED = msgid("category.one_needed")
 
 # WORK TIMES
 MESSAGE_NO_WORK_TIME_FOUND = msgid("work_time.noone_matching")
-
+MESSAGE_NO_WORK_DONE = msgid("work.time.nothing")
 
 # malicious
 MESSAGE_NOT_ENOUGH_FILTERS_GIVEN = msgid("param.filter.missing")

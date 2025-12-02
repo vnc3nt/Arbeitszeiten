@@ -4,12 +4,14 @@ from typing import Dict, Iterable, List, Optional, Tuple, Union
 from sqlalchemy import and_, not_, or_, text, func
 
 from database.models import Profile, ProfileCategory, WorkTimeEntry, db
-from shared.messages import MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_NO_WORK_TIME_FOUND
+from shared.messages import MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_NO_WORK_TIME_FOUND, MESSAGE_NO_WORK_DONE
 from shared.constants import API_DATETIME_FORMAT, API_DATE_FORMAT
 from shared.util import Result, flatten, get_period_start
 
 
 def add_new_work(user_id: int, category_id: int, work_start: datetime, work_duration: timedelta, note: str) -> Result[WorkTimeEntry, Union[str, Dict]]:
+    if work_duration < timedelta():
+        return Result(error=MESSAGE_NO_WORK_DONE)
     work_end = work_start + work_duration
     category = ProfileCategory.query.join(Profile).filter(Profile.userId == user_id, ProfileCategory.id == category_id).first()
     if category is None:
