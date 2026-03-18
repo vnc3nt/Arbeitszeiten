@@ -23,6 +23,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.{}:{}@{}:{}/{}".format(
     os.environ.get("port"),
     os.environ.get("scheme")
 )
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "connect_args": {
+        "options": "-csearch_path=arbeitszeiten,public"
+    }
+}
 app.config.update(
     BUNDLE_ERRORS = True,
     SECRET_KEY = os.urandom(40),
