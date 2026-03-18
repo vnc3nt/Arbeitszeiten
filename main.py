@@ -25,7 +25,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.{}:{}@{}:{}/{}".format(
 )
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "connect_args": {
-        "options": "-c search_path=arbeitszeiten"
+        "options": "-c search_path=arbeitszeiten,public"
     }
 }
 app.config.update(
