@@ -14,24 +14,28 @@ def update_expire_time():
     return int(time()) + EXPIRE_TIME #in seconds
 
 class users(db.Model):
+    __table_args__ = {'schema': 'arbeitszeiten'}
     id=db.Column(db.BIGINT, primary_key=True, nullable=False)
     username=db.Column(db.String(30), nullable=False)
     password=db.Column(db.String(128), nullable=False)
 
 class data(db.Model):
-    userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
+    __table_args__ = {'schema': 'arbeitszeiten'}
+    userid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False, primary_key=True)
     date=db.Column(db.DATE, nullable=False, primary_key=True, default=current_date)
-    categoryid=db.Column(db.BIGINT,ForeignKey("category.id"), nullable=True, primary_key=False)
+    categoryid=db.Column(db.BIGINT,ForeignKey("arbeitszeiten.category.id"), nullable=True, primary_key=False)
     data=db.Column(db.Numeric(5,2), nullable=True)
     maxhours=db.Column(db.Numeric(5,2), nullable=True)
 
 class category(db.Model):
+    __table_args__ = {'schema': 'arbeitszeiten'}
     id=db.Column(db.BIGINT, primary_key=True, nullable=False)
-    userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False, primary_key=True)
+    userid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False, primary_key=True)
     name=db.Column(db.String(30), nullable=False)
     color=db.Column(db.String(7), nullable=False)
 
 class token(db.Model):
-    userid=db.Column(db.BIGINT, ForeignKey("users.id"), nullable=False)
+    __table_args__ = {'schema': 'arbeitszeiten'}
+    userid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False)
     token=db.Column(db.String(128), nullable=False, primary_key=True)
     expiretime=db.Column(db.BIGINT, nullable=False, default=update_expire_time)
