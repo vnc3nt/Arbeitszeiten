@@ -37,10 +37,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 main {
+    width: 100%;
     position: absolute;
     top: var(--topbar-height);
     scroll-margin: var(--topbar-height);
     padding: 0 0.5em;
+    box-sizing: border-box;
 }
 
 textarea {
@@ -57,3 +59,26 @@ textarea {
     margin-bottom: 0.2em;
 }
 
+#date-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-bottom: 0.7em;
+
+    > * > button {
+        height: 100%;
+    }
+
+    > :nth-child(2) {
+        display: flex;
+        flex-flow: column nowrap;
+    }
+}
+
+button {
+    padding: 0.3em;
+
+    &.full {
+        width: 100%;
+    }
+}

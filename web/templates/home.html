@@ -5,27 +5,27 @@ Arbeitszeit
 {% block content %}
 {% if profile %}
 <h1 data-color="#{{ profile.color }}">{{ profile.name }}</h1>
-<form action="" method="get">
-    <input type="hidden" name="{{ ARGS_DATE }}" value="{{ prev_date }}">
-    <button type="submit">{{ _('previous.month') }}</button>
-</form>
-<form action="" method="get">
-    <input type="date" name="{{ ARGS_DATE }}">
-    <button type="submit">{{ _('goto.date') }}</button>
-</form>
-<form action="" method="get">
-    <input type="hidden" name="{{ ARGS_DATE }}" value="{{ next_date }}">
-    <button type="submit">{{ _('next.month') }}</button>
-</form>
+<div id="date-selector">
+    <form action="" method="get">
+        <input type="hidden" name="{{ ARGS_DATE }}" value="{{ prev_date }}">
+        <button type="submit">{{ _('previous.month') }}</button>
+    </form>
+    <form action="" method="get">
+        <input type="date" name="{{ ARGS_DATE }}">
+        <button type="submit">{{ _('goto.date') }}</button>
+    </form>
+    <form action="" method="get">
+        <input type="hidden" name="{{ ARGS_DATE }}" value="{{ next_date }}">
+        <button type="submit">{{ _('next.month') }}</button>
+    </form>
+</div>
 <div class="basic-stats">
     <div id="work-balance">
         <span class="text">{{ total_work | decimalformat}}h / {{ worktime }}</span>
         <meter id="work-balance" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
     </div>
 </div>
-<div class="record">
-    <button popovertargetaction="show" popovertarget="add-work-time-dialog">{{ _('work.time.add') }}</button>
-</div>
+<button popovertargetaction="show" popovertarget="add-work-time-dialog" class="full">{{ _('work.time.add') }}</button>
 <dialog popover id="add-work-time-dialog">
     <h2>{{ _('work.time.add') }}</h2>
     <button class="close" popovertarget="add-work-time-dialog" popovertargetaction="hide">
