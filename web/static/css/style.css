@@ -43,3 +43,17 @@ main {
     padding: 0 0.5em;
 }
 
+textarea {
+    display: block;
+    resize: vertical;
+    width: -moz-fill-available;
+    width: -webkit-fill-available;
+    min-height: 2lh;
+    max-height: 10lh;
+}
+
+.input-box {
+    padding: 0.1em;
+    margin-bottom: 0.2em;
+}
+
