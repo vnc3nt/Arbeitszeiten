@@ -34,7 +34,6 @@ Arbeitszeit
     </form>
 </dialog>
 <h1 data-color="#{{ profile.color }}">{{ profile.name }}</h1>
-{{profile.to_json(include_entries=True)}}
 <form action="" method="get">
     <input type="hidden" name="{{ ARGS_DATE }}" value="{{ prev_date }}">
     <button type="submit">{{ _('previous.month') }}</button>
