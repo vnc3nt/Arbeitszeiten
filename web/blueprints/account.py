@@ -18,30 +18,42 @@ def home():
     user = g.get(G_USER)
     interval = try_datetime(request.args.get(ARGS_DATE), default=current_date())
     profile = get_last_viewed_user_profile(user.id)
-    
-    category_result = get_categories(user.id, profile.id)
+
+    category_result = get_categories(user.id, profile.id if profile else None)
     if category_result.is_error:
         flash(_(category_result), category=FLASH_ERROR)
         categories = []
     else:
         categories = category_result.value
-        
+
     opt = {}
     if profile:
         work_time = get_work_period(profile.id, interval)
         opt["worktime"] = work_time.workTime
         period = get_period_start(interval, work_time.workTimeFormat)
-        
+
         # button control
         opt["prev_date"] = get_period_start(period - timedelta(days=1), work_time.workTimeFormat)
         opt["next_date"] = period + get_period_length(period, work_time.workTimeFormat)
-        
+
         opt["total_work"] = get_balance(profile.id, period, opt["next_date"])
-        
+
 
     return render_template(
-        "home.html", 
+        "home.html",
         profile=get_last_viewed_user_profile(user.id),
         categories=categories,
         **opt
     )
+
+
+@account.route("/stats")
+def stats():
+    return "Not Implemented Yet"
+
+
+@account.route("/profile")
+def profile():
+    return "Not Implemented Yet"
+
+

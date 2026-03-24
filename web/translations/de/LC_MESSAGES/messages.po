@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-01 01:53+0100\n"
+"POT-Creation-Date: 2026-03-24 19:09+0100\n"
 "PO-Revision-Date: 2025-11-30 16:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -17,6 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
+
+#: web/database/models.py:31
+msgid "month"
+msgstr ""
+
+#: web/database/models.py:32
+msgid "week"
+msgstr ""
 
 #: web/shared/messages.py:4
 msgid "password.no_match"
@@ -62,6 +70,11 @@ msgstr "Mindestens eine Kategorie muss ausgewählt sein"
 msgid "work_time.noone_matching"
 msgstr "Keine Arbeitszeit gefunden"
 
+#: web/shared/messages.py:21
+#, fuzzy
+msgid "work.time.nothing"
+msgstr "Keine Arbeitszeit gefunden"
+
 #: web/shared/messages.py:24
 msgid "param.filter.missing"
 msgstr "Mindestens ein Filter Parameter muss aktiv sein"
@@ -73,6 +86,45 @@ msgstr ""
 #: web/templates/base.html:11
 msgid "website.desc"
 msgstr "Website, um seine Arbeitszeiten zu tracken"
+
+#: web/templates/home.html:8 web/templates/home.html:33
+#: web/templates/home.html:57
+msgid "work.time.add"
+msgstr ""
+
+#: web/templates/home.html:14
+msgid "work.category"
+msgstr ""
+
+#: web/templates/home.html:22
+#, fuzzy
+msgid "work.time.begin"
+msgstr "Keine Arbeitszeit gefunden"
+
+#: web/templates/home.html:26
+msgid "work.time.end"
+msgstr ""
+
+#: web/templates/home.html:30
+msgid "note"
+msgstr ""
+
+#: web/templates/home.html:40
+msgid "previous.month"
+msgstr ""
+
+#: web/templates/home.html:44
+msgid "goto.date"
+msgstr ""
+
+#: web/templates/home.html:48
+msgid "next.month"
+msgstr ""
+
+#: web/templates/home.html:60
+#, fuzzy
+msgid "profile.missing.headline"
+msgstr "Mindestens ein Filter Parameter muss aktiv sein"
 
 #: web/templates/login.html:3 web/templates/login.html:8
 #: web/templates/login.html:12 web/templates/register.html:7
@@ -95,6 +147,40 @@ msgstr "Passwort"
 #: web/templates/register.html:12
 msgid "password.confirm"
 msgstr "Passwort bestätigen"
+
+#: web/templates/stats.html:3
+msgid "statistics.title"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:2
+#: web/templates/parts/create_profile.html:25
+#, fuzzy
+msgid "profile.create"
+msgstr "Profilname bereits benutzt"
+
+#: web/templates/parts/create_profile.html:4
+#, fuzzy
+msgid "profile.name"
+msgstr "Profilname bereits benutzt"
+
+#: web/templates/parts/create_profile.html:7
+#, fuzzy
+msgid "profile.color"
+msgstr "Profil nicht gefunden"
+
+#: web/templates/parts/create_profile.html:11
+#, fuzzy
+msgid "profile.date.start"
+msgstr "Profilname bereits benutzt"
+
+#: web/templates/parts/create_profile.html:15
+#, fuzzy
+msgid "work.timeformat"
+msgstr "Keine Arbeitszeit gefunden"
+
+#: web/templates/parts/create_profile.html:23
+msgid "work.worktime_in_hour"
+msgstr ""
 
 #: web/templates/parts/topbar.html:13
 msgid "flash.dismiss"

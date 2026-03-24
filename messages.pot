@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2025 ORGANIZATION
+# Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-01 01:53+0100\n"
+"POT-Creation-Date: 2026-03-24 19:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
+
+#: web/database/models.py:31
+msgid "month"
+msgstr ""
+
+#: web/database/models.py:32
+msgid "week"
+msgstr ""
 
 #: web/shared/messages.py:4
 msgid "password.no_match"
@@ -61,6 +69,10 @@ msgstr ""
 msgid "work_time.noone_matching"
 msgstr ""
 
+#: web/shared/messages.py:21
+msgid "work.time.nothing"
+msgstr ""
+
 #: web/shared/messages.py:24
 msgid "param.filter.missing"
 msgstr ""
@@ -71,6 +83,43 @@ msgstr ""
 
 #: web/templates/base.html:11
 msgid "website.desc"
+msgstr ""
+
+#: web/templates/home.html:8 web/templates/home.html:33
+#: web/templates/home.html:57
+msgid "work.time.add"
+msgstr ""
+
+#: web/templates/home.html:14
+msgid "work.category"
+msgstr ""
+
+#: web/templates/home.html:22
+msgid "work.time.begin"
+msgstr ""
+
+#: web/templates/home.html:26
+msgid "work.time.end"
+msgstr ""
+
+#: web/templates/home.html:30
+msgid "note"
+msgstr ""
+
+#: web/templates/home.html:40
+msgid "previous.month"
+msgstr ""
+
+#: web/templates/home.html:44
+msgid "goto.date"
+msgstr ""
+
+#: web/templates/home.html:48
+msgid "next.month"
+msgstr ""
+
+#: web/templates/home.html:60
+msgid "profile.missing.headline"
 msgstr ""
 
 #: web/templates/login.html:3 web/templates/login.html:8
@@ -93,6 +142,35 @@ msgstr ""
 
 #: web/templates/register.html:12
 msgid "password.confirm"
+msgstr ""
+
+#: web/templates/stats.html:3
+msgid "statistics.title"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:2
+#: web/templates/parts/create_profile.html:25
+msgid "profile.create"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:4
+msgid "profile.name"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:7
+msgid "profile.color"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:11
+msgid "profile.date.start"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:15
+msgid "work.timeformat"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:23
+msgid "work.worktime_in_hour"
 msgstr ""
 
 #: web/templates/parts/topbar.html:13
