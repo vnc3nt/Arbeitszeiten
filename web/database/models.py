@@ -30,7 +30,7 @@ class TokenType(Enum):
 class WorkTimeFormat(Enum):
     MONTH = msgid("month")
     WEEK = msgid("week")
-    
+
     def to_json(self):
         return self.name
 
@@ -71,7 +71,7 @@ class Profile(db.Model):  # TODO missing: (changable) order
             data["work_periods"] = [x.to_json() for x in work_periods]
 
         if include_entries:
-            entries = WorkTimeEntry.query.filter(WorkTimeEntry.profileCategoryId).order_by(WorkTimeEntry.workStart).all()
+            entries = WorkTimeEntry.query.filter(WorkTimeEntry.profileCategoryId == self.id).order_by(WorkTimeEntry.workStart).all()
             data["entries"] = [x.to_json() for x in entries]
         return data
 
@@ -126,6 +126,10 @@ class WorkTimeEntry(db.Model):
     workStart = db.Column(db.TIMESTAMP(), nullable=False)
     entryTime = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     note = db.Column(db.Text, nullable=False, server_default="")
+
+    @property
+    def category(self):
+        return ProfileCategory.query.filter(ProfileCategory.id == self.profileCategoryId).first()
 
     def to_json(self, *, expandCategory: bool = True):
         data = {

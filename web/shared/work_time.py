@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone, date
 from typing import Dict, Iterable, List, Optional, Tuple, Union
 
-from sqlalchemy import and_, not_, or_, text, func
+from sqlalchemy import and_, desc, not_, or_, text, func
 
 from database.models import Profile, ProfileCategory, WorkTimeEntry, db
 from shared.messages import MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_NO_WORK_TIME_FOUND, MESSAGE_NO_WORK_DONE
@@ -37,7 +37,7 @@ def work_overlaps(user_id: int, work_start: datetime, work_end: datetime) -> Opt
     return entries[0] if entries else None
 
 
-def filter_work_times(user_id: int, work_time_id: Optional[int] = None, profile_id: Optional[int] = None, category_id: Optional[int] = None, time_range: Optional[Tuple[datetime, datetime]] = None) -> Iterable[WorkTimeEntry]:
+def filter_work_times(user_id: int, profile_id: Optional[int] = None, work_time_id: Optional[int] = None, category_id: Optional[int] = None, time_range: Optional[Tuple[datetime, datetime]] = None) -> Iterable[WorkTimeEntry]:
     query = WorkTimeEntry.query.select_from(WorkTimeEntry).join(ProfileCategory).join(Profile)
     query = query.filter(Profile.userId == user_id)
     if work_time_id:
@@ -49,16 +49,16 @@ def filter_work_times(user_id: int, work_time_id: Optional[int] = None, profile_
     if category_id:
         query = query.filter(ProfileCategory.id == category_id)
 
+    entries = query.order_by(desc(WorkTimeEntry.workStart)).all()
     if time_range:
-        entries = query.all()
+        result = []
         for entry in entries:
-            entry_workStart = entry.workStart.replace(tzinfo=timezone.utc)
-            entry_workEnd = entry_workStart + timedelta(seconds=entry.duration)
-            if entry_workStart < time_range[1] and entry_workEnd > time_range[0]:
-                yield entry
-
-    else:
-        return query.all()
+            entry_work_start = entry.workStart.replace(tzinfo=timezone.utc)
+            entry_work_end = entry_work_start + timedelta(seconds=entry.duration)
+            if entry_work_start < time_range[1] and entry_work_end > time_range[0]:
+                result.append(entry)
+        entries = result
+    return entries
 
 
 def delete_work_time(user_id, id: int) -> Result[WorkTimeEntry, str]:
@@ -84,7 +84,7 @@ def get_balance(profile_id: int, begin: Union[datetime, date], end: Union[date, 
 
     subquery = db.session.query(ProfileCategory.id).filter(ProfileCategory.profileId == profile_id).subquery()
     value = db.session.query(func.sum(WorkTimeEntry.duration)).filter(WorkTimeEntry.workStart >= begin, WorkTimeEntry.workStart < end, WorkTimeEntry.profileCategoryId.in_(subquery)).all()
-    
+
     if value[0][0] is None:
         return 0.0
     return value[0][0] / 60.0

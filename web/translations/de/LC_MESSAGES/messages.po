@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-24 19:21+0100\n"
+"POT-Creation-Date: 2026-03-24 22:32+0100\n"
 "PO-Revision-Date: 2025-11-30 16:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -87,40 +87,40 @@ msgstr "Arbeitszeiten, work tracker"
 msgid "website.desc"
 msgstr "Website, um seine Arbeitszeiten zu tracken"
 
-#: web/templates/home.html:8 web/templates/home.html:33
-#: web/templates/home.html:57
-msgid "work.time.add"
-msgstr "Arbeit hinzufügen"
-
-#: web/templates/home.html:14
-msgid "work.category"
-msgstr "Kategorie"
-
-#: web/templates/home.html:22
-msgid "work.time.begin"
-msgstr "Von"
-
-#: web/templates/home.html:26
-msgid "work.time.end"
-msgstr "Bis"
-
-#: web/templates/home.html:30
-msgid "note"
-msgstr "Notiz"
-
-#: web/templates/home.html:40
+#: web/templates/home.html:11
 msgid "previous.month"
 msgstr "Früher"
 
-#: web/templates/home.html:44
+#: web/templates/home.html:15
 msgid "goto.date"
 msgstr "Aktualisieren"
 
-#: web/templates/home.html:48
+#: web/templates/home.html:19
 msgid "next.month"
 msgstr "Später"
 
-#: web/templates/home.html:60
+#: web/templates/home.html:28 web/templates/home.html:30
+#: web/templates/home.html:54
+msgid "work.time.add"
+msgstr "Arbeit hinzufügen"
+
+#: web/templates/home.html:36
+msgid "work.category"
+msgstr "Kategorie"
+
+#: web/templates/home.html:44
+msgid "work.time.begin"
+msgstr "Von"
+
+#: web/templates/home.html:48
+msgid "work.time.end"
+msgstr "Bis"
+
+#: web/templates/home.html:52
+msgid "note"
+msgstr "Notiz"
+
+#: web/templates/home.html:58
 msgid "profile.missing.headline"
 msgstr "Profil erstellen"
 
@@ -146,9 +146,25 @@ msgstr "Passwort"
 msgid "password.confirm"
 msgstr "Passwort bestätigen"
 
-#: web/templates/stats.html:3
+#: web/templates/stats.html:3 web/templates/stats.html:6
 msgid "statistics.title"
 msgstr "Übersicht"
+
+#: web/templates/stats.html:10
+msgid "stat.entry.start"
+msgstr "Beginn"
+
+#: web/templates/stats.html:11
+msgid "stat.entry.duration"
+msgstr "Dauer"
+
+#: web/templates/stats.html:12
+msgid "stat.entry.category"
+msgstr "Kategorie"
+
+#: web/templates/stats.html:13
+msgid "stat.entry.note"
+msgstr "Notiz"
 
 #: web/templates/parts/create_profile.html:2
 #: web/templates/parts/create_profile.html:25
@@ -160,17 +176,14 @@ msgid "profile.name"
 msgstr "Profilname"
 
 #: web/templates/parts/create_profile.html:7
-#, fuzzy
 msgid "profile.color"
 msgstr "Profilfarbe"
 
 #: web/templates/parts/create_profile.html:11
-#, fuzzy
 msgid "profile.date.start"
 msgstr "Arbeitsbeginn"
 
 #: web/templates/parts/create_profile.html:15
-#, fuzzy
 msgid "work.timeformat"
 msgstr "Zahlungsvertrag"
 
@@ -178,7 +191,7 @@ msgstr "Zahlungsvertrag"
 msgid "work.worktime_in_hour"
 msgstr "Mindestarbeitszeit in Stunden"
 
-#: web/templates/parts/topbar.html:13
+#: web/templates/parts/topbar.html:11
 msgid "flash.dismiss"
 msgstr "Schließen"
 
