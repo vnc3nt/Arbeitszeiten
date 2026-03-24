@@ -1,8 +1,6 @@
-<header>
-    <div id="app-icon">
-        <img src="{{ url_for('static', filename='img/appicons/512x512.png') }}" alt="Logo">
-        <span>Arbeitszeiten</span>
-    </div>
+<header id="topbar">
+    <img src="{{ url_for('static', filename='img/appicons/512x512.png') }}" alt="Logo">
+    <span>Arbeitszeiten</span>
 </header>
 {% with messages = get_flashed_messages(with_categories=true) %}
 <ul id=flash-msg>

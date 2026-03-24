@@ -1,0 +1,6 @@
+:root {
+    --website-background-color: light-dark(white, #232227);
+
+    --topbar-height: 3rem;
+    --topbar-background: linear-gradient(#660074, #9930aa, #660074);
+}
