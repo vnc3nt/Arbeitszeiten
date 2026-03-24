@@ -29,6 +29,7 @@
     bottom: 0;
     background-color: inherit;
     text-align: center;
+    overflow-x: auto;
 
     ul {
         padding: 0;
@@ -45,13 +46,14 @@
         height: 100%;
         flex: 1 1 auto;
         text-align: center;
+        white-space: nowrap;
     }
 
     .nav-item a {
         display: block;
         height: 100%;
         text-decoration: none;
-        padding: 0.5em 0;
+        padding: 0.5em 0.5ch;
         color: inherit;
 
         &:hover {
