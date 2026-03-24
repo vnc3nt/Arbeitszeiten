@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-24 19:09+0100\n"
+"POT-Creation-Date: 2026-03-24 19:21+0100\n"
 "PO-Revision-Date: 2025-11-30 17:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -20,11 +20,11 @@ msgstr ""
 
 #: web/database/models.py:31
 msgid "month"
-msgstr ""
+msgstr "month"
 
 #: web/database/models.py:32
 msgid "week"
-msgstr ""
+msgstr "week"
 
 #: web/shared/messages.py:4
 msgid "password.no_match"
@@ -71,7 +71,6 @@ msgid "work_time.noone_matching"
 msgstr "No work time is matching"
 
 #: web/shared/messages.py:21
-#, fuzzy
 msgid "work.time.nothing"
 msgstr "No work time is matching"
 
@@ -81,50 +80,48 @@ msgstr "At least one filter parameter has to be active"
 
 #: web/templates/base.html:10
 msgid "website.kw"
-msgstr ""
+msgstr "work tracker"
 
 #: web/templates/base.html:11
 msgid "website.desc"
-msgstr ""
+msgstr "This website helps you tracking your work time"
 
 #: web/templates/home.html:8 web/templates/home.html:33
 #: web/templates/home.html:57
 msgid "work.time.add"
-msgstr ""
+msgstr "Add work"
 
 #: web/templates/home.html:14
 msgid "work.category"
-msgstr ""
+msgstr "Category"
 
 #: web/templates/home.html:22
-#, fuzzy
 msgid "work.time.begin"
-msgstr "No work time is matching"
+msgstr "From"
 
 #: web/templates/home.html:26
 msgid "work.time.end"
-msgstr ""
+msgstr "Until"
 
 #: web/templates/home.html:30
 msgid "note"
-msgstr ""
+msgstr "Note"
 
 #: web/templates/home.html:40
 msgid "previous.month"
-msgstr ""
+msgstr "Previous"
 
 #: web/templates/home.html:44
 msgid "goto.date"
-msgstr ""
+msgstr "Change"
 
 #: web/templates/home.html:48
 msgid "next.month"
-msgstr ""
+msgstr "Next"
 
 #: web/templates/home.html:60
-#, fuzzy
 msgid "profile.missing.headline"
-msgstr "At least one filter parameter has to be active"
+msgstr "No profile found"
 
 #: web/templates/login.html:3 web/templates/login.html:8
 #: web/templates/login.html:12 web/templates/register.html:7
@@ -150,39 +147,34 @@ msgstr "Confirm password"
 
 #: web/templates/stats.html:3
 msgid "statistics.title"
-msgstr ""
+msgstr "Work Statistics"
 
 #: web/templates/parts/create_profile.html:2
 #: web/templates/parts/create_profile.html:25
-#, fuzzy
 msgid "profile.create"
-msgstr "Profile name already used"
+msgstr "Create profile"
 
 #: web/templates/parts/create_profile.html:4
-#, fuzzy
 msgid "profile.name"
-msgstr "Profile name already used"
+msgstr "work profile name"
 
 #: web/templates/parts/create_profile.html:7
-#, fuzzy
 msgid "profile.color"
-msgstr "Profile not found"
+msgstr "profile color"
 
 #: web/templates/parts/create_profile.html:11
-#, fuzzy
 msgid "profile.date.start"
-msgstr "Profile name already used"
+msgstr "work start"
 
 #: web/templates/parts/create_profile.html:15
-#, fuzzy
 msgid "work.timeformat"
-msgstr "No work time is matching"
+msgstr "Work type"
 
 #: web/templates/parts/create_profile.html:23
 msgid "work.worktime_in_hour"
-msgstr ""
+msgstr "hours to work"
 
 #: web/templates/parts/topbar.html:13
 msgid "flash.dismiss"
-msgstr "Okay"
+msgstr "Dismiss"
 

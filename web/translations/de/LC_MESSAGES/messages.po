@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-24 19:09+0100\n"
+"POT-Creation-Date: 2026-03-24 19:21+0100\n"
 "PO-Revision-Date: 2025-11-30 16:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -20,11 +20,11 @@ msgstr ""
 
 #: web/database/models.py:31
 msgid "month"
-msgstr ""
+msgstr "Monat"
 
 #: web/database/models.py:32
 msgid "week"
-msgstr ""
+msgstr "Woche"
 
 #: web/shared/messages.py:4
 msgid "password.no_match"
@@ -81,7 +81,7 @@ msgstr "Mindestens ein Filter Parameter muss aktiv sein"
 
 #: web/templates/base.html:10
 msgid "website.kw"
-msgstr ""
+msgstr "Arbeitszeiten, work tracker"
 
 #: web/templates/base.html:11
 msgid "website.desc"
@@ -90,41 +90,39 @@ msgstr "Website, um seine Arbeitszeiten zu tracken"
 #: web/templates/home.html:8 web/templates/home.html:33
 #: web/templates/home.html:57
 msgid "work.time.add"
-msgstr ""
+msgstr "Arbeit hinzufügen"
 
 #: web/templates/home.html:14
 msgid "work.category"
-msgstr ""
+msgstr "Kategorie"
 
 #: web/templates/home.html:22
-#, fuzzy
 msgid "work.time.begin"
-msgstr "Keine Arbeitszeit gefunden"
+msgstr "Von"
 
 #: web/templates/home.html:26
 msgid "work.time.end"
-msgstr ""
+msgstr "Bis"
 
 #: web/templates/home.html:30
 msgid "note"
-msgstr ""
+msgstr "Notiz"
 
 #: web/templates/home.html:40
 msgid "previous.month"
-msgstr ""
+msgstr "Früher"
 
 #: web/templates/home.html:44
 msgid "goto.date"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: web/templates/home.html:48
 msgid "next.month"
-msgstr ""
+msgstr "Später"
 
 #: web/templates/home.html:60
-#, fuzzy
 msgid "profile.missing.headline"
-msgstr "Mindestens ein Filter Parameter muss aktiv sein"
+msgstr "Profil erstellen"
 
 #: web/templates/login.html:3 web/templates/login.html:8
 #: web/templates/login.html:12 web/templates/register.html:7
@@ -150,39 +148,37 @@ msgstr "Passwort bestätigen"
 
 #: web/templates/stats.html:3
 msgid "statistics.title"
-msgstr ""
+msgstr "Übersicht"
 
 #: web/templates/parts/create_profile.html:2
 #: web/templates/parts/create_profile.html:25
-#, fuzzy
 msgid "profile.create"
-msgstr "Profilname bereits benutzt"
+msgstr "Arbeitsprofil erstellen"
 
 #: web/templates/parts/create_profile.html:4
-#, fuzzy
 msgid "profile.name"
-msgstr "Profilname bereits benutzt"
+msgstr "Profilname"
 
 #: web/templates/parts/create_profile.html:7
 #, fuzzy
 msgid "profile.color"
-msgstr "Profil nicht gefunden"
+msgstr "Profilfarbe"
 
 #: web/templates/parts/create_profile.html:11
 #, fuzzy
 msgid "profile.date.start"
-msgstr "Profilname bereits benutzt"
+msgstr "Arbeitsbeginn"
 
 #: web/templates/parts/create_profile.html:15
 #, fuzzy
 msgid "work.timeformat"
-msgstr "Keine Arbeitszeit gefunden"
+msgstr "Zahlungsvertrag"
 
 #: web/templates/parts/create_profile.html:23
 msgid "work.worktime_in_hour"
-msgstr ""
+msgstr "Mindestarbeitszeit in Stunden"
 
 #: web/templates/parts/topbar.html:13
 msgid "flash.dismiss"
-msgstr "Okay"
+msgstr "Schließen"
 
