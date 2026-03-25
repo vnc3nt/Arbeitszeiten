@@ -1,7 +1,13 @@
 <nav id="main-navigation">
     <ul>
-        <li class="nav-item"><a href="{{ url_for('account.home') }}">My Work</a></li>
-        <li class="nav-item"><a href="{{ url_for('account.stats') }}">Statistics</a></li>
-        <li class="nav-item"><a href="{{ url_for('account.profile') }}">My Profile</a></li>
+        <li class="nav-item">
+            <a href="{{ url_for('account.home') }}">{{_("navigation.home")}}</a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('account.stats') }}">{{_("navigation.stats")}}</a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('account.profile') }}">{{_("navigation.profile")}}</a>
+        </li>
     </ul>
 </nav>
