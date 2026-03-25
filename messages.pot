@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-24 22:32+0100\n"
+"POT-Creation-Date: 2026-03-25 12:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,6 +187,18 @@ msgstr ""
 
 #: web/templates/parts/create_profile.html:23
 msgid "work.worktime_in_hour"
+msgstr ""
+
+#: web/templates/parts/navigation.html:4
+msgid "navigation.home"
+msgstr ""
+
+#: web/templates/parts/navigation.html:7
+msgid "navigation.stats"
+msgstr ""
+
+#: web/templates/parts/navigation.html:10
+msgid "navigation.profile"
 msgstr ""
 
 #: web/templates/parts/topbar.html:11
