@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-25 12:38+0100\n"
+"POT-Creation-Date: 2026-03-27 15:45+0100\n"
 "PO-Revision-Date: 2025-11-30 17:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -141,6 +141,27 @@ msgstr "Username"
 msgid "password"
 msgstr "Password"
 
+#: web/templates/profile.html:3
+msgid "profile.my"
+msgstr "My profile"
+
+#: web/templates/profile.html:6
+msgid "work.profiles"
+msgstr "My work places"
+
+#: web/templates/parts/create_profile.html:2
+#: web/templates/parts/create_profile.html:25 web/templates/profile.html:11
+msgid "profile.create"
+msgstr "Create profile"
+
+#: web/templates/profile.html:14
+msgid "logout"
+msgstr "Logout"
+
+#: web/templates/profile.html:16
+msgid "close"
+msgstr ""
+
 #: web/templates/register.html:12
 msgid "password.confirm"
 msgstr "Confirm password"
@@ -164,11 +185,6 @@ msgstr "Category"
 #: web/templates/stats.html:13
 msgid "stat.entry.note"
 msgstr "Note"
-
-#: web/templates/parts/create_profile.html:2
-#: web/templates/parts/create_profile.html:25
-msgid "profile.create"
-msgstr "Create profile"
 
 #: web/templates/parts/create_profile.html:4
 msgid "profile.name"

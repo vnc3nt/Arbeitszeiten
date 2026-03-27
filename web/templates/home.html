@@ -4,7 +4,7 @@ Arbeitszeit
 {% endblock %}
 {% block content %}
 {% if profile %}
-<h1 data-color="#{{ profile.color }}">{{ profile.name }}</h1>
+<h1 data-color="#{{ profile.color }}" style="background-color: #{{ profile.color }};">{{ profile.name }}</h1>
 <div id="date-selector">
     <form action="" method="get">
         <input type="hidden" name="{{ ARGS_DATE }}" value="{{ prev_date }}">
@@ -21,7 +21,7 @@ Arbeitszeit
 </div>
 <div class="basic-stats">
     <div id="work-balance">
-        <span class="text">{{ total_work | decimalformat}}h / {{ worktime }}</span>
+        <span class="text">{{ total_work / 60 | decimalformat}}h / {{ worktime }}</span>
         <meter id="work-balance" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
     </div>
 </div>

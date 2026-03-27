@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-25 12:38+0100\n"
+"POT-Creation-Date: 2026-03-27 15:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,6 +140,27 @@ msgstr ""
 msgid "password"
 msgstr ""
 
+#: web/templates/profile.html:3
+msgid "profile.my"
+msgstr ""
+
+#: web/templates/profile.html:6
+msgid "work.profiles"
+msgstr ""
+
+#: web/templates/parts/create_profile.html:2
+#: web/templates/parts/create_profile.html:25 web/templates/profile.html:11
+msgid "profile.create"
+msgstr ""
+
+#: web/templates/profile.html:14
+msgid "logout"
+msgstr ""
+
+#: web/templates/profile.html:16
+msgid "close"
+msgstr ""
+
 #: web/templates/register.html:12
 msgid "password.confirm"
 msgstr ""
@@ -162,11 +183,6 @@ msgstr ""
 
 #: web/templates/stats.html:13
 msgid "stat.entry.note"
-msgstr ""
-
-#: web/templates/parts/create_profile.html:2
-#: web/templates/parts/create_profile.html:25
-msgid "profile.create"
 msgstr ""
 
 #: web/templates/parts/create_profile.html:4

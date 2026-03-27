@@ -1,0 +1,19 @@
+{% extends "base_logged_in.html" %}
+{% block title %}
+{{ _("profile.my") }}
+{% endblock title %}
+{% block content %}
+<h1>{{ _("work.profiles") }}</h1>
+<ul>
+    {% for profile in profiles %}
+    <li style="background: #{{ profile.color }}">{{ profile.name }}</li>
+    {% endfor %}
+    <li><button popovertarget="create-profile" popoveraction="show">{{ _("profile.create") }}</button></li>
+</ul>
+<hr>
+<a href="{{ url_for("auth.logout_web") }}">{{ _("logout") }}</a>
+<dialog popover id="create-profile">
+    <button popoveraction="hide" popovertarget="create-profile">{{ _("close") }}</button>
+    {% include "parts/create_profile.html" %}
+</dialog>
+{% endblock content %}

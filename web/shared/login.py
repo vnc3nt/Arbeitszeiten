@@ -3,6 +3,7 @@ from time import time
 from typing import Optional
 
 from sqlalchemy import or_
+from functools import wraps
 from shared.messages import MESSAGE_INVALID_LOGIN_CREDENTIALS, MESSAGE_PASSWORD_DOES_NOT_MATCH, MESSAGE_USERNAME_ALREADY_TAKEN
 from shared.constants import G_USER, SESSION_USER_TOKEN
 from database.models import EXPIRE_TIME, Token, Users, db, TokenType
@@ -10,8 +11,6 @@ import hashlib
 import secrets
 
 from shared.util import Result
-
-
 
 def hash_password(username: str, password: str, salt: str) -> str:
     return hashlib.sha256(bytes(password + username + salt, encoding="utf-8")).hexdigest()
@@ -93,5 +92,16 @@ def redirect_to_login_when_logged_out():
     token = session.get(SESSION_USER_TOKEN, None)
     if token is None or not is_valid_token(token):
         return redirect(url_for("auth.login"))
-    
+
     setattr(g, G_USER, get_user(token))
+
+def redirect_to_account_home_when_logged_in(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        token = session.get(SESSION_USER_TOKEN, None)
+        if token is not None and is_valid_token(token):
+            return redirect(url_for("account.home"))
+
+        setattr(g, SESSION_USER_TOKEN, None)
+        return f(*args, )
+    return wrapper

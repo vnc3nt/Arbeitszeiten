@@ -1,18 +1,14 @@
-from flask import Blueprint, render_template, request, g, url_for, flash, redirect, session
+from flask import Blueprint, render_template, request, url_for, flash, redirect, session
 from shared.util import assert_non_null_values
-from shared.login import login_user, register_user, logout
+from shared.login import login_user, register_user, logout, redirect_to_account_home_when_logged_in
 from shared.constants import SESSION_USER_TOKEN, FORM_USERNAME, FORM_PASSWORD, FORM_CONFIRM_PASSWORD, FLASH_ERROR
 from flask_babel import _
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
-@auth.before_request
-def check_login_state():
-    if session.get(SESSION_USER_TOKEN, None) is not None:
-        return redirect(url_for("account.home"))
-    return None  # proceed as normal
 
 @auth.route("/login", methods=["GET", "POST"])
+@redirect_to_account_home_when_logged_in
 def login():
     username = ""
     if request.method == "POST":
@@ -29,6 +25,7 @@ def login():
 
 
 @auth.route("/register", methods=["GET", "POST"])
+@redirect_to_account_home_when_logged_in
 def register():
     if request.method == "POST":
         username = request.form.get(FORM_USERNAME)
@@ -46,7 +43,7 @@ def register():
 
 @auth.route("/logout")
 def logout_web():
-    token = session.get(SESSION_USER_TOKEN)
+    token = session.pop(SESSION_USER_TOKEN)
     if token is not None:
         logout(token)
     return redirect(url_for("auth.login"))

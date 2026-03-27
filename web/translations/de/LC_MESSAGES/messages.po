@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-25 12:38+0100\n"
+"POT-Creation-Date: 2026-03-27 15:45+0100\n"
 "PO-Revision-Date: 2025-11-30 16:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -71,7 +71,6 @@ msgid "work_time.noone_matching"
 msgstr "Keine Arbeitszeit gefunden"
 
 #: web/shared/messages.py:21
-#, fuzzy
 msgid "work.time.nothing"
 msgstr "Keine Arbeitszeit gefunden"
 
@@ -142,6 +141,27 @@ msgstr "Benutzername"
 msgid "password"
 msgstr "Passwort"
 
+#: web/templates/profile.html:3
+msgid "profile.my"
+msgstr "Mein Profil"
+
+#: web/templates/profile.html:6
+msgid "work.profiles"
+msgstr "Meine Arbeitsprofile"
+
+#: web/templates/parts/create_profile.html:2
+#: web/templates/parts/create_profile.html:25 web/templates/profile.html:11
+msgid "profile.create"
+msgstr "Arbeitsprofil erstellen"
+
+#: web/templates/profile.html:14
+msgid "logout"
+msgstr "Abmelden"
+
+#: web/templates/profile.html:16
+msgid "close"
+msgstr ""
+
 #: web/templates/register.html:12
 msgid "password.confirm"
 msgstr "Passwort bestätigen"
@@ -165,11 +185,6 @@ msgstr "Kategorie"
 #: web/templates/stats.html:13
 msgid "stat.entry.note"
 msgstr "Notiz"
-
-#: web/templates/parts/create_profile.html:2
-#: web/templates/parts/create_profile.html:25
-msgid "profile.create"
-msgstr "Arbeitsprofil erstellen"
 
 #: web/templates/parts/create_profile.html:4
 msgid "profile.name"

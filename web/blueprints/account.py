@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, g, url_for, flash, redire
 from shared.util import assert_non_null_values, try_datetime, get_period_length, get_period_start
 from shared.constants import SESSION_USER_TOKEN, FLASH_ERROR, G_USER, ARGS_DATE
 from shared.login import redirect_to_login_when_logged_out
-from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period
+from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period, get_user_profiles
 from shared.work_time import filter_work_times, get_balance
 from database.models import current_date, db
 from flask_babel import _
@@ -62,6 +62,7 @@ def stats():
 
 @account.route("/profile")
 def profile():
-    return "Not Implemented Yet"
+    user = g.get(G_USER)
+    return render_template("profile.html", profiles=get_user_profiles(user.id))
 
 
