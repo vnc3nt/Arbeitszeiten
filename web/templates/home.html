@@ -21,7 +21,7 @@ Arbeitszeit
 </div>
 <div class="basic-stats">
     <div id="work-balance">
-        <span class="text">{{ total_work / 60 | decimalformat}}h / {{ worktime }}</span>
+        <span class="text">{{ total_work | decimalformat}}h / {{ worktime }}</span>
         <meter id="work-balance" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
     </div>
 </div>

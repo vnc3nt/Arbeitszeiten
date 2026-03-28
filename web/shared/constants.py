@@ -2,8 +2,9 @@ import re
 
 # G and session cache
 SESSION_USER_TOKEN = "currentToken"
-G_USER = "user"
 SESSION_FORM_DATA = "form-data"
+G_USER = "user"
+G_CURRENT_PROFILE = "cur_profile"
 
 # Patterns
 USERNAME_PATTERN = "[^ ]{8,}"
@@ -57,3 +58,4 @@ FORM_WORK_NOTE = "work-note"
 
 # flash categories
 FLASH_ERROR = "error"
+

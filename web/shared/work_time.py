@@ -87,4 +87,4 @@ def get_balance(profile_id: int, begin: Union[datetime, date], end: Union[date, 
 
     if value[0][0] is None:
         return 0.0
-    return value[0][0] / 60.0
+    return value[0][0] / 3600.0  # seconds to hours

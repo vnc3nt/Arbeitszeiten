@@ -47,6 +47,7 @@ def get_work_period(profile_id: int, time: Union[date, datetime]) -> WorkTime:
         return WorkTime.query.filter(WorkTime.profileId == profile_id).order_by(asc(WorkTime.workStart)).first()
     return work_time
 
+
 def set_work_period(profile_id: int, work_time: int, period_start: date, work_period: WorkTimeFormat, category_id: Optional[int] = None) -> Result[WorkTime, str]:
     """
     It is expected that profile_id is valid and correct
@@ -85,6 +86,10 @@ def get_user_profile_by_id(user_id: int, profile_id: int, update_last: bool) -> 
         profile.lastViewed = datetime.now(timezone.utc)
         db.session.commit()
     return profile
+
+def get_user_profile_by_name(user_id: int, profile_name: str) -> Optional[Profile]:
+    # include user and profile id to make sure the profile belongs to the given person
+    return Profile.query.filter(Profile.userId == user_id, Profile.name == profile_name).first()
 
 
 def update_user_profile(user_id: int, profile_id: int, *, name: Optional[str] = None, color: Optional[str] = None) -> Result[Profile, str]:
