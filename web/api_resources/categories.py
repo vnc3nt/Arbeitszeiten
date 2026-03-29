@@ -16,7 +16,7 @@ category_create.add_argument(
         nullable=False,
         required=True,
         location=POST_LOCATIONS,
-        help="The id of the profile this category shall belong to"
+        help="The id of the dialog_bases this category shall belong to"
 )
 category_create.add_argument(
         name="name",
@@ -42,7 +42,7 @@ category_get.add_argument(
         nullable=False,
         required=False,
         location=GET_LOCATIONS,
-        help="The profile id of the categories"
+        help="The dialog_bases id of the categories"
 )
 category_get.add_argument(
         name="id",
@@ -85,7 +85,7 @@ category_delete.add_argument(
         nullable=False,
         required=True,
         location=DELETE_LOCATIONS,
-        help="The id of the profile to delete"
+        help="The id of the dialog_bases to delete"
 )
 
 

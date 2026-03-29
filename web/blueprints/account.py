@@ -62,7 +62,7 @@ def stats():
     )
 
 
-@account.route("/profile")
+@account.route("/dialog_bases")
 def profile_web():
     user = g.get(G_USER)
     profiles = get_user_profiles(user.id)

@@ -7,6 +7,6 @@ api = Api(app)
 
 api.add_resource(Apicheck, "/")
 api.add_resource(Authentication, "/auth/<string:auth_type>", "/auth/<string:auth_type>/")
-api.add_resource(Profiles, "/profile", "/profile/")
+api.add_resource(Profiles, "/dialog_bases", "/dialog_bases/")
 api.add_resource(Categories, "/category", "/category/")
 api.add_resource(WorkTime, "/work", "/work/")

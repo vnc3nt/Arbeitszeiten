@@ -1,0 +1,30 @@
+{% macro base(action, name=gget(FORM_PROFILE_NAME), color='#' + gget(FORM_PROFILE_COLOR), work_start=gget(FORM_WORK_START), work_format=gget(FORM_WORK_FORMAT), work_time=gget(FORM_WORK_TIME)) %}
+<form action="{{ url_for(action) }}" method="post" aria-labelledby="create-profile-dialog">
+    <h2 id="create-profile-dialog">{{ _('profile.create') }}</h2>
+    <div class="input-box">
+        <input type="text" placeholder="{{ _('profile.name') }}" name="{{ FORM_PROFILE_NAME }}" value="{{ name }}" required >
+    </div>
+    <div class="input-box">
+        <label for="profile-color">{{ _('profile.color') }}</label>
+        <input type="color" id="profile-color" placeholder="farbe" name="{{ FORM_PROFILE_COLOR }}" value="{{ color }}" required>
+    </div>
+    <div class="input-box">
+        <label for="profile-date-start">{{ _('profile.date.start') }}</label>
+        <input type="date" id="profile-date-start" name="{{ FORM_WORK_START }}" value="{{ work_start }}" required>
+    </div>
+    <div class="input-box">
+        <label for="profile-work-format">{{ _('work.timeformat') }}</label>
+        <select name="{{ FORM_WORK_FORMAT }}" id="profile-work-format">
+            {% for opt in WORK_TIME_FORMATS._value2member_map_ %}
+            <option value="{{ opt }}" {{ 'selected' if loop.index == 1 and not work_format or gget(FORM_WORK_FORMAT) == opt }}>{{ _(opt) }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="input-box">
+        <input type="number" name="{{ FORM_WORK_TIME }}" placeholder="{{ _('work.worktime_in_hour') }}" min="1" value="{{ work_time }}" required>
+    </div>
+    <div class="button-list">
+        {{ caller() }}
+    </div>
+</form>
+{% endmacro %}

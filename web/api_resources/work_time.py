@@ -26,7 +26,7 @@ work_time_get.add_argument(
         required=False,
         nullable=False,
         location=GET_LOCATIONS,
-        help="The id of the profile this work belongs to"
+        help="The id of the dialog_bases this work belongs to"
 )
 work_time_get.add_argument(
         name="categoryId",

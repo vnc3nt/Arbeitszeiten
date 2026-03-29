@@ -1,4 +1,5 @@
 {% extends "base_logged_in.html" %}
+{% import "macros/profile.html" as profile %}
 {% block title %}
 {{ _("profile.my") }}
 {% endblock title %}
@@ -16,12 +17,12 @@
         {% endif %}
     </li>
     {% endfor %}
-    <li><button popovertarget="create-profile" popoveraction="show">{{ _("profile.create") }}</button></li>
+    <li><button popovertarget="create-profile" popovertargetaction="show">{{ _("profile.create") }}</button></li>
 </ul>
 <hr>
 <a href="{{ url_for('auth.logout_web') }}">{{ _("logout") }}</a>
 <dialog popover id="create-profile">
-    <button popoveraction="hide" popovertarget="create-profile">{{ _("close") }}</button>
-    {% include "parts/create_profile.html" %}
+    <button class="close" popovertargetaction="hide" popovertarget="create-profile">{{ _("close") }}</button>
+    {{ profile.create() }}
 </dialog>
 {% endblock content %}

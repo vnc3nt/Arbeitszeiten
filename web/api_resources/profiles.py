@@ -16,7 +16,7 @@ profile_create.add_argument(
         required=True,
         nullable=False,
         location=POST_LOCATIONS,
-        help="No profile name given"
+        help="No dialog_bases name given"
 )
 profile_create.add_argument(
         name="color",
@@ -59,7 +59,7 @@ profile_get.add_argument(
         nullable=True,
         required=False,
         location=GET_LOCATIONS,
-        help="If not present, will return all user profiles. If 'last', will return the last viewed profile"
+        help="If not present, will return all user profiles. If 'last', will return the last viewed dialog_bases"
 )
 profile_get.add_argument(
     name="include_entries",
@@ -86,7 +86,7 @@ profile_get.add_argument(
     required=False,
     default="true",
     location=GET_LOCATIONS,
-    help="Whether to change the last opened profile in the database or not"
+    help="Whether to change the last opened dialog_bases in the database or not"
 )
 
 profile_patch = token_param.copy()
@@ -96,7 +96,7 @@ profile_patch.add_argument(
     nullable=False,
     required=True,
     location=PATCH_LOCATIONS,
-    help="The id of the profile to change"
+    help="The id of the dialog_bases to change"
 )
 profile_patch.add_argument(
     name="name",
@@ -104,7 +104,7 @@ profile_patch.add_argument(
     nullable=False,
     required=False,
     location=PATCH_LOCATIONS,
-    help="New name of the profile"
+    help="New name of the dialog_bases"
 )
 profile_patch.add_argument(
     name="color",
@@ -112,7 +112,7 @@ profile_patch.add_argument(
     nullable=False,
     required=False,
     location=PATCH_LOCATIONS,
-    help="New color of the profile"
+    help="New color of the dialog_bases"
 )
 
 profile_delete = token_param.copy()
@@ -122,7 +122,7 @@ profile_delete.add_argument(
     nullable=False,
     required=True,
     location=DELETE_LOCATIONS,
-    help="The id of the profile to delete"
+    help="The id of the dialog_bases to delete"
 )
 
 

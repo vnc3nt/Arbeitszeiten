@@ -23,11 +23,11 @@ def create_profile(user_id: int, name: str, color: str, work_start: datetime, wo
     db.session.add(profile)
     db.session.flush()
 
-    # this function will commit adding the profile and can't fail because new profile
+    # this function will commit adding the dialog_bases and can't fail because new dialog_bases
     set_work_period(profile.id, work_time, get_period_start(work_start, work_period), work_period, None)
 
     for category_name, color in DEFAULT_CATEGORIES:
-        create_category(user_id, profile.id, category_name, color)  # should not fail because it is a new profile
+        create_category(user_id, profile.id, category_name, color)  # should not fail because it is a new dialog_bases
 
     return Result(value=profile)
 
@@ -80,7 +80,7 @@ def get_last_viewed_user_profile(user_id: int) -> Optional[Profile]:
     return Profile.query.filter(Profile.userId == user_id).order_by(desc(Profile.lastViewed)).first()
 
 def get_user_profile_by_id(user_id: int, profile_id: int, update_last: bool) -> Optional[Profile]:
-    # include user and profile id to make sure the profile belongs to the given person
+    # include user and dialog_bases id to make sure the dialog_bases belongs to the given person
     profile = Profile.query.filter(Profile.userId == user_id, Profile.id == profile_id).first()
     if profile is not None and update_last:
         profile.lastViewed = datetime.now(timezone.utc)
@@ -88,7 +88,7 @@ def get_user_profile_by_id(user_id: int, profile_id: int, update_last: bool) -> 
     return profile
 
 def get_user_profile_by_name(user_id: int, profile_name: str) -> Optional[Profile]:
-    # include user and profile id to make sure the profile belongs to the given person
+    # include user and dialog_bases id to make sure the dialog_bases belongs to the given person
     return Profile.query.filter(Profile.userId == user_id, Profile.name == profile_name).first()
 
 
@@ -132,7 +132,7 @@ def create_category(user_id: int, profile_id: int, name: str, color: str):
 
 
 def get_category_names(profile_id: int) -> Iterable[str]:
-    """Assumes correct profile id"""
+    """Assumes correct dialog_bases id"""
     return flatten(db.session.query(ProfileCategory.name).filter(ProfileCategory.profileId == profile_id).order_by(ProfileCategory.id).all())
 
 def get_profile_categories(user_id: int, profile_id: int) -> Result[List[ProfileCategory], str]:

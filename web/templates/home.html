@@ -55,7 +55,8 @@ Arbeitszeit
     </form>
 </dialog>
 {% else %}
+{% import "macros/profile.html" as profile %}
 <h1>{{ _('profile.missing.headline') }}</h1>
-{% include "parts/create_profile.html" %}
+{{ profile.create() }}
 {% endif %}
 {% endblock %}

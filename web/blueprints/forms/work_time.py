@@ -5,7 +5,7 @@ from shared.constants import G_USER, FLASH_ERROR, FORM_WORK_CATEGROY, FORM_WORK_
 from shared.util import assert_non_null_values, assert_int, assert_datetime
 from shared.work_time import add_new_work
 
-work_time_forms = Blueprint("work_time", __name__, url_prefix="/profile")
+work_time_forms = Blueprint("work_time", __name__, url_prefix="/dialog_bases")
 
 
 @work_time_forms.route("/add", methods=["POST"], )

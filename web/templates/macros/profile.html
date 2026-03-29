@@ -1,0 +1,12 @@
+{% import "macros/dialog_bases/profile.html" as profile %}
+{% macro create() %}
+{% call profile.base('form.profile.create') %}
+<button type="submit">{{ _('profile.create') }}</button>
+{% endcall %}
+{% endmacro %}
+
+{% macro edit() %}
+{% call profile.base('form.profile.create') %}
+<button type="submit">{{ _('profile.edit') }}</button>
+{% endcall %}
+{% endmacro %}

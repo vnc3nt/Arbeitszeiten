@@ -8,9 +8,9 @@ from shared.constants import G_USER, FORM_PROFILE_NAME, FORM_PROFILE_COLOR, FORM
 from shared.messages import MESSAGE_PROFILE_NOT_FOUND
 from shared.profiles import create_profile, get_user_profile_by_name
 from shared.util import assert_non_null_values, assert_date, assert_enum, assert_color
-from web_util import switch_profile
+from web_util import switch_profile, clear_form_cache
 
-profile_forms = Blueprint("profile", __name__, url_prefix="/profile")
+profile_forms = Blueprint("profile", __name__, url_prefix="/dialog_bases")
 
 
 @profile_forms.route("/create", methods=["POST"])
@@ -36,6 +36,8 @@ def create():
 def switch():
     user: Users = g.get(G_USER)
     profile_name = request.form.get(FORM_PROFILE_NAME)
+    clear_form_cache()
+
     if profile_name is None:
         abort(400)
 
