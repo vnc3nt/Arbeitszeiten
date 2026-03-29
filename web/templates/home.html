@@ -31,7 +31,7 @@ Arbeitszeit
     <button class="close" popovertarget="add-work-time-dialog" popovertargetaction="hide">
         Close
     </button>
-    <form action="{{ url_for('form.add_work_time_web') }}" method="post">
+    <form action="{{ url_for('form.work_time.add') }}" method="post">
         <div class="input-box">
             <label for="work-time-category">{{ _('work.category') }}</label>
             <select name="{{ FORM_WORK_CATEGROY }}" id="" autofocus>

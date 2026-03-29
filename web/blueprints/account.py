@@ -65,6 +65,11 @@ def stats():
 @account.route("/profile")
 def profile_web():
     user = g.get(G_USER)
-    return render_template("profile.html", profiles=get_user_profiles(user.id))
+    profiles = get_user_profiles(user.id)
+    return render_template(
+        "profile.html",
+        profiles=profiles,
+        active_profile=get_current_profile(user.id)
+    )
 
 

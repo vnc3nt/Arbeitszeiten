@@ -1,4 +1,4 @@
-<form action="{{ url_for('form.create_profile_web') }}" method="post" aria-labelledby="create-profile-dialog">
+<form action="{{ url_for('form.profile.create') }}" method="post" aria-labelledby="create-profile-dialog">
     <h2 id="create-profile-dialog">{{ _('profile.create') }}</h2>
     <div class="input-box">
         <input type="text" placeholder="{{ _('profile.name') }}" name="{{ FORM_PROFILE_NAME }}" value="{{ gget(FORM_PROFILE_NAME) }}" required >

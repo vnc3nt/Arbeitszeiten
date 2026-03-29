@@ -8,16 +8,18 @@
     {% for profile in profiles %}
     <li style="background: #{{ profile.color }}">
         {{ profile.name }}
-        <form action="{{ url_for('form.switch_profile_web') }}" method="post">
+        {% if profile.id != active_profile.id %}
+        <form action="{{ url_for('form.profile.switch') }}" method="post">
             <input type="hidden" name="{{ FORM_PROFILE_NAME }}" value="{{ profile.name }}">
-            <button type="submit">Select</button>
+            <button type="submit">{{ _("profile.select") }}</button>
         </form>
+        {% endif %}
     </li>
     {% endfor %}
     <li><button popovertarget="create-profile" popoveraction="show">{{ _("profile.create") }}</button></li>
 </ul>
 <hr>
-<a href="{{ url_for("auth.logout_web") }}">{{ _("logout") }}</a>
+<a href="{{ url_for('auth.logout_web') }}">{{ _("logout") }}</a>
 <dialog popover id="create-profile">
     <button popoveraction="hide" popovertarget="create-profile">{{ _("close") }}</button>
     {% include "parts/create_profile.html" %}
