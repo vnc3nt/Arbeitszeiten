@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-27 15:45+0100\n"
+"POT-Creation-Date: 2026-03-29 21:23+0200\n"
 "PO-Revision-Date: 2025-11-30 16:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -86,125 +86,130 @@ msgstr "Arbeitszeiten, work tracker"
 msgid "website.desc"
 msgstr "Website, um seine Arbeitszeiten zu tracken"
 
-#: web/templates/home.html:11
-msgid "previous.month"
-msgstr "Früher"
-
-#: web/templates/home.html:15
-msgid "goto.date"
-msgstr "Aktualisieren"
-
-#: web/templates/home.html:19
-msgid "next.month"
-msgstr "Später"
-
-#: web/templates/home.html:28 web/templates/home.html:30
-#: web/templates/home.html:54
-msgid "work.time.add"
-msgstr "Arbeit hinzufügen"
-
-#: web/templates/home.html:36
-msgid "work.category"
-msgstr "Kategorie"
-
-#: web/templates/home.html:44
-msgid "work.time.begin"
-msgstr "Von"
-
-#: web/templates/home.html:48
-msgid "work.time.end"
-msgstr "Bis"
-
-#: web/templates/home.html:52
-msgid "note"
-msgstr "Notiz"
-
-#: web/templates/home.html:58
-msgid "profile.missing.headline"
-msgstr "Profil erstellen"
-
-#: web/templates/login.html:3 web/templates/login.html:8
-#: web/templates/login.html:12 web/templates/register.html:7
-msgid "login"
-msgstr "Anmelden"
-
-#: web/templates/login.html:7 web/templates/register.html:3
-#: web/templates/register.html:8 web/templates/register.html:13
-msgid "register"
-msgstr "Registrieren"
-
-#: web/templates/login.html:10 web/templates/register.html:10
-msgid "username"
-msgstr "Benutzername"
-
-#: web/templates/login.html:11 web/templates/register.html:11
-msgid "password"
-msgstr "Passwort"
-
-#: web/templates/profile.html:3
-msgid "profile.my"
-msgstr "Mein Profil"
-
-#: web/templates/profile.html:6
-msgid "work.profiles"
-msgstr "Meine Arbeitsprofile"
-
-#: web/templates/parts/create_profile.html:2
-#: web/templates/parts/create_profile.html:25 web/templates/profile.html:11
+#: web/templates/macros/profile.html:3 web/templates/macros/profile.html:26
+#: web/templates/page/profile.html:22
 msgid "profile.create"
 msgstr "Arbeitsprofil erstellen"
 
-#: web/templates/profile.html:14
-msgid "logout"
-msgstr "Abmelden"
-
-#: web/templates/profile.html:16
-msgid "close"
-msgstr ""
-
-#: web/templates/register.html:12
-msgid "password.confirm"
-msgstr "Passwort bestätigen"
-
-#: web/templates/stats.html:3 web/templates/stats.html:6
-msgid "statistics.title"
-msgstr "Übersicht"
-
-#: web/templates/stats.html:10
-msgid "stat.entry.start"
-msgstr "Beginn"
-
-#: web/templates/stats.html:11
-msgid "stat.entry.duration"
-msgstr "Dauer"
-
-#: web/templates/stats.html:12
-msgid "stat.entry.category"
-msgstr "Kategorie"
-
-#: web/templates/stats.html:13
-msgid "stat.entry.note"
-msgstr "Notiz"
-
-#: web/templates/parts/create_profile.html:4
+#: web/templates/macros/profile.html:5
 msgid "profile.name"
 msgstr "Profilname"
 
-#: web/templates/parts/create_profile.html:7
+#: web/templates/macros/profile.html:8
 msgid "profile.color"
 msgstr "Profilfarbe"
 
-#: web/templates/parts/create_profile.html:11
+#: web/templates/macros/profile.html:12
 msgid "profile.date.start"
 msgstr "Arbeitsbeginn"
 
-#: web/templates/parts/create_profile.html:15
+#: web/templates/macros/profile.html:16
 msgid "work.timeformat"
 msgstr "Zahlungsvertrag"
 
-#: web/templates/parts/create_profile.html:23
+#: web/templates/macros/profile.html:24
 msgid "work.worktime_in_hour"
 msgstr "Mindestarbeitszeit in Stunden"
+
+#: web/templates/page/home.html:11
+msgid "previous.month"
+msgstr "Früher"
+
+#: web/templates/page/home.html:15
+msgid "goto.date"
+msgstr "Aktualisieren"
+
+#: web/templates/page/home.html:19
+msgid "next.month"
+msgstr "Später"
+
+#: web/templates/page/home.html:28 web/templates/page/home.html:30
+#: web/templates/page/home.html:54
+msgid "work.time.add"
+msgstr "Arbeit hinzufügen"
+
+#: web/templates/page/home.html:36
+msgid "work.category"
+msgstr "Kategorie"
+
+#: web/templates/page/home.html:44
+msgid "work.time.begin"
+msgstr "Von"
+
+#: web/templates/page/home.html:48
+msgid "work.time.end"
+msgstr "Bis"
+
+#: web/templates/page/home.html:52
+msgid "note"
+msgstr "Notiz"
+
+#: web/templates/page/home.html:59 web/templates/page/profile.html:20
+msgid "profile.missing"
+msgstr "Kein Arbeitsprofil vorhanden"
+
+#: web/templates/page/login.html:3 web/templates/page/login.html:8
+#: web/templates/page/login.html:12 web/templates/page/register.html:7
+msgid "login"
+msgstr "Anmelden"
+
+#: web/templates/page/login.html:7 web/templates/page/register.html:3
+#: web/templates/page/register.html:8 web/templates/page/register.html:13
+msgid "register"
+msgstr "Registrieren"
+
+#: web/templates/page/login.html:10 web/templates/page/register.html:10
+msgid "username"
+msgstr "Benutzername"
+
+#: web/templates/page/login.html:11 web/templates/page/register.html:11
+msgid "password"
+msgstr "Passwort"
+
+#: web/templates/page/profile.html:4
+msgid "profile.my"
+msgstr "Mein Profil"
+
+#: web/templates/page/profile.html:7
+msgid "work.profiles"
+msgstr "Meine Arbeitsprofile"
+
+#: web/templates/page/profile.html:15
+#, fuzzy
+msgid "profile.select"
+msgstr "Arbeitsprofil erstellen"
+
+#: web/templates/page/profile.html:25
+msgid "logout"
+msgstr "Abmelden"
+
+#: web/templates/page/profile.html:27
+msgid "close"
+msgstr "Schließen"
+
+#: web/templates/page/register.html:12
+msgid "password.confirm"
+msgstr "Passwort bestätigen"
+
+#: web/templates/page/stats.html:3 web/templates/page/stats.html:6
+msgid "statistics.title"
+msgstr "Übersicht"
+
+#: web/templates/page/stats.html:10
+msgid "stat.entry.start"
+msgstr "Beginn"
+
+#: web/templates/page/stats.html:11
+msgid "stat.entry.duration"
+msgstr "Dauer"
+
+#: web/templates/page/stats.html:12
+msgid "stat.entry.category"
+msgstr "Kategorie"
+
+#: web/templates/page/stats.html:13
+msgid "stat.entry.note"
+msgstr "Notiz"
 
 #: web/templates/parts/navigation.html:4
 msgid "navigation.home"
@@ -221,4 +226,7 @@ msgstr "Profile"
 #: web/templates/parts/topbar.html:11
 msgid "flash.dismiss"
 msgstr "Schließen"
+
+#~ msgid "profile.missing.headline"
+#~ msgstr "Profil erstellen"
 

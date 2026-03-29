@@ -21,7 +21,7 @@ def login():
             return redirect(url_for("account.home"))
         flash(_(result.error), category=FLASH_ERROR)
 
-    return render_template("login.html", username=username)
+    return render_template("page/login.html", username=username)
 
 
 @auth.route("/register", methods=["GET", "POST"])
@@ -38,7 +38,7 @@ def register():
         print(result)
         flash(_(result), category=FLASH_ERROR)
 
-    return render_template("register.html")
+    return render_template("page/register.html")
 
 
 @auth.route("/logout")

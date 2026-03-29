@@ -8,8 +8,8 @@ MESSAGE_INVALID_ACCESS_TOKEN = msgid("token.invalid")
 MESSAGE_SUCCESSFULLY_REGISTERED = msgid("register.successfully")
 
 # PROFILE
-MESSAGE_PROFILE_NAME_USED = msgid("dialog_bases.name_used")
-MESSAGE_PROFILE_NOT_FOUND = msgid("dialog_bases.not_found")
+MESSAGE_PROFILE_NAME_USED = msgid("profile.name_used")
+MESSAGE_PROFILE_NOT_FOUND = msgid("profile.not_found")
 
 # CATEGORY
 MESSAGE_CATEGORY_NAME_ALREADY_USED = msgid("category.name_used")

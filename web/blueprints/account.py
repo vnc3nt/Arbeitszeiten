@@ -1,12 +1,13 @@
 from datetime import timedelta
 
-from flask import Blueprint, render_template, request, g, flash
+from flask import Blueprint, render_template, request, g, flash, abort
 from flask_babel import _
 
 from database.models import current_date
 from shared.constants import FLASH_ERROR, G_USER, ARGS_DATE
 from shared.login import redirect_to_login_when_logged_out
-from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period, get_user_profiles
+from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period, get_user_profiles, \
+    get_user_profile_by_id
 from shared.util import try_datetime, get_period_length, get_period_start
 from shared.work_time import filter_work_times, get_balance
 from web_util import get_current_profile
@@ -42,7 +43,7 @@ def home():
 
 
     return render_template(
-        "home.html",
+        "page/home.html",
         profile=profile,
         categories=categories,
         **opt
@@ -56,7 +57,7 @@ def stats():
     entries = filter_work_times(user.id, profile.id)
 
     return render_template(
-        "stats.html",
+        "page/stats.html",
         profile=profile,
         entries=entries
     )
@@ -67,9 +68,16 @@ def profile_web():
     user = g.get(G_USER)
     profiles = get_user_profiles(user.id)
     return render_template(
-        "profile.html",
+        "page/profile.html",
         profiles=profiles,
         active_profile=get_current_profile(user.id)
     )
 
 
+@account.route("/edit-profile/<int:profile_id>")
+def edit_profile_web(profile_id: int):
+    user = g.get(G_USER)
+    profile = get_user_profile_by_id(user.id, profile_id)
+    if profile is None:
+        abort(404)
+    return render_template("dialog/edit_profile.html", profile=profile)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-27 15:45+0100\n"
+"POT-Creation-Date: 2026-03-29 21:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,124 +85,128 @@ msgstr ""
 msgid "website.desc"
 msgstr ""
 
-#: web/templates/home.html:11
-msgid "previous.month"
-msgstr ""
-
-#: web/templates/home.html:15
-msgid "goto.date"
-msgstr ""
-
-#: web/templates/home.html:19
-msgid "next.month"
-msgstr ""
-
-#: web/templates/home.html:28 web/templates/home.html:30
-#: web/templates/home.html:54
-msgid "work.time.add"
-msgstr ""
-
-#: web/templates/home.html:36
-msgid "work.category"
-msgstr ""
-
-#: web/templates/home.html:44
-msgid "work.time.begin"
-msgstr ""
-
-#: web/templates/home.html:48
-msgid "work.time.end"
-msgstr ""
-
-#: web/templates/home.html:52
-msgid "note"
-msgstr ""
-
-#: web/templates/home.html:58
-msgid "profile.missing.headline"
-msgstr ""
-
-#: web/templates/login.html:3 web/templates/login.html:8
-#: web/templates/login.html:12 web/templates/register.html:7
-msgid "login"
-msgstr ""
-
-#: web/templates/login.html:7 web/templates/register.html:3
-#: web/templates/register.html:8 web/templates/register.html:13
-msgid "register"
-msgstr ""
-
-#: web/templates/login.html:10 web/templates/register.html:10
-msgid "username"
-msgstr ""
-
-#: web/templates/login.html:11 web/templates/register.html:11
-msgid "password"
-msgstr ""
-
-#: web/templates/profile.html:3
-msgid "profile.my"
-msgstr ""
-
-#: web/templates/profile.html:6
-msgid "work.profiles"
-msgstr ""
-
-#: web/templates/parts/create_profile.html:2
-#: web/templates/parts/create_profile.html:25 web/templates/profile.html:11
+#: web/templates/macros/profile.html:3 web/templates/macros/profile.html:26
+#: web/templates/page/profile.html:22
 msgid "profile.create"
 msgstr ""
 
-#: web/templates/profile.html:14
-msgid "logout"
-msgstr ""
-
-#: web/templates/profile.html:16
-msgid "close"
-msgstr ""
-
-#: web/templates/register.html:12
-msgid "password.confirm"
-msgstr ""
-
-#: web/templates/stats.html:3 web/templates/stats.html:6
-msgid "statistics.title"
-msgstr ""
-
-#: web/templates/stats.html:10
-msgid "stat.entry.start"
-msgstr ""
-
-#: web/templates/stats.html:11
-msgid "stat.entry.duration"
-msgstr ""
-
-#: web/templates/stats.html:12
-msgid "stat.entry.category"
-msgstr ""
-
-#: web/templates/stats.html:13
-msgid "stat.entry.note"
-msgstr ""
-
-#: web/templates/parts/create_profile.html:4
+#: web/templates/macros/profile.html:5
 msgid "profile.name"
 msgstr ""
 
-#: web/templates/parts/create_profile.html:7
+#: web/templates/macros/profile.html:8
 msgid "profile.color"
 msgstr ""
 
-#: web/templates/parts/create_profile.html:11
+#: web/templates/macros/profile.html:12
 msgid "profile.date.start"
 msgstr ""
 
-#: web/templates/parts/create_profile.html:15
+#: web/templates/macros/profile.html:16
 msgid "work.timeformat"
 msgstr ""
 
-#: web/templates/parts/create_profile.html:23
+#: web/templates/macros/profile.html:24
 msgid "work.worktime_in_hour"
+msgstr ""
+
+#: web/templates/page/home.html:11
+msgid "previous.month"
+msgstr ""
+
+#: web/templates/page/home.html:15
+msgid "goto.date"
+msgstr ""
+
+#: web/templates/page/home.html:19
+msgid "next.month"
+msgstr ""
+
+#: web/templates/page/home.html:28 web/templates/page/home.html:30
+#: web/templates/page/home.html:54
+msgid "work.time.add"
+msgstr ""
+
+#: web/templates/page/home.html:36
+msgid "work.category"
+msgstr ""
+
+#: web/templates/page/home.html:44
+msgid "work.time.begin"
+msgstr ""
+
+#: web/templates/page/home.html:48
+msgid "work.time.end"
+msgstr ""
+
+#: web/templates/page/home.html:52
+msgid "note"
+msgstr ""
+
+#: web/templates/page/home.html:59 web/templates/page/profile.html:20
+msgid "profile.missing"
+msgstr ""
+
+#: web/templates/page/login.html:3 web/templates/page/login.html:8
+#: web/templates/page/login.html:12 web/templates/page/register.html:7
+msgid "login"
+msgstr ""
+
+#: web/templates/page/login.html:7 web/templates/page/register.html:3
+#: web/templates/page/register.html:8 web/templates/page/register.html:13
+msgid "register"
+msgstr ""
+
+#: web/templates/page/login.html:10 web/templates/page/register.html:10
+msgid "username"
+msgstr ""
+
+#: web/templates/page/login.html:11 web/templates/page/register.html:11
+msgid "password"
+msgstr ""
+
+#: web/templates/page/profile.html:4
+msgid "profile.my"
+msgstr ""
+
+#: web/templates/page/profile.html:7
+msgid "work.profiles"
+msgstr ""
+
+#: web/templates/page/profile.html:15
+msgid "profile.select"
+msgstr ""
+
+#: web/templates/page/profile.html:25
+msgid "logout"
+msgstr ""
+
+#: web/templates/page/profile.html:27
+msgid "close"
+msgstr ""
+
+#: web/templates/page/register.html:12
+msgid "password.confirm"
+msgstr ""
+
+#: web/templates/page/stats.html:3 web/templates/page/stats.html:6
+msgid "statistics.title"
+msgstr ""
+
+#: web/templates/page/stats.html:10
+msgid "stat.entry.start"
+msgstr ""
+
+#: web/templates/page/stats.html:11
+msgid "stat.entry.duration"
+msgstr ""
+
+#: web/templates/page/stats.html:12
+msgid "stat.entry.category"
+msgstr ""
+
+#: web/templates/page/stats.html:13
+msgid "stat.entry.note"
 msgstr ""
 
 #: web/templates/parts/navigation.html:4

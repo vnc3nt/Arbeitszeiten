@@ -16,6 +16,8 @@
         </form>
         {% endif %}
     </li>
+    {% else %}
+    <li>{{ _("profile.missing") }}</li>
     {% endfor %}
     <li><button popovertarget="create-profile" popovertargetaction="show">{{ _("profile.create") }}</button></li>
 </ul>

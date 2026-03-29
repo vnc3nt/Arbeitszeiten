@@ -57,6 +57,18 @@ class Profile(db.Model):  # TODO missing: (changable) order
     workStart = db.Column(db.Date, nullable=False)  # TODO: dates are weird because of timezones
     lastViewed = db.Column(db.TIMESTAMP, nullable=False)
 
+    def to_form_dict(self):
+        return {
+            "name": self.name,
+            "color": self.color,
+            "work_start": self.workStart,
+            "categories": self.categories
+        }
+
+    @property
+    def categories(self):
+        return []  # FIXME implement database call
+
     def to_json(self, *, include_entries: bool = False, include_work_periods: bool = False):
         data = {
                 "id": self.id,
