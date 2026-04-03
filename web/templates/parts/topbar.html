@@ -3,12 +3,12 @@
     <span>Arbeitszeiten</span>
 </header>
 {% with messages = get_flashed_messages(with_categories=true) %}
-<ul id=flash-msg>
+<ul id="flash-msg">
     {% for cat, msg in messages %}
-    <li class="{{ cat }}" id="\f\m-{{loop.index}}">
+    <li class="{{ cat }} fm">
         <input type="checkbox" id="fm-{{loop.index}}" class="flash-msg-toggle" checked />
         <span class="message">{{ msg }}</span>
-        <label for="fm-{{loop.index}}">{{ _('flash.dismiss') }}</button>
+        <label for="fm-{{loop.index}}">{{ _('flash.dismiss') }}</label>
     </li>
     {% endfor %}
 </ul>
