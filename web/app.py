@@ -34,7 +34,7 @@ for variable in dir(__consts):
 # called when request is canceled/finished
 @app.teardown_appcontext
 def teardown_appcontext(_):
-    # clear g cachehello
+    # clear g cache
     g.pop(G_USER, None)
 
 
