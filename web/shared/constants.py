@@ -3,6 +3,9 @@ import re
 # G and session cache
 SESSION_USER_TOKEN = "currentToken"
 SESSION_FORM_DATA = "form-data"
+SESSION_TIMER_START = "timer-start"
+SESSION_TIMER_INTERVALS = "timer-intervals"
+
 G_USER = "user"
 G_CURRENT_PROFILE = "cur_profile"
 
@@ -52,7 +55,7 @@ FORM_WORK_START = "work-start"
 FORM_WORK_FORMAT = "work-format"
 FORM_WORK_TIME = "work-time"
 
-FORM_WORK_CATEGROY = "work-category"
+FORM_WORK_CATEGORY = "work-category"
 FORM_WORK_BEGIN = "work-begin"
 FORM_WORK_END = "work-end"
 FORM_WORK_NOTE = "work-note"

@@ -34,7 +34,7 @@ Arbeitszeit
     <form action="{{ url_for('form.work_time.add') }}" method="post">
         <div class="input-box">
             <label for="work-time-category">{{ _('work.category') }}</label>
-            <select name="{{ FORM_WORK_CATEGROY }}" id="" autofocus>
+            <select name="{{ FORM_WORK_CATEGORY }}" id="" autofocus>
                 {% for category in categories %}
                 <option data-color="#{{category.color}}" value="{{category.id}}" {{ 'selected' if not loop.index0}}>{{category.name}}</option>
                 {% endfor %}
