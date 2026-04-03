@@ -4,21 +4,24 @@
         <label for="work-time-category">{{ _('work.category') }}</label>
         <select name="{{ FORM_WORK_CATEGORY }}" id="work-time-category" autofocus>
             {% for category in categories %}
-            <option data-color="#{{category.color}}" value="{{category.id}}" {{ 'selected' if not loop.index0}}>{{category.name}}</option>
+            <option data-color="#{{category.color}}" value="{{category.id}}" {{ 'selected' if not loop.index0 }}>{{category.name}}</option>
             {% endfor %}
         </select>
     </div>
     <div class="input-box">
         <label for="work-begin-time">{{ _('work.time.begin') }}</label>
-        <input id="work-begin-time" type="datetime-local" name="{{ FORM_WORK_BEGIN }}" value="now" required>
+        <input id="work-begin-time" type="datetime-local" name="{{ FORM_WORK_BEGIN }}" value="{{ begin }}" required>
     </div>
     <div class="input-box">
         <label for="work-end-time">{{ _('work.time.end') }}</label>
-        <input type="datetime-local" id="work-end-time" name="{{ FORM_WORK_END }}" required>
+        <input type="datetime-local" id="work-end-time" name="{{ FORM_WORK_END }}" value="{{ end }}" required>
     </div>
     <div class="input-box">
         <textarea name="{{ FORM_WORK_NOTE }}" rows="3" value="" spellcheck="true" placeholder="{{ _('note') }}"></textarea>
     </div>
+    {% if caller is defined %}
+    {{ caller() }}
+    {% endif %}
     <button>{{ _('work.time.add') }}</button>
 </form>
 {% endmacro %}

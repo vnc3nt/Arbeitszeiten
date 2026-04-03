@@ -34,7 +34,18 @@ Arbeitszeit
     </button>
     {{ work_time.add(categories) }}
 </dialog>
-{{ session.get(SESSION_TIMEZONE_OFFSET)}}
+<form method="post" id="timer" data-start="{{ session.get(SESSION_TIMER_START, '') }}">
+{% if session.get(SESSION_TIMER_START)  %}
+    <button formaction="{{ url_for('form.timer.pause') }}">{{ _('work.timer.pause') }}</button>
+{% elif session.get(SESSION_TIMER_INTERVALS) %}
+    <button formaction="{{ url_for('form.timer.begin') }}">{{ _('work.timer.continue') }}</button>
+    <button formaction="{{ url_for('account.save_times') }}" formmethod="get">{{ _('work.timer.save') }}</button>
+{% else %}
+    <button formaction="{{ url_for('form.timer.begin') }}">{{ _('work.timer.start') }}</button>
+{% endif %}
+    {{ session.get(SESSION_TIMER_START) }}
+    {{ session.get(SESSION_TIMER_INTERVALS) }}
+</form>
 {% else %}
 {% import "macros/profile.html" as profile %}
 <h1>{{ _('profile.missing') }}</h1>

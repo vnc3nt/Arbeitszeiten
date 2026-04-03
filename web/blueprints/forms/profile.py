@@ -10,7 +10,7 @@ from shared.profiles import create_profile, get_user_profile_by_name, get_user_p
 from shared.util import assert_non_null_values, assert_date, assert_enum, assert_color, assert_int
 from web_util import switch_profile, clear_form_cache
 
-profile_forms = Blueprint("profile", __name__, url_prefix="/dialog_bases")
+profile_forms = Blueprint("profile", __name__, url_prefix="/profile")
 
 
 @profile_forms.route("/create", methods=["POST"])

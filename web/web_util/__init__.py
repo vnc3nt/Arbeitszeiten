@@ -23,4 +23,4 @@ def clear_form_cache():
     session.pop(SESSION_FORM_DATA)
 
 def convert_utc_to_local_time(time: datetime) -> datetime:
-    return time + timedelta(minutes=session.get(SESSION_TIMEZONE_OFFSET, 0))
+    return time + timedelta(minutes=-session.get(SESSION_TIMEZONE_OFFSET, 0))

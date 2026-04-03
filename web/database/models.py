@@ -67,7 +67,7 @@ class Profile(db.Model):  # TODO missing: (changable) order
 
     @property
     def categories(self):
-        return []  # FIXME implement database call
+        return ProfileCategory.query.filter(ProfileCategory.profileId == self.id).order_by(ProfileCategory.name).all()
 
     def to_json(self, *, include_entries: bool = False, include_work_periods: bool = False):
         data = {

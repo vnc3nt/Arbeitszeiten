@@ -1,6 +1,7 @@
 from flask import Blueprint, request, session
 
 from blueprints.forms.profile import profile_forms
+from blueprints.forms.timer import timer
 from blueprints.forms.work_time import work_time_forms
 from shared.constants import SESSION_FORM_DATA
 from shared.login import redirect_to_login_when_logged_out
@@ -26,3 +27,4 @@ def error400(error):
 
 forms.register_blueprint(profile_forms)
 forms.register_blueprint(work_time_forms)
+forms.register_blueprint(timer)

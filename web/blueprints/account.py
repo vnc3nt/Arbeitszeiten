@@ -1,10 +1,11 @@
 from datetime import timedelta
 
-from flask import Blueprint, render_template, request, g, flash, abort, session
+from flask import Blueprint, render_template, request, g, flash, abort, session, redirect, url_for
 from flask_babel import _
 
 from database.models import current_date
-from shared.constants import FLASH_ERROR, G_USER, ARGS_DATE, SESSION_TIMEZONE_OFFSET, FORM_TIMEZONE_OFFSET
+from shared.constants import FLASH_ERROR, G_USER, ARGS_DATE, SESSION_TIMEZONE_OFFSET, FORM_TIMEZONE_OFFSET, \
+    SESSION_TIMER_INTERVALS
 from shared.login import redirect_to_login_when_logged_out
 from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period, get_user_profiles, \
     get_user_profile_by_id
@@ -81,6 +82,23 @@ def edit_profile_web(profile_id: int):
     if profile is None:
         abort(404)
     return render_template("dialog/edit_profile.html", profile=profile)
+
+
+@account.route("/save-times")
+def save_times():
+    user = g.get(G_USER)
+    profile = get_current_profile(user.id)
+    if profile is None or not session.get(SESSION_TIMER_INTERVALS): # covers [] and None for interval
+        return redirect(url_for("account.home"))
+
+    intervals = session[SESSION_TIMER_INTERVALS]
+    return render_template(
+        "page/save_work_time.html",
+        profile=profile,
+        begin=intervals[0][0].strftime("%Y-%m-%dT%H:%M"),
+        end=intervals[0][1].strftime("%Y-%m-%dT%H:%M")
+    )
+
 
 @account.route("/timezone", methods=["patch"])
 def update_timezone():

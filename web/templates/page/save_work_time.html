@@ -1,0 +1,9 @@
+{% extends "base_logged_in.html" %}
+{% block title %}Idk{% endblock %}
+{% import "macros/work_time.html" as work_time %}
+{% block content %}
+<h1>{{ _('work.timer.save.times') }}</h1>
+{% call work_time.add(profile.categories, begin, end) %}
+<input type="hidden" name="{{ FORM_IS_TIMER }}" value="true">
+{% endcall %}
+{% endblock content %}
