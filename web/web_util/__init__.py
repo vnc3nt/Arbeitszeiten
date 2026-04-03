@@ -1,8 +1,9 @@
 from typing import Optional, Tuple
 from flask import g, session
+from datetime import datetime, timedelta
 
 from database.models import Profile
-from shared.constants import G_CURRENT_PROFILE, SESSION_FORM_DATA
+from shared.constants import G_CURRENT_PROFILE, SESSION_FORM_DATA, SESSION_TIMEZONE_OFFSET
 from shared.profiles import get_last_viewed_user_profile, get_user_profile_by_id
 from shared.util import Result
 
@@ -20,3 +21,6 @@ def switch_profile(user_id: int, profile_id) -> Optional[Profile]:
 
 def clear_form_cache():
     session.pop(SESSION_FORM_DATA)
+
+def convert_utc_to_local_time(time: datetime) -> datetime:
+    return time + timedelta(minutes=session.get(SESSION_TIMEZONE_OFFSET, 0))

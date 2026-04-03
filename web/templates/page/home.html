@@ -4,6 +4,7 @@ Arbeitszeit
 {% endblock %}
 {% block content %}
 {% if profile %}
+{% import "macros/work_time.html" as work_time %}
 <h1 data-color="#{{ profile.color }}" style="background-color: #{{ profile.color }};">{{ profile.name }}</h1>
 <div id="date-selector">
     <form action="" method="get">
@@ -22,7 +23,7 @@ Arbeitszeit
 <div class="basic-stats">
     <div id="work-balance">
         <span class="text">{{ total_work | decimalformat}}h / {{ worktime }}</span>
-        <meter id="work-balance" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
+        <meter id="work-balance-meter" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
     </div>
 </div>
 <button popovertargetaction="show" popovertarget="add-work-time-dialog" class="full">{{ _('work.time.add') }}</button>
@@ -31,29 +32,9 @@ Arbeitszeit
     <button class="close" popovertarget="add-work-time-dialog" popovertargetaction="hide">
         Close
     </button>
-    <form action="{{ url_for('form.work_time.add') }}" method="post">
-        <div class="input-box">
-            <label for="work-time-category">{{ _('work.category') }}</label>
-            <select name="{{ FORM_WORK_CATEGORY }}" id="" autofocus>
-                {% for category in categories %}
-                <option data-color="#{{category.color}}" value="{{category.id}}" {{ 'selected' if not loop.index0}}>{{category.name}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="input-box">
-            <label for="work-begin-time">{{ _('work.time.begin') }}</label>
-            <input id="work-begin-time" type="datetime-local" name="{{ FORM_WORK_BEGIN }}" value="now" required>
-        </div>
-        <div class="input-box">
-            <label for="work-end-time">{{ _('work.time.end') }}</label>
-            <input type="datetime-local" id="work-end-time" name="{{ FORM_WORK_END }}" required>
-        </div>
-        <div class="input-box">
-            <textarea name="{{ FORM_WORK_NOTE }}" rows="3" value="" spellcheck="true" placeholder="{{ _('note') }}"></textarea>
-        </div>
-        <button>{{ _('work.time.add') }}</button>
-    </form>
+    {{ work_time.add(categories) }}
 </dialog>
+{{ session.get(SESSION_TIMEZONE_OFFSET)}}
 {% else %}
 {% import "macros/profile.html" as profile %}
 <h1>{{ _('profile.missing') }}</h1>

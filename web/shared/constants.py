@@ -5,6 +5,7 @@ SESSION_USER_TOKEN = "currentToken"
 SESSION_FORM_DATA = "form-data"
 SESSION_TIMER_START = "timer-start"
 SESSION_TIMER_INTERVALS = "timer-intervals"
+SESSION_TIMEZONE_OFFSET = "timezone-offset"
 
 G_USER = "user"
 G_CURRENT_PROFILE = "cur_profile"
@@ -59,6 +60,8 @@ FORM_WORK_CATEGORY = "work-category"
 FORM_WORK_BEGIN = "work-begin"
 FORM_WORK_END = "work-end"
 FORM_WORK_NOTE = "work-note"
+
+FORM_TIMEZONE_OFFSET = "offset"
 
 # flash categories
 FLASH_ERROR = "error"

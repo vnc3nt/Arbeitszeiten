@@ -1,4 +1,20 @@
 {% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+    let date = new Date();
+    let offset = date.getTimezoneOffset();
+    fetch(
+        "/account/timezone",
+         {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: `{"{{FORM_TIMEZONE_OFFSET}}":${offset}}`
+         }
+    ).then(resp => console.log(resp))
+</script>
+{% endblock header %}
 {% block footer %}
 {% include "parts/navigation.html" %}
 {% endblock footer %}

@@ -1,0 +1,24 @@
+{% macro add(categories, begin="", end="") %}
+<form action="{{ url_for('form.work_time.add') }}" method="post">
+    <div class="input-box">
+        <label for="work-time-category">{{ _('work.category') }}</label>
+        <select name="{{ FORM_WORK_CATEGORY }}" id="work-time-category" autofocus>
+            {% for category in categories %}
+            <option data-color="#{{category.color}}" value="{{category.id}}" {{ 'selected' if not loop.index0}}>{{category.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="input-box">
+        <label for="work-begin-time">{{ _('work.time.begin') }}</label>
+        <input id="work-begin-time" type="datetime-local" name="{{ FORM_WORK_BEGIN }}" value="now" required>
+    </div>
+    <div class="input-box">
+        <label for="work-end-time">{{ _('work.time.end') }}</label>
+        <input type="datetime-local" id="work-end-time" name="{{ FORM_WORK_END }}" required>
+    </div>
+    <div class="input-box">
+        <textarea name="{{ FORM_WORK_NOTE }}" rows="3" value="" spellcheck="true" placeholder="{{ _('note') }}"></textarea>
+    </div>
+    <button>{{ _('work.time.add') }}</button>
+</form>
+{% endmacro %}
