@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from flask import Blueprint, render_template, request, g, flash, abort, session, redirect, url_for
+from flask import Blueprint, render_template, request, g, flash, abort, session, redirect, url_for, make_response
 from flask_babel import _
 
 from database.models import current_date
@@ -12,6 +12,7 @@ from shared.profiles import get_last_viewed_user_profile, get_categories, get_wo
 from shared.util import try_datetime, get_period_length, get_period_start, assert_int
 from shared.work_time import filter_work_times, get_balance
 from web_util import get_current_profile
+from web_util.timer import timer_get_first, timer_has_entry
 
 account = Blueprint("account", __name__, url_prefix="/account")
 
@@ -90,15 +91,15 @@ def edit_profile_web(profile_id: int):
 def save_times():
     user = g.get(G_USER)
     profile = get_current_profile(user.id)
-    if profile is None or not session.get(SESSION_TIMER_INTERVALS): # covers [] and None for interval
+    if profile is None or not timer_has_entry(): # covers [] and None for interval
         return redirect(url_for("account.home"))
 
-    intervals = session[SESSION_TIMER_INTERVALS]
+    entry = timer_get_first()
     return render_template(
         "page/save_work_time.html",
         profile=profile,
-        begin=intervals[0][0].strftime("%Y-%m-%dT%H:%M"),
-        end=intervals[0][1].strftime("%Y-%m-%dT%H:%M")
+        begin=entry[0].strftime("%Y-%m-%dT%H:%M"),
+        end=entry[1].strftime("%Y-%m-%dT%H:%M")
     )
 
 
@@ -107,4 +108,6 @@ def update_timezone():
     offset = request.json.get(FORM_TIMEZONE_OFFSET)
     offset = assert_int(offset)
     session[SESSION_TIMEZONE_OFFSET] = offset
+    resp = make_response()
+    resp.set_data()
     return "", 204

@@ -43,8 +43,6 @@ Arbeitszeit
 {% else %}
     <button formaction="{{ url_for('form.timer.begin') }}">{{ _('work.timer.start') }}</button>
 {% endif %}
-    {{ session.get(SESSION_TIMER_START) }}
-    {{ session.get(SESSION_TIMER_INTERVALS) }}
 </form>
 {% else %}
 {% import "macros/profile.html" as profile %}

@@ -4,6 +4,7 @@
 {% block content %}
 <h1>{{ _('work.timer.save.times') }}</h1>
 {% call work_time.add(profile.categories, begin, end) %}
+<button formaction="{{ url_for('form.timer.skip') }}">{{ _('work.timer.skip') }}</buttonf>
 <input type="hidden" name="{{ FORM_IS_TIMER }}" value="true">
 {% endcall %}
 {% endblock content %}

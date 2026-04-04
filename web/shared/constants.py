@@ -66,5 +66,6 @@ FORM_TIMEZONE_OFFSET = "offset"
 FORM_IS_TIMER = "is-timer"
 
 # flash categories
+FLASH_SUCCESS = "success"
 FLASH_ERROR = "error"
 
