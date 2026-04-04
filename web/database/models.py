@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 from enum import Enum, auto
 from flask_sqlalchemy import SQLAlchemy
@@ -12,7 +13,10 @@ from config.flask_settings import SQLALCHEMY_NAMING_CONVENTION
 
 EXPIRE_TIME = 3600*24*7 #eine woche hält das token
 
-db = SQLAlchemy(metadata=MetaData(naming_convention=SQLALCHEMY_NAMING_CONVENTION))
+db = SQLAlchemy(metadata=MetaData(
+    naming_convention=SQLALCHEMY_NAMING_CONVENTION,
+    schema=os.getenv("DB_SCHEMA", None)
+))
 
 def current_date():
     time = datetime.now(timezone.utc)
@@ -95,7 +99,7 @@ class WorkTime(db.Model):
     id = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), primary_key=True, nullable=False, autoincrement=True)
     profileId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("Profile.id", ondelete="cascade"), nullable=False)
     profileCategoryId = db.Column(db.BigInteger().with_variant(db.Integer, "sqlite"), ForeignKey("ProfileCategory.id", ondelete="cascade"), nullable=True)
-    workTime = db.Column(db.Integer, CheckConstraint("workTime >= 0", name="positiveWorktime"),  nullable=False)
+    workTime = db.Column(db.Integer, CheckConstraint("\"workTime\" >= 0", name="positiveWorktime"),  nullable=False)
     workTimeFormat = db.Column(db.Enum(WorkTimeFormat), nullable=False)
     workStart = db.Column(db.Date, nullable=False)
 
