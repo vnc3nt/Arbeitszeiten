@@ -10,7 +10,7 @@ from shared.login import redirect_to_login_when_logged_out
 from shared.profiles import get_last_viewed_user_profile, get_categories, get_work_period, get_user_profiles, \
     get_user_profile_by_id
 from shared.util import try_datetime, get_period_length, get_period_start, assert_int
-from shared.work_time import filter_work_times, get_balance
+from shared.work_time import filter_work_times, get_period_balance, get_total_balance
 from web_util import get_current_profile
 from web_util.timer import timer_get_first, timer_has_entry
 
@@ -41,11 +41,14 @@ def home():
         opt["prev_date"] = get_period_start(period - timedelta(days=1), work_time.workTimeFormat)
         opt["next_date"] = period + get_period_length(period, work_time.workTimeFormat)
 
-        opt["total_work"] = get_balance(profile.id, period, opt["next_date"])
+        opt["total_work"] = get_period_balance(profile.id, period, opt["next_date"])
+
+        opt["total_balance"] = get_total_balance(profile.id, -session.get(SESSION_TIMEZONE_OFFSET, 0))
 
 
     return render_template(
         "page/home.html",
+        date=interval,
         profile=profile,
         categories=categories,
         **opt
@@ -108,6 +111,4 @@ def update_timezone():
     offset = request.json.get(FORM_TIMEZONE_OFFSET)
     offset = assert_int(offset)
     session[SESSION_TIMEZONE_OFFSET] = offset
-    resp = make_response()
-    resp.set_data()
     return "", 204

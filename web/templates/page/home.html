@@ -12,7 +12,7 @@ Arbeitszeit
         <button type="submit">{{ _('previous.month') }}</button>
     </form>
     <form action="" method="get">
-        <input type="date" name="{{ ARGS_DATE }}">
+        <input type="date" name="{{ ARGS_DATE }}" value="{{ date.strftime('%Y-%m-%d') }}">
         <button type="submit">{{ _('goto.date') }}</button>
     </form>
     <form action="" method="get">
@@ -22,8 +22,11 @@ Arbeitszeit
 </div>
 <div class="basic-stats">
     <div id="work-balance">
+        {{ total_balance }}
+    </div>
+    <div id="completed-work">
+        <progress value="{{ total_work }}" max="{{ worktime }}"></progress>
         <span class="text">{{ total_work | decimalformat}}h / {{ worktime }}</span>
-        <meter id="work-balance-meter" min="0" low="{{ worktime }}" max="{{ worktime }}" optimum="{{ worktime }}" value="{{ total_work }}">{{ total_work }} / {{ worktime }}</meter>
     </div>
 </div>
 <button popovertargetaction="show" popovertarget="add-work-time-dialog" class="full">{{ _('work.time.add') }}</button>

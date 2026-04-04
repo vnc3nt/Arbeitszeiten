@@ -121,3 +121,7 @@ def assert_int(value: str, r: Optional[Iterable[int]] = None, abort_code: int = 
         abort(abort_code)
 
     return v
+
+
+def diff_month(first: datetime, second: datetime):
+    return (second.year - first.year) * 12 + second.month - first.month

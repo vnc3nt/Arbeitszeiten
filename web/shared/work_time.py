@@ -3,10 +3,11 @@ from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 from sqlalchemy import and_, desc, not_, or_, text, func
 
-from database.models import Profile, ProfileCategory, WorkTimeEntry, db
+from database import WorkTimeFormat
+from database.models import Profile, ProfileCategory, WorkTimeEntry, db, WorkTime
 from shared.messages import MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_NO_WORK_TIME_FOUND, MESSAGE_NO_WORK_DONE
 from shared.constants import API_DATETIME_FORMAT, API_DATE_FORMAT
-from shared.util import Result, flatten, get_period_start
+from shared.util import Result, flatten, get_period_start, diff_month
 
 
 def add_new_work(user_id: int, category_id: int, work_start: datetime, work_duration: timedelta, note: str) -> Result[WorkTimeEntry, Union[str, Dict]]:
@@ -76,7 +77,7 @@ def delete_work_time_by_category(user_id: int, category_id: int) -> Result[List[
         db.session.delete(entry)
     return Result(value=entries)
 
-def get_balance(profile_id: int, begin: Union[datetime, date], end: Union[date, datetime]):
+def get_period_balance(profile_id: int, begin: Union[datetime, date], end: Union[date, datetime]):
     if isinstance(begin, date):
         begin = datetime(year=begin.year, month=begin.month, day=begin.day)
     if isinstance(end, date):
@@ -88,3 +89,31 @@ def get_balance(profile_id: int, begin: Union[datetime, date], end: Union[date, 
     if value[0][0] is None:
         return 0.0
     return value[0][0] / 3600.0  # seconds to hours
+
+
+def get_total_balance(profile_id: int, tzMinOffset: int = 0):
+    balance = 0
+    work_times: List[WorkTime] = WorkTime.query.filter(WorkTime.profileId == profile_id).order_by(desc(WorkTime.workStart)).all()
+    current_time = datetime.now(timezone.utc) + timedelta(minutes=tzMinOffset)
+    while work_times:
+        begin = work_times[0].workStart
+        end = work_times[1].workStart if len(work_times) >= 2 else current_time
+
+        if work_times[0].workTimeFormat == WorkTimeFormat.MONTH:
+            amount = diff_month(begin, end) + 1
+            balance -= amount * work_times[0].workTime
+
+        elif work_times[0].workTimeFormat == WorkTimeFormat.WEEK:
+            amount = (end - begin) / timedelta(days=7)
+            balance -= amount * work_times[0].workTime
+
+        work_time = db.session.query(func.sum(WorkTimeEntry.duration)).filter(WorkTimeEntry.workStart >= begin, WorkTimeEntry.workStart <= end).first()
+        if work_time is None:
+            work_time = 0
+        else:
+            work_time = work_time[0] / 3600.0
+
+        balance += work_time
+        work_times = work_times[1:]
+
+    return balance
