@@ -12,7 +12,7 @@
 
         <form method="post">
             <input type="hidden" name="{{ FORM_PROFILE_ID }}" value="{{ profile.id }}">
-            {% if profile.id == active_profile.id %}
+            {% if profile.id != active_profile.id %}
             <button formaction="{{ url_for('form.profile.switch') }}" type="submit">{{ _("profile.select") }}</button>
             {% endif %}
             <button formaction="{{ url_for('form.profile.delete') }}" type="submit">{{ _("profile.delete") }}</button>
