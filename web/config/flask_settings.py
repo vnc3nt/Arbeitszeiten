@@ -3,10 +3,10 @@ import dotenv
 
 env_file = dotenv.find_dotenv()
 if env_file == '':
-    print("No env file found")
-    raise SystemExit(-1)
-print(f"Using env file '{env_file}'")
-dotenv.load_dotenv(verbose=True)
+    print("No env file found. Assuming to use normal env")
+else:
+    print(f"Using env file '{env_file}'")
+    dotenv.load_dotenv(verbose=True)
 
 if (db_uri := os.environ.get("DB_URI")) is not None:
     SQLALCHEMY_DATABASE_URI = db_uri
