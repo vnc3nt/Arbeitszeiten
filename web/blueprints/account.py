@@ -55,6 +55,8 @@ def home():
 def stats():
     user = g.get(G_USER)
     profile = get_current_profile(user.id)
+    if profile is None:
+        return redirect(url_for("account.home"))
     entries = filter_work_times(user.id, profile.id)
 
     return render_template(
@@ -64,7 +66,7 @@ def stats():
     )
 
 
-@account.route("/dialog_bases")
+@account.route("/profile")
 def profile_web():
     user = g.get(G_USER)
     profiles = get_user_profiles(user.id)
