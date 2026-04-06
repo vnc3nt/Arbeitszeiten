@@ -108,7 +108,7 @@ def get_total_balance(profile_id: int, tzMinOffset: int = 0):
             balance -= amount * work_times[0].workTime
 
         work_time = db.session.query(func.sum(WorkTimeEntry.duration)).filter(WorkTimeEntry.workStart >= begin, WorkTimeEntry.workStart <= end).first()
-        if work_time is None:
+        if work_time[0] is None:
             work_time = 0
         else:
             work_time = work_time[0] / 3600.0
