@@ -4,24 +4,7 @@
 {% endblock %}
 {% block content %}
 <h1>{{ profile.name }} | {{_("statistics.title")}}</h1>
-<table border=1>
-    <thead>
-        <tr>
-            <th>{{_("stat.entry.start")}}</th>
-            <th>{{_("stat.entry.duration")}}</th>
-            <th>{{_("stat.entry.category")}}</th>
-            <th>{{_("stat.entry.note")}}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in entries %}
-        <tr style="background: #{{ entry.category.color }}">
-            <td>{{ entry.workStart }}</td>
-            <td>{{ entry.duration }}min</td>
-            <td>{{ entry.category.name }}</td>
-            <td>{{ entry.note }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div hx-get="{{ url_for('stats.period') }}" hx-trigger="intersect once" hx-swap="innerHTML">
+    <img src="{{ url_for('static', filename='img/spinner.svg') }}" id="stat-loading-indicator" alt="Loading..." width=30px class="htmx-indicator">
+</div>
 {% endblock %}

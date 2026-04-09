@@ -39,18 +39,26 @@ class Result(Generic[T, E]):
         return self.__error
 
 
-def get_period_start(intervall_date: Union[datetime, date], work_period: WorkTimeFormat) -> date:
+def get_period_start(interval_date: Union[datetime, date], work_period: WorkTimeFormat) -> datetime:
     if work_period == WorkTimeFormat.MONTH:
-        return date(intervall_date.year, intervall_date.month, 1)
+        return datetime(interval_date.year, interval_date.month, 1, 0, 0, 0)
     elif work_period == WorkTimeFormat.WEEK:
-        week_start = intervall_date - timedelta(days=intervall_date.weekday())
+        week_start = interval_date - timedelta(days=interval_date.weekday())
         return week_start if isinstance(week_start, date) else week_start.date()
     raise NotImplementedError("unknown work period:", work_period)  # exists if we ever implement other work periods
 
 
-def get_period_length(period_begin: date, work_period: WorkTimeFormat):
+def get_period_length(period_begin: Union[datetime, date], work_period: WorkTimeFormat) -> timedelta:
     if work_period == WorkTimeFormat.MONTH:
-        return date(year=period_begin.year + period_begin.month // 12, month=period_begin.month % 12 + 1, day=1) - period_begin
+        return date(
+            year=period_begin.year + period_begin.month // 12,
+            month=period_begin.month % 12 + 1,
+            day=1
+        ) - date(
+            period_begin.year,
+            period_begin.month,
+            period_begin.day
+        )
     elif work_period == WorkTimeFormat.WEEK:
         return timedelta(days=1)
     raise NotImplementedError("unknown work period:", work_period)  # exists if we ever implement other work periods

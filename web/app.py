@@ -6,6 +6,7 @@ import shared.constants as __consts
 from blueprints.account import account as account_app
 from blueprints.api import app as api_app
 from blueprints.auth import auth as auth_app
+from blueprints.stats import stats as stats_app
 from blueprints.forms import forms as form_handler
 from database import db, WorkTimeFormat
 from database.migrations import migrate
@@ -42,6 +43,7 @@ app.register_blueprint(api_app)
 app.register_blueprint(auth_app)
 app.register_blueprint(account_app)
 app.register_blueprint(form_handler)
+app.register_blueprint(stats_app)
 
 
 def main():

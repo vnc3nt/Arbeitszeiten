@@ -18,7 +18,7 @@ db = SQLAlchemy(metadata=MetaData(
     schema=os.getenv("DB_SCHEMA", None)
 ))
 
-def current_date():
+def current_date() -> datetime:
     time = datetime.now(timezone.utc)
     return datetime(day=time.day, month=time.month, year=time.year)
 

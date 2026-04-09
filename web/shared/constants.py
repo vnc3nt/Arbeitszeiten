@@ -43,6 +43,7 @@ DEFAULT_CATEGORIES = [("Work", "ff6961"), ("Vacation", "A4D8D8")]  # needs to co
 
 # query params
 ARGS_DATE = "date"
+ARGS_PERIOD_DATE = "period"
 
 # form names
 FORM_USERNAME = "username"

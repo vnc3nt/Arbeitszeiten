@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone, date, tzinfo
 from typing import Iterable, List, Optional, Union
 
 from sqlalchemy import desc, asc
@@ -42,7 +42,7 @@ def get_user_profiles(user_id) -> List[Profile]:
     return Profile.query.filter(Profile.userId == user_id).all()
 
 def get_work_period(profile_id: int, time: Union[date, datetime]) -> WorkTime:
-    work_time = WorkTime.query.filter(WorkTime.profileId == profile_id, WorkTime.workStart <= time).order_by(desc(WorkTime.workStart)).first()
+    work_time: Optional[WorkTime] = WorkTime.query.filter(WorkTime.profileId == profile_id, WorkTime.workStart <= time).order_by(desc(WorkTime.workStart)).first()
     if work_time is None:
         return WorkTime.query.filter(WorkTime.profileId == profile_id).order_by(asc(WorkTime.workStart)).first()
     return work_time
@@ -52,7 +52,7 @@ def set_work_period(profile_id: int, work_time: int, period_start: date, work_pe
     """
     It is expected that profile_id is valid and correct
 
-    Currently this function seems to not be able to fail
+    Currently, this function seems to not be able to fail
     """
     entry = WorkTime.query.filter(WorkTime.profileId==profile_id, WorkTime.workStart==period_start, WorkTime.profileCategoryId==category_id).first()
     if entry is None:
