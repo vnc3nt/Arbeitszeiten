@@ -20,8 +20,8 @@ def add():
     assert_non_null_values(category, start, end)
 
     category = assert_int(category)
-    start = assert_datetime(start)
-    end = assert_datetime(end)
+    start = assert_datetime(start, format="%Y-%m-%dT%H:%M")
+    end = assert_datetime(end, format="%Y-%m-%dT%H:%M")
 
     result = add_new_work(user.id, category, start, end - start, note)
     if result.is_error:

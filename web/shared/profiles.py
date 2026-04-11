@@ -3,7 +3,7 @@ from typing import Iterable, List, Optional, Union
 
 from sqlalchemy import desc, asc
 
-from database.models import ProfileCategory, WorkTime, WorkTimeFormat, db, Profile
+from database.models import ProfileCategory, WorkTime, WorkTimeFormat, db, Profile, Users
 from shared.util import Result, flatten, get_period_start
 from shared.messages import MESSAGE_CATEGORY_NAME_ALREADY_USED, MESSAGE_CATEGORY_NOT_FOUND, MESSAGE_CATEGORY_ONE_NEEDED, MESSAGE_NOT_ENOUGH_FILTERS_GIVEN, MESSAGE_PROFILE_NAME_USED, MESSAGE_PROFILE_NOT_FOUND
 from shared.constants import DEFAULT_CATEGORIES
@@ -188,3 +188,12 @@ def update_category(user_id: int, category_id: int, *, name: Optional[str] = Non
 
     return Result(value=category)
 
+
+def get_work_begin(user_id: int, profile_id: int) -> WorkTime:
+    return WorkTime.query \
+            .select_from(Users) \
+            .join(Profile) \
+            .join(WorkTime) \
+            .filter(WorkTime.profileId == profile_id, Profile.userId == user_id) \
+            .order_by(asc(WorkTime.workStart)) \
+            .first()

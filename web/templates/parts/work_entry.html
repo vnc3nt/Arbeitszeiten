@@ -1,1 +1,6 @@
-<li>{{ entry.to_json() }}</li>
+<tr style="background-color: #{{entry.category.color}}">
+    <td>{{ entry.workStart }}</td>
+    <td>{{ entry.duration / 60}}h</td>
+    <td>{{ entry.category.name }}</td>
+    <td>{{ entry.note }}</td>
+</tr>

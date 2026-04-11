@@ -4,6 +4,7 @@ from datetime import datetime, date, timedelta, timezone
 from typing import Any, Generic, Iterable, Optional, TypeVar, Union, Tuple
 
 from database.models import WorkTimeFormat
+from shared.constants import FORMAT_HTML_DATETIME
 
 T = TypeVar("T")
 E = TypeVar("E")
@@ -39,12 +40,12 @@ class Result(Generic[T, E]):
         return self.__error
 
 
-def get_period_start(interval_date: Union[datetime, date], work_period: WorkTimeFormat) -> datetime:
+def get_period_start(interval_date: Union[datetime, date], work_period: WorkTimeFormat) -> date:
     if work_period == WorkTimeFormat.MONTH:
-        return datetime(interval_date.year, interval_date.month, 1, 0, 0, 0)
+        return date(interval_date.year, interval_date.month, 1)
     elif work_period == WorkTimeFormat.WEEK:
         week_start = interval_date - timedelta(days=interval_date.weekday())
-        return week_start if isinstance(week_start, date) else week_start.date()
+        return week_start.date() if isinstance(week_start, datetime) else week_start
     raise NotImplementedError("unknown work period:", work_period)  # exists if we ever implement other work periods
 
 
@@ -75,10 +76,10 @@ def assert_non_null_values(*values, abort_code: int = 400):
     print("Passed")
 
 
-def assert_datetime(value: str, abort_code: int = 400) -> datetime:
+def assert_datetime(value: str, abort_code: int = 400, format: str = FORMAT_HTML_DATETIME, tzinfo: Optional[timezone]=None) -> datetime:
     print("Assert datetime:", value)
     try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M").replace(tzinfo=timezone.utc)
+        return datetime.strptime(value, format).replace(tzinfo=tzinfo)
     except ValueError as e:
         print("Assert datetime:", e)
         abort(abort_code)

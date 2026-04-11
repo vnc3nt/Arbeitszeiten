@@ -70,3 +70,6 @@ FORM_IS_TIMER = "is-timer"
 FLASH_SUCCESS = "success"
 FLASH_ERROR = "error"
 
+
+# formats
+FORMAT_HTML_DATETIME = "%Y-%m-%dT%H:%M:%S"

@@ -1,9 +1,19 @@
 <div hx-get="{{ url_for('stats.period', period=previous) }}" hx-swap="afterend" hx-trigger="intersect once">
     <h2>{{ _(period.strftime("month.%m")) }} {{ period.year }}</h2>
-    <ul>
+    {% if entries %}
+    <table border="1" width="100%">
+        <tr>
+            <th>Start</th>
+            <th>Duration</th>
+            <th>Category</th>
+            <th>Note</th>
+        </tr>
         {% for entry in entries %}
         {% include "parts/work_entry.html" %}
         {% endfor %}
-    </ul>
+    </table>
+    {% else %}
+    <p>No work done</p>
+    {% endif %}
     <img src="{{ url_for('static', filename='img/spinner.svg') }}" alt="Loading..." width=30px class="htmx-indicator">
 </div>
