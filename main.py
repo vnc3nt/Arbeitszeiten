@@ -8,11 +8,15 @@ from constants import USERID, TOKEN
 from time import time
 from sqlalchemy import func, distinct
 
-with open(".env", "r") as f:
-    for line in f.readlines():
-        if line.strip() and not line.strip().startswith("#"):
-            attr, val = line.lstrip().split("=", 1)
-            os.environ[attr] = val.rstrip("\n")
+if os.path.exists(".env"):
+    with open(".env", "r") as f:
+        for line in f.readlines():
+            if line.strip() and not line.strip().startswith("#"):
+                attr, val = line.lstrip().split("=", 1)
+                os.environ[attr] = val.rstrip("\n")
+else:
+    print("Keine .env Datei gefunden, nutze Cloud-Umgebungsvariablen.")
+
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.{}:{}@{}:{}/{}".format(
