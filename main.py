@@ -17,7 +17,6 @@ if os.path.exists(".env"):
 else:
     print("Keine .env Datei gefunden, nutze Cloud-Umgebungsvariablen.")
 
-
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.{}:{}@{}:{}/{}".format(
     os.environ.get("uname"),
