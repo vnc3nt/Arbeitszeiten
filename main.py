@@ -33,10 +33,11 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 app.config.update(
     BUNDLE_ERRORS = True,
-    SECRET_KEY = os.urandom(40),
-    SESSION_COOKIE_SECURE = False,
-    SESSION_COOKIE_SAMESITE = "Strict"
+    SECRET_KEY = os.environ.get("SECRET_KEY"),
+    SESSION_COOKIE_SECURE = True,  # Cloud Run nutzt HTTPS, also auf True setzen, bei render hatte ich False
+    SESSION_COOKIE_SAMESITE = "Lax" # "Lax" ist oft kompatibler als "Strict" für Redirects
 )
+
 #print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 app.register_blueprint(api_app)
