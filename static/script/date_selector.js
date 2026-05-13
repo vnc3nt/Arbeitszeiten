@@ -3,6 +3,9 @@ let selectedDate = null;
 const overviewCache = new Map();
 let activeActionRequests = 0;
 let actionErrorTimer = null;
+let latestHomeMutationId = 0;
+const numberAnimationTokens = new WeakMap();
+const timeAnimationTokens = new WeakMap();
 
 function formatDecimalComma(value) {
     const number = Number(value);
@@ -97,10 +100,17 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
         return;
     }
 
+    const animationToken = (numberAnimationTokens.get(element) || 0) + 1;
+    numberAnimationTokens.set(element, animationToken);
+
     const difference = endValue - startValue;
     const startTime = performance.now();
 
     function update(currentTime) {
+        if (numberAnimationTokens.get(element) !== animationToken) {
+            return;
+        }
+
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const easeProgress = easeOutCubic(progress);
@@ -114,7 +124,9 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
             requestAnimationFrame(update);
         } else {
             // Ensure final value is exact
-            element.textContent = `${formatDecimalCommaLimited(endValue, 2)}h`;
+            if (numberAnimationTokens.get(element) === animationToken) {
+                element.textContent = `${formatDecimalCommaLimited(endValue, 2)}h`;
+            }
         }
     }
 
@@ -127,10 +139,17 @@ function animateTimeDisplay(element, startDecimal, endDecimal, duration = 400) {
         return;
     }
 
+    const animationToken = (timeAnimationTokens.get(element) || 0) + 1;
+    timeAnimationTokens.set(element, animationToken);
+
     const difference = endDecimal - startDecimal;
     const startTime = performance.now();
 
     function update(currentTime) {
+        if (timeAnimationTokens.get(element) !== animationToken) {
+            return;
+        }
+
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const easeProgress = easeOutCubic(progress);
@@ -144,7 +163,9 @@ function animateTimeDisplay(element, startDecimal, endDecimal, duration = 400) {
             requestAnimationFrame(update);
         } else {
             // Ensure final value is exact
-            element.textContent = formatTimeDisplay(endDecimal);
+            if (timeAnimationTokens.get(element) === animationToken) {
+                element.textContent = formatTimeDisplay(endDecimal);
+            }
         }
     }
 
@@ -295,6 +316,15 @@ function updateNumericCard(cardId, delta, selector) {
     } else {
         card.setAttribute('data-current-hours', String(newValue));
     }
+}
+
+function startHomeMutation() {
+    latestHomeMutationId += 1;
+    return latestHomeMutationId;
+}
+
+function isLatestHomeMutation(mutationId) {
+    return mutationId === latestHomeMutationId;
 }
 
 function updateEditTimeDisplay(decimalHours) {
@@ -633,6 +663,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            const mutationId = startHomeMutation();
             const snapshot = captureHomeSnapshot();
             applyOptimisticHomeAction(form);
 
@@ -642,12 +673,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData: new FormData(form)
                 });
 
+                if (!isLatestHomeMutation(mutationId)) {
+                    return;
+                }
+
                 applyHomeState(state);
 
                 if (form.dataset.homeAction === 'set_max_hours') {
                     closeMaxHoursModal();
                 }
             } catch (error) {
+                if (!isLatestHomeMutation(mutationId)) {
+                    return;
+                }
+
                 restoreHomeSnapshot(snapshot);
                 showActionError('Änderung konnte nicht gespeichert werden. Bitte erneut versuchen.');
                 console.error('Home action failed without reload:', error);
@@ -759,6 +798,8 @@ function handleModalClose(event) {
 }
 
 // Time input functions
+let pendingTimeInputValue = null;
+
 function openTimeInput() {
     const timeDisplay = document.getElementById('edit-time-display');
     const timePickerContainer = document.getElementById('time-picker-container');
@@ -783,12 +824,16 @@ function closeTimeInput() {
 
 function confirmTimeInput() {
     const timePicker = document.getElementById('time-picker');
-    if (timePicker && timePicker.value) {
-        updateTime(timePicker.value);
+    const timeValue = pendingTimeInputValue || timePicker?.value;
+
+    if (timeValue) {
+        pendingTimeInputValue = null;
+        updateTime(timeValue);
     }
 }
 
 function cancelTimeInput() {
+    pendingTimeInputValue = null;
     closeTimeInput();
 }
 
@@ -811,6 +856,7 @@ function updateTime(timeValue) {
     const nextDayTime = parseClockToDecimal(roundedTime);
     const timeDelta = nextDayTime - currentDayTime;
     const snapshot = captureHomeSnapshot();
+    const mutationId = startHomeMutation();
 
     const formData = new FormData();
     formData.append('action', 'set_time');
@@ -826,10 +872,18 @@ function updateTime(timeValue) {
         formData
     })
         .then((state) => {
+            if (!isLatestHomeMutation(mutationId)) {
+                return;
+            }
+
             applyHomeState(state);
             closeTimeInput();
         })
         .catch((error) => {
+            if (!isLatestHomeMutation(mutationId)) {
+                return;
+            }
+
             restoreHomeSnapshot(snapshot);
             showActionError('Zeit konnte nicht gespeichert werden. Bitte erneut versuchen.');
             console.error('Time update failed without reload:', error);
@@ -838,11 +892,16 @@ function updateTime(timeValue) {
 
 // Initialize time picker buttons
 document.addEventListener('DOMContentLoaded', function() {
-    // Use native OS time picker confirmation: submit only on the input's change event
     const timePicker = document.getElementById('time-picker');
     if (timePicker) {
         timePicker.addEventListener('change', function() {
             if (timePicker.value) {
+                pendingTimeInputValue = timePicker.value;
+            }
+        });
+
+        timePicker.addEventListener('blur', function() {
+            if (pendingTimeInputValue) {
                 confirmTimeInput();
             }
         });
