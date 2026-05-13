@@ -40,17 +40,17 @@
 
   <div class="edit-section">
     <div class="day-selection" id="day-selection">
-      <input type="date" id="date-picker" value="{{ selected_date or '' }}" onchange="selectDate(this.value)" class="styled-date-picker">
+      <input type="date" id="date-picker" value="{{ selected_date or '' }}" class="styled-date-picker">
     </div>
     <div class="edit-time-box">
-      <form method="POST" style="display: inline;">
+        <form method="POST" style="display: inline;" data-home-action="sub_30">
         <input type="hidden" name="selected_date" value="{{ selected_date }}">
         <input type="hidden" name="action" value="sub_30">
         <button type="submit" class="edit-btn">-30min</button>
       </form>
       <span class="edit-time-value" id="edit-time-display" onclick="openTimeInput()">{{ edit_time }}</span>
       <input type="time" id="time-picker" value="{{ edit_time_24h or '' }}" onchange="updateTime(this.value)" class="styled-time-picker" style="display: none;">
-      <form method="POST" style="display: inline;">
+      <form method="POST" style="display: inline;" data-home-action="add_30">
         <input type="hidden" name="selected_date" value="{{ selected_date }}">
         <input type="hidden" name="action" value="add_30">
         <button type="submit" class="edit-btn">+30min</button>
@@ -66,14 +66,14 @@
     <div class="modal-header">
       <h3>Maximale Stunden pro Monat</h3>
     </div>
-    <form method="POST" action="{{ url_for('home') }}">
+    <form method="POST" action="{{ url_for('home') }}" data-home-action="set_max_hours">
       <input type="hidden" name="action" value="set_max_hours">
       <input type="hidden" name="selected_date" value="{{ selected_date }}">
       <div class="modal-body">
-        <input type="text" 
-               id="maxHoursInput" 
-               name="max_hours" 
-               placeholder="{{ suggested_max_hours or '' }}h"
+         <input type="text" 
+           id="maxHoursInput" 
+           name="max_hours" 
+           placeholder="{% if suggested_max_hours %}{{ suggested_max_hours }}h{% endif %}"
                pattern="[0-9]+([,.][0-9]+)?"
                title="Bitte geben Sie die Stundenanzahl pro Monat ein (z.B. 35, 35.5 oder 35,5)"
                required>

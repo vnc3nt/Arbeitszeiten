@@ -1,25 +1,221 @@
 // Date selector functionality
 let selectedDate = null;
 
+function formatDecimalComma(value) {
+    const number = Number(value);
+
+    if (Number.isNaN(number)) {
+        return '';
+    }
+
+    if (Number.isInteger(number)) {
+        return String(number);
+    }
+
+    return String(number).replace('.', ',');
+}
+
+function formatGermanDate(dateValue) {
+    const date = new Date(`${dateValue}T00:00:00`);
+    return date.toLocaleDateString('de-DE');
+}
+
+async function fetchHomeState({ method = 'GET', dateValue = null, formData = null } = {}) {
+    const url = new URL(window.location.href);
+
+    if (dateValue) {
+        url.searchParams.set('date', dateValue);
+    }
+
+    const requestOptions = {
+        method,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'fetch'
+        }
+    };
+
+    if (formData) {
+        requestOptions.body = formData;
+    }
+
+    const response = await fetch(method === 'POST' ? window.location.pathname : url.toString(), requestOptions);
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Request failed');
+    }
+
+    return await response.json();
+}
+
+function renderOverviewData(overviewData) {
+    const body = document.querySelector('#overviewModal .overview-body');
+
+    if (!body || !overviewData) {
+        return;
+    }
+
+    body.innerHTML = '';
+
+    const years = Object.keys(overviewData).sort((a, b) => Number(b) - Number(a));
+
+    years.forEach((yearKey) => {
+        const yearContainer = document.createElement('div');
+        yearContainer.className = 'overview-year';
+
+        const yearHeading = document.createElement('h4');
+        yearHeading.textContent = yearKey;
+        yearContainer.appendChild(yearHeading);
+
+        const months = Object.keys(overviewData[yearKey]).sort((a, b) => Number(b) - Number(a));
+
+        months.forEach((monthKey) => {
+            const monthData = overviewData[yearKey][monthKey];
+            const monthContainer = document.createElement('div');
+            monthContainer.className = 'overview-month';
+
+            const monthHeader = document.createElement('div');
+            monthHeader.className = 'month-header';
+
+            const monthName = document.createElement('span');
+            monthName.className = 'month-name';
+            monthName.textContent = monthData.name;
+            monthHeader.appendChild(monthName);
+
+            if (monthData.difference !== null && monthData.difference !== undefined) {
+                const differenceValue = Number(monthData.difference);
+                const differenceSpan = document.createElement('span');
+                differenceSpan.className = differenceValue > 0 ? 'month-surplus' : differenceValue < 0 ? 'month-deficit' : 'month-neutral';
+                differenceSpan.textContent = differenceValue > 0 ? `+${formatDecimalComma(differenceValue)}h` : differenceValue < 0 ? `${formatDecimalComma(differenceValue)}h` : '0h';
+                monthHeader.appendChild(differenceSpan);
+            }
+
+            monthContainer.appendChild(monthHeader);
+
+            (monthData.entries || []).forEach((entry) => {
+                const entryRow = document.createElement('div');
+                entryRow.className = 'overview-entry';
+
+                const entryDate = document.createElement('span');
+                entryDate.className = 'entry-date';
+                entryDate.textContent = formatGermanDate(entry.date);
+
+                const entryHours = document.createElement('span');
+                entryHours.className = 'entry-hours';
+                entryHours.textContent = `${formatDecimalComma(entry.hours)}h`;
+
+                entryRow.appendChild(entryDate);
+                entryRow.appendChild(entryHours);
+                monthContainer.appendChild(entryRow);
+            });
+
+            yearContainer.appendChild(monthContainer);
+        });
+
+        body.appendChild(yearContainer);
+    });
+}
+
+function applyHomeState(state) {
+    if (!state) {
+        return;
+    }
+
+    const datePicker = document.getElementById('date-picker');
+    if (datePicker && state.selected_date) {
+        datePicker.value = state.selected_date;
+        selectedDate = state.selected_date;
+    }
+
+    if (state.selected_date) {
+        localStorage.setItem('selectedDate', state.selected_date);
+
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('date', state.selected_date);
+        window.history.replaceState({}, '', currentUrl.toString());
+    }
+
+    document.querySelectorAll('input[name="selected_date"]').forEach((input) => {
+        if (state.selected_date) {
+            input.value = state.selected_date;
+        }
+    });
+
+    const totalCard = document.getElementById('total-hours-card');
+    if (totalCard) {
+        totalCard.setAttribute('data-hours', state.total_hours_numeric ?? 0);
+        const totalValue = totalCard.querySelector('.card-value');
+        if (totalValue && state.total_hours !== undefined) {
+            totalValue.textContent = `${state.total_hours}h`;
+        }
+    }
+
+    const monthCard = document.getElementById('month-card');
+    if (monthCard) {
+        monthCard.setAttribute('data-current-hours', state.month_hours_numeric ?? 0);
+        monthCard.setAttribute('data-max-hours', state.current_max_hours_numeric ?? 0);
+
+        const monthTitle = monthCard.querySelector('.card-title');
+        if (monthTitle && state.selected_month_name) {
+            monthTitle.textContent = state.selected_month_name;
+        }
+
+        const monthValue = monthCard.querySelector('.card-value');
+        if (monthValue && state.month_hours !== undefined) {
+            monthValue.textContent = `${state.month_hours}h`;
+        }
+    }
+
+    const editTimeDisplay = document.getElementById('edit-time-display');
+    if (editTimeDisplay && state.edit_time) {
+        editTimeDisplay.textContent = state.edit_time;
+    }
+
+    const timePicker = document.getElementById('time-picker');
+    if (timePicker && state.edit_time_24h) {
+        timePicker.value = state.edit_time_24h;
+    }
+
+    const maxHoursInput = document.getElementById('maxHoursInput');
+    if (maxHoursInput) {
+        maxHoursInput.placeholder = `${state.suggested_max_hours_display || ''}h`;
+    }
+
+    renderOverviewData(state.overview_data);
+
+    if (typeof setDynamicCardBackground === 'function') {
+        setDynamicCardBackground();
+    }
+
+    if (typeof setMonthProgress === 'function') {
+        setMonthProgress();
+    }
+
+    formatDateInput();
+}
+
 function selectDate(dateValue) {
-    console.log('selectDate called with:', dateValue);
-    
     if (!dateValue) return;
     
     selectedDate = dateValue;
     
-    // Store selected date and reload page
+    // Store selected date and refresh the page state without a full reload
     updateSelectedDate(dateValue);
 }
 
-function updateSelectedDate(dateValue) {
-    // Store the selected date and reload the page with the new date
+async function updateSelectedDate(dateValue) {
     localStorage.setItem('selectedDate', dateValue);
-    
-    // Reload the page with the new date parameter
-    const currentUrl = new URL(window.location);
-    currentUrl.searchParams.set('date', dateValue);
-    window.location.href = currentUrl.toString();
+
+    try {
+        const state = await fetchHomeState({ method: 'GET', dateValue });
+        applyHomeState(state);
+    } catch (error) {
+        console.error('Could not update selected date without reload:', error);
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('date', dateValue);
+        window.location.href = currentUrl.toString();
+    }
 }
 
 function formatDateInput() {
@@ -64,32 +260,50 @@ function formatDateInput() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Date selector initialized');
     const datePicker = document.getElementById('date-picker');
     
     if (!datePicker) {
-        console.error('Date picker element not found during initialization');
         return;
     }
     
     // Use the value provided by the server
     if (datePicker.value) {
         selectedDate = datePicker.value;
-        console.log('Initial selected date from server:', selectedDate);
     } else {
         // Fallback to today if no value is set
         const today = new Date().toISOString().split('T')[0];
         datePicker.value = today;
         selectedDate = today;
-        console.log('Set default date to today:', selectedDate);
     }
     
     // Format the date input on load
     formatDateInput();
     
-    // Add event listener for when the date changes
+    // Add event listener for async home actions
+    document.querySelectorAll('form[data-home-action]').forEach((form) => {
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            try {
+                const state = await fetchHomeState({
+                    method: 'POST',
+                    formData: new FormData(form)
+                });
+
+                applyHomeState(state);
+
+                if (form.dataset.homeAction === 'set_max_hours') {
+                    closeMaxHoursModal();
+                }
+            } catch (error) {
+                console.error('Home action failed without reload:', error);
+                form.submit();
+            }
+        });
+    });
+
     datePicker.addEventListener('change', function() {
-        formatDateInput();
+        selectDate(this.value);
     });
 });
 
@@ -181,32 +395,47 @@ function updateTime(timeValue) {
     
     const roundedTime = roundToQuarterHour(timeValue);
     const selectedDate = document.getElementById('date-picker').value;
-    
-    // Send time update to server
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.style.display = 'none';
-    
-    const actionInput = document.createElement('input');
-    actionInput.type = 'hidden';
-    actionInput.name = 'action';
-    actionInput.value = 'set_time';
-    form.appendChild(actionInput);
-    
-    const dateInput = document.createElement('input');
-    dateInput.type = 'hidden';
-    dateInput.name = 'selected_date';
-    dateInput.value = selectedDate;
-    form.appendChild(dateInput);
-    
-    const timeInput = document.createElement('input');
-    timeInput.type = 'hidden';
-    timeInput.name = 'time_value';
-    timeInput.value = roundedTime;
-    form.appendChild(timeInput);
-    
-    document.body.appendChild(form);
-    form.submit();
+
+    const formData = new FormData();
+    formData.append('action', 'set_time');
+    formData.append('selected_date', selectedDate);
+    formData.append('time_value', roundedTime);
+
+    fetchHomeState({
+        method: 'POST',
+        formData
+    })
+        .then((state) => {
+            applyHomeState(state);
+            closeTimeInput();
+        })
+        .catch((error) => {
+            console.error('Time update failed without reload:', error);
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'set_time';
+            form.appendChild(actionInput);
+
+            const dateInput = document.createElement('input');
+            dateInput.type = 'hidden';
+            dateInput.name = 'selected_date';
+            dateInput.value = selectedDate;
+            form.appendChild(dateInput);
+
+            const timeInput = document.createElement('input');
+            timeInput.type = 'hidden';
+            timeInput.name = 'time_value';
+            timeInput.value = roundedTime;
+            form.appendChild(timeInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        });
 }
 
 // Add both click and touch event listeners for modal closing
