@@ -1,6 +1,8 @@
 // Date selector functionality
 let selectedDate = null;
 const overviewCache = new Map();
+let activeActionRequests = 0;
+let actionErrorTimer = null;
 
 function formatDecimalComma(value) {
     const number = Number(value);
@@ -72,6 +74,126 @@ function getSelectedDateValue() {
     return datePicker ? datePicker.value : selectedDate;
 }
 
+function getLoadingOverlay() {
+    return document.getElementById('action-loading-overlay');
+}
+
+function getErrorBanner() {
+    return document.getElementById('action-error-banner');
+}
+
+function showActionLoading() {
+    activeActionRequests += 1;
+
+    const overlay = getLoadingOverlay();
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+}
+
+function hideActionLoading() {
+    activeActionRequests = Math.max(0, activeActionRequests - 1);
+
+    if (activeActionRequests > 0) {
+        return;
+    }
+
+    const overlay = getLoadingOverlay();
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+}
+
+function showActionError(message) {
+    const banner = getErrorBanner();
+    if (!banner) {
+        return;
+    }
+
+    if (actionErrorTimer) {
+        window.clearTimeout(actionErrorTimer);
+    }
+
+    banner.textContent = message;
+    banner.classList.add('is-visible');
+    banner.style.display = 'block';
+
+    actionErrorTimer = window.setTimeout(() => {
+        banner.classList.remove('is-visible');
+        banner.style.display = 'none';
+    }, 4200);
+}
+
+function captureHomeSnapshot() {
+    const totalCard = document.getElementById('total-hours-card');
+    const monthCard = document.getElementById('month-card');
+    const editTimeDisplay = document.getElementById('edit-time-display');
+    const timePicker = document.getElementById('time-picker');
+    const maxHoursInput = document.getElementById('maxHoursInput');
+
+    return {
+        totalHoursText: totalCard?.querySelector('.card-value')?.textContent ?? '',
+        totalHoursData: totalCard?.getAttribute('data-hours') ?? '0',
+        monthHoursText: monthCard?.querySelector('.card-value')?.textContent ?? '',
+        monthHoursData: monthCard?.getAttribute('data-current-hours') ?? '0',
+        monthMaxHoursData: monthCard?.getAttribute('data-max-hours') ?? '0',
+        editTimeText: editTimeDisplay?.textContent ?? '',
+        timePickerValue: timePicker?.value ?? '',
+        maxHoursPlaceholder: maxHoursInput?.placeholder ?? ''
+    };
+}
+
+function restoreHomeSnapshot(snapshot) {
+    if (!snapshot) {
+        return;
+    }
+
+    const totalCard = document.getElementById('total-hours-card');
+    const monthCard = document.getElementById('month-card');
+    const editTimeDisplay = document.getElementById('edit-time-display');
+    const timePicker = document.getElementById('time-picker');
+    const maxHoursInput = document.getElementById('maxHoursInput');
+
+    if (totalCard) {
+        totalCard.setAttribute('data-hours', snapshot.totalHoursData);
+        const totalValue = totalCard.querySelector('.card-value');
+        if (totalValue) {
+            totalValue.textContent = snapshot.totalHoursText;
+        }
+    }
+
+    if (monthCard) {
+        monthCard.setAttribute('data-current-hours', snapshot.monthHoursData);
+        monthCard.setAttribute('data-max-hours', snapshot.monthMaxHoursData);
+        const monthValue = monthCard.querySelector('.card-value');
+        if (monthValue) {
+            monthValue.textContent = snapshot.monthHoursText;
+        }
+    }
+
+    if (editTimeDisplay) {
+        editTimeDisplay.textContent = snapshot.editTimeText;
+    }
+
+    if (timePicker) {
+        timePicker.value = snapshot.timePickerValue;
+    }
+
+    if (maxHoursInput) {
+        maxHoursInput.placeholder = snapshot.maxHoursPlaceholder;
+    }
+
+    if (typeof setDynamicCardBackground === 'function') {
+        setDynamicCardBackground();
+    }
+
+    if (typeof setMonthProgress === 'function') {
+        setMonthProgress();
+    }
+}
+
 function updateNumericCard(cardId, delta, selector) {
     const card = document.getElementById(cardId);
     if (!card || !Number.isFinite(delta) || delta === 0) {
@@ -132,26 +254,32 @@ async function fetchHomeState({ method = 'GET', dateValue = null, formData = nul
         url.searchParams.set('include_overview', '1');
     }
 
-    const requestOptions = {
-        method,
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'fetch'
+    showActionLoading();
+
+    try {
+        const requestOptions = {
+            method,
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'fetch'
+            }
+        };
+
+        if (formData) {
+            requestOptions.body = formData;
         }
-    };
 
-    if (formData) {
-        requestOptions.body = formData;
+        const response = await fetch(method === 'POST' ? window.location.pathname : url.toString(), requestOptions);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || 'Request failed');
+        }
+
+        return await response.json();
+    } finally {
+        hideActionLoading();
     }
-
-    const response = await fetch(method === 'POST' ? window.location.pathname : url.toString(), requestOptions);
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Request failed');
-    }
-
-    return await response.json();
 }
 
 function renderOverviewData(overviewData) {
@@ -342,6 +470,7 @@ async function updateSelectedDate(dateValue) {
         const state = await fetchHomeState({ method: 'GET', dateValue, includeOverview: false });
         applyHomeState(state);
     } catch (error) {
+        showActionError('Datum konnte nicht aktualisiert werden. Bitte erneut versuchen.');
         console.error('Could not update selected date without reload:', error);
         const currentUrl = new URL(window.location.href);
         currentUrl.searchParams.set('date', dateValue);
@@ -415,6 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            const snapshot = captureHomeSnapshot();
             applyOptimisticHomeAction(form);
 
             try {
@@ -429,8 +559,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeMaxHoursModal();
                 }
             } catch (error) {
+                restoreHomeSnapshot(snapshot);
+                showActionError('Änderung konnte nicht gespeichert werden. Bitte erneut versuchen.');
                 console.error('Home action failed without reload:', error);
-                form.submit();
             }
         });
     });
@@ -484,6 +615,7 @@ function openOverviewModal() {
                 }
             })
             .catch((error) => {
+                showActionError('Übersicht konnte nicht geladen werden. Bitte erneut versuchen.');
                 console.error('Overview loading failed:', error);
             });
     }
@@ -555,6 +687,7 @@ function updateTime(timeValue) {
     const currentDayTime = parseClockToDecimal(document.getElementById('edit-time-display')?.textContent);
     const nextDayTime = parseClockToDecimal(roundedTime);
     const timeDelta = nextDayTime - currentDayTime;
+    const snapshot = captureHomeSnapshot();
 
     const formData = new FormData();
     formData.append('action', 'set_time');
@@ -574,31 +707,9 @@ function updateTime(timeValue) {
             closeTimeInput();
         })
         .catch((error) => {
+            restoreHomeSnapshot(snapshot);
+            showActionError('Zeit konnte nicht gespeichert werden. Bitte erneut versuchen.');
             console.error('Time update failed without reload:', error);
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.style.display = 'none';
-
-            const actionInput = document.createElement('input');
-            actionInput.type = 'hidden';
-            actionInput.name = 'action';
-            actionInput.value = 'set_time';
-            form.appendChild(actionInput);
-
-            const dateInput = document.createElement('input');
-            dateInput.type = 'hidden';
-            dateInput.name = 'selected_date';
-            dateInput.value = selectedDate;
-            form.appendChild(dateInput);
-
-            const timeInput = document.createElement('input');
-            timeInput.type = 'hidden';
-            timeInput.name = 'time_value';
-            timeInput.value = roundedTime;
-            form.appendChild(timeInput);
-
-            document.body.appendChild(form);
-            form.submit();
         });
 }
 

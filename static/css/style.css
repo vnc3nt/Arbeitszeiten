@@ -265,6 +265,72 @@ input[id=year]:checked~.glider {
     transition: 0.25s ease-out;
 }
 
+.action-loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.18);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 9998;
+  pointer-events: all;
+}
+
+.action-loading-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  background: rgba(35, 35, 35, 0.92);
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.action-loading-spinner {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-top-color: #d9d9d9;
+  border-right-color: #b8b8b8;
+  animation: action-spin 0.8s linear infinite;
+  flex: 0 0 auto;
+}
+
+.action-loading-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+}
+
+.action-error-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: rgba(28, 28, 28, 0.96);
+  color: #f4f4f4;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  max-width: min(92vw, 38rem);
+  text-align: center;
+}
+
+.action-error-banner.is-visible {
+  display: block;
+}
+
+@keyframes action-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 
 .datalist {
   position: relative;
