@@ -15,6 +15,7 @@
     <details id="profile-menu-btn">
         <summary>
             <img class="profile-pic" src="{{url_for('static', filename='img/icons/512x512-profile.png')}}" alt="profile">
+            <div id="action-loading-indicator" class="action-loading-indicator" aria-hidden="true" style="display: none;"></div>
         </summary>
             {% include "snippets/profile_menu.html" %}
     </details>
@@ -56,13 +57,6 @@
         <button type="submit" class="edit-btn">+30min</button>
       </form>
     </div>
-  </div>
-</div>
-
-<div id="action-loading-overlay" class="action-loading-overlay" aria-hidden="true" style="display: none;">
-  <div class="action-loading-panel" role="status" aria-live="polite">
-    <div class="action-loading-spinner"></div>
-    <div class="action-loading-text">Speichere Änderungen...</div>
   </div>
 </div>
 

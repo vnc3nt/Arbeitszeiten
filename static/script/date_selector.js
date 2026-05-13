@@ -140,7 +140,7 @@ function getSelectedDateValue() {
 }
 
 function getLoadingOverlay() {
-    return document.getElementById('action-loading-overlay');
+    return document.getElementById('action-loading-indicator');
 }
 
 function getErrorBanner() {
@@ -150,10 +150,10 @@ function getErrorBanner() {
 function showActionLoading() {
     activeActionRequests += 1;
 
-    const overlay = getLoadingOverlay();
-    if (overlay) {
-        overlay.style.display = 'flex';
-        overlay.setAttribute('aria-hidden', 'false');
+    const indicator = getLoadingOverlay();
+    if (indicator) {
+        indicator.style.display = 'block';
+        indicator.setAttribute('aria-hidden', 'false');
     }
 }
 
@@ -164,10 +164,10 @@ function hideActionLoading() {
         return;
     }
 
-    const overlay = getLoadingOverlay();
-    if (overlay) {
-        overlay.style.display = 'none';
-        overlay.setAttribute('aria-hidden', 'true');
+    const indicator = getLoadingOverlay();
+    if (indicator) {
+        indicator.style.display = 'none';
+        indicator.setAttribute('aria-hidden', 'true');
     }
 }
 
