@@ -463,7 +463,8 @@ function renderOverviewData(overviewData) {
     });
 }
 
-function applyHomeState(state) {
+// NEU: snapshot = null als zweiter Parameter hinzugefügt
+function applyHomeState(state, snapshot = null) {
     if (!state) {
         return;
     }
@@ -490,27 +491,34 @@ function applyHomeState(state) {
 
     const totalCard = document.getElementById('total-hours-card');
     if (totalCard) {
-        const currentTotal = parseLocaleNumber(totalCard.getAttribute('data-hours'));
+        // GEÄNDERT: domTotal = aktueller Wert, baseTotal = Wert VOR dem Klick
+        const domTotal = parseLocaleNumber(totalCard.getAttribute('data-hours'));
+        const baseTotal = snapshot ? parseLocaleNumber(snapshot.totalHoursData) : domTotal;
+        
         const nextTotal = state.total_hours_numeric !== undefined
             ? Number(state.total_hours_numeric)
-            : currentTotal + (state.total_hours_delta !== undefined ? Number(state.total_hours_delta) : 0);
+            : baseTotal + (state.total_hours_delta !== undefined ? Number(state.total_hours_delta) : 0);
+            
         totalCard.setAttribute('data-hours', String(nextTotal));
         const totalValue = totalCard.querySelector('.card-value');
         if (totalValue) {
-            if (state.total_hours !== undefined) {
-                animateNumberChange(totalValue, currentTotal, nextTotal, 400);
-            } else if (state.total_hours_delta !== undefined) {
-                animateNumberChange(totalValue, currentTotal, nextTotal, 400);
+            if (state.total_hours !== undefined || state.total_hours_delta !== undefined) {
+                // GEÄNDERT: Animation startet vom aktuellen DOM-Wert zum neuen echten Wert
+                animateNumberChange(totalValue, domTotal, nextTotal, 400);
             }
         }
     }
 
     const monthCard = document.getElementById('month-card');
     if (monthCard) {
-        const currentMonth = parseLocaleNumber(monthCard.getAttribute('data-current-hours'));
+        // GEÄNDERT: domMonth = aktueller Wert, baseMonth = Wert VOR dem Klick
+        const domMonth = parseLocaleNumber(monthCard.getAttribute('data-current-hours'));
+        const baseMonth = snapshot ? parseLocaleNumber(snapshot.monthHoursData) : domMonth;
+        
         const nextMonth = state.month_hours_numeric !== undefined
             ? Number(state.month_hours_numeric)
-            : currentMonth + (state.month_hours_delta !== undefined ? Number(state.month_hours_delta) : 0);
+            : baseMonth + (state.month_hours_delta !== undefined ? Number(state.month_hours_delta) : 0);
+            
         monthCard.setAttribute('data-current-hours', String(nextMonth));
 
         if (state.current_max_hours_numeric !== undefined) {
@@ -524,10 +532,9 @@ function applyHomeState(state) {
 
         const monthValue = monthCard.querySelector('.card-value');
         if (monthValue) {
-            if (state.month_hours !== undefined) {
-                animateNumberChange(monthValue, currentMonth, nextMonth, 400);
-            } else if (state.month_hours_delta !== undefined) {
-                animateNumberChange(monthValue, currentMonth, nextMonth, 400);
+            if (state.month_hours !== undefined || state.month_hours_delta !== undefined) {
+                // GEÄNDERT: Animation startet vom aktuellen DOM-Wert zum neuen echten Wert
+                animateNumberChange(monthValue, domMonth, nextMonth, 400);
             }
         }
     }
@@ -677,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                applyHomeState(state);
+                applyHomeState(state, snapshot);
 
                 if (form.dataset.homeAction === 'set_max_hours') {
                     closeMaxHoursModal();
@@ -871,7 +878,7 @@ function updateTime(timeValue) {
                 return;
             }
 
-            applyHomeState(state);
+            applyHomeState(state, snapshot);
             closeTimeInput();
         })
         .catch((error) => {
