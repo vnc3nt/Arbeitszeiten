@@ -696,13 +696,18 @@ function openOverviewModal() {
             body.innerHTML = `
                 <div class="overview-skeletons" aria-hidden="true">
                     <span class="sr-only">Inhalte werden geladen</span>
-                    ${Array.from({ length: 6 }).map(() => `
-                        <div class="skeleton-row">
-                            <div class="skeleton-thumb"></div>
-                            <div class="skeleton-lines">
-                                <div class="skeleton-line short"></div>
-                                <div class="skeleton-line long"></div>
-                            </div>
+                    ${Array.from({ length: 2 }).map(() => `
+                        <div class="skeleton-month">
+                            <div class="skeleton-month-title"></div>
+                            <div class="skeleton-month-badge"></div>
+                        </div>
+                        <div class="skeleton-entries">
+                            ${Array.from({ length: 4 }).map(() => `
+                                <div class="skeleton-entry">
+                                    <div class="skeleton-entry-left"></div>
+                                    <div class="skeleton-entry-right"></div>
+                                </div>
+                            `).join('')}
                         </div>
                     `).join('')}
                 </div>
