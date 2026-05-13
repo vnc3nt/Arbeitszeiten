@@ -38,29 +38,6 @@ function formatDecimalCommaLimited(value, maxDecimals = 2) {
     return String(rounded).replace('.', ',');
 }
 
-function formatHoursWithStableWidth(value) {
-    const number = Number(value);
-    if (Number.isNaN(number)) return '';
-
-    // Immer strikt auf 2 Nachkommastellen runden
-    const rounded = Math.round(number * 100) / 100;
-    const isInteger = Math.floor(rounded) === rounded;
-
-    // Festes Format erzeugen (z.B. "10.00" oder "10.50")
-    const fixedString = rounded.toFixed(2);
-    const parts = fixedString.split('.');
-    const intPart = parts[0];
-    const decPart = parts[1];
-
-    if (isInteger) {
-        // Bei ganzen Zahlen: Komma und Nachkommastellen unsichtbar machen (reserviert aber den Platz!)
-        return `${intPart}<span style="visibility: hidden;" aria-hidden="true">,${decPart}</span>h`;
-    } else {
-        // Bei Kommazahlen: Normal anzeigen
-        return `${intPart},${decPart}h`;
-    }
-}
-
 function formatGermanDate(dateValue) {
     const date = new Date(`${dateValue}T00:00:00`);
     return date.toLocaleDateString('de-DE');
@@ -139,8 +116,8 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
         const easeProgress = easeOutCubic(progress);
         const currentValue = startValue + difference * easeProgress;
 
-        // GEÄNDERT: Nutze innerHTML und unsere neue "Stable Width" Funktion
-        element.innerHTML = formatHoursWithStableWidth(currentValue);
+        // Format and display the current value (limited to 2 decimal places)
+        element.textContent = `${formatDecimalCommaLimited(currentValue, 2)}h`;
 
         // Continue animation if not finished
         if (progress < 1) {
@@ -148,8 +125,7 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
         } else {
             // Ensure final value is exact
             if (numberAnimationTokens.get(element) === animationToken) {
-                // GEÄNDERT: Auch hier innerHTML nutzen
-                element.innerHTML = formatHoursWithStableWidth(endValue);
+                element.textContent = `${formatDecimalCommaLimited(endValue, 2)}h`;
             }
         }
     }
@@ -261,9 +237,9 @@ function captureHomeSnapshot() {
     const maxHoursInput = document.getElementById('maxHoursInput');
 
     return {
-        totalHoursText: totalCard?.querySelector('.card-value')?.innerHTML ?? '',
+        totalHoursText: totalCard?.querySelector('.card-value')?.textContent ?? '',
         totalHoursData: totalCard?.getAttribute('data-hours') ?? '0',
-        monthHoursText: monthCard?.querySelector('.card-value')?.innerHTML ?? '',
+        monthHoursText: monthCard?.querySelector('.card-value')?.textContent ?? '',
         monthHoursData: monthCard?.getAttribute('data-current-hours') ?? '0',
         monthMaxHoursData: monthCard?.getAttribute('data-max-hours') ?? '0',
         editTimeText: editTimeDisplay?.textContent ?? '',
@@ -287,7 +263,7 @@ function restoreHomeSnapshot(snapshot) {
         totalCard.setAttribute('data-hours', snapshot.totalHoursData);
         const totalValue = totalCard.querySelector('.card-value');
         if (totalValue) {
-            totalValue.innerHTML = snapshot.totalHoursText;
+            totalValue.textContent = snapshot.totalHoursText;
         }
     }
 
@@ -296,7 +272,7 @@ function restoreHomeSnapshot(snapshot) {
         monthCard.setAttribute('data-max-hours', snapshot.monthMaxHoursData);
         const monthValue = monthCard.querySelector('.card-value');
         if (monthValue) {
-            monthValue.innerHTML = snapshot.monthHoursText;
+            monthValue.textContent = snapshot.monthHoursText;
         }
     }
 
