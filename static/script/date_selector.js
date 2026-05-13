@@ -18,6 +18,23 @@ function formatDecimalComma(value) {
     return String(number).replace('.', ',');
 }
 
+function formatDecimalCommaLimited(value, maxDecimals = 2) {
+    const number = Number(value);
+
+    if (Number.isNaN(number)) {
+        return '';
+    }
+
+    // Round to specified decimal places
+    const rounded = Math.round(number * Math.pow(10, maxDecimals)) / Math.pow(10, maxDecimals);
+
+    if (Math.floor(rounded) === rounded) {
+        return String(Math.floor(rounded));
+    }
+
+    return String(rounded).replace('.', ',');
+}
+
 function formatGermanDate(dateValue) {
     const date = new Date(`${dateValue}T00:00:00`);
     return date.toLocaleDateString('de-DE');
@@ -89,15 +106,15 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
         const easeProgress = easeOutCubic(progress);
         const currentValue = startValue + difference * easeProgress;
 
-        // Format and display the current value
-        element.textContent = `${formatDecimalComma(currentValue)}h`;
+        // Format and display the current value (limited to 2 decimal places)
+        element.textContent = `${formatDecimalCommaLimited(currentValue, 2)}h`;
 
         // Continue animation if not finished
         if (progress < 1) {
             requestAnimationFrame(update);
         } else {
             // Ensure final value is exact
-            element.textContent = `${formatDecimalComma(endValue)}h`;
+            element.textContent = `${formatDecimalCommaLimited(endValue, 2)}h`;
         }
     }
 
@@ -722,28 +739,35 @@ function handleModalClose(event) {
 // Time input functions
 function openTimeInput() {
     const timeDisplay = document.getElementById('edit-time-display');
+    const timePickerContainer = document.getElementById('time-picker-container');
     const timePicker = document.getElementById('time-picker');
     
-    if (timeDisplay && timePicker) {
+    if (timeDisplay && timePickerContainer && timePicker) {
         timeDisplay.style.display = 'none';
-        timePicker.style.display = 'inline-block';
+        timePickerContainer.style.display = 'inline-flex';
         timePicker.focus();
-        
-        // Add blur event listener to hide when clicking outside
-        timePicker.addEventListener('blur', function() {
-            closeTimeInput();
-        });
     }
 }
 
 function closeTimeInput() {
     const timeDisplay = document.getElementById('edit-time-display');
-    const timePicker = document.getElementById('time-picker');
+    const timePickerContainer = document.getElementById('time-picker-container');
     
-    if (timeDisplay && timePicker) {
+    if (timeDisplay && timePickerContainer) {
         timeDisplay.style.display = 'inline-block';
-        timePicker.style.display = 'none';
+        timePickerContainer.style.display = 'none';
     }
+}
+
+function confirmTimeInput() {
+    const timePicker = document.getElementById('time-picker');
+    if (timePicker && timePicker.value) {
+        updateTime(timePicker.value);
+    }
+}
+
+function cancelTimeInput() {
+    closeTimeInput();
 }
 
 function updateTime(timeValue) {
@@ -789,6 +813,20 @@ function updateTime(timeValue) {
             console.error('Time update failed without reload:', error);
         });
 }
+
+// Initialize time picker buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const timeConfirmBtn = document.getElementById('time-confirm-btn');
+    const timeCancelBtn = document.getElementById('time-cancel-btn');
+    
+    if (timeConfirmBtn) {
+        timeConfirmBtn.addEventListener('click', confirmTimeInput);
+    }
+    
+    if (timeCancelBtn) {
+        timeCancelBtn.addEventListener('click', cancelTimeInput);
+    }
+});
 
 // Add both click and touch event listeners for modal closing
 window.addEventListener('click', handleModalClose);

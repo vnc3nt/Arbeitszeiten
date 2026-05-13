@@ -50,7 +50,11 @@
         <button type="submit" class="edit-btn">-30min</button>
       </form>
       <span class="edit-time-value" id="edit-time-display" onclick="openTimeInput()">{{ edit_time }}</span>
-      <input type="time" id="time-picker" value="{{ edit_time_24h or '' }}" onchange="updateTime(this.value)" class="styled-time-picker" style="display: none;">
+      <div id="time-picker-container" class="time-picker-container" style="display: none;">
+        <input type="time" id="time-picker" value="{{ edit_time_24h or '' }}" class="styled-time-picker">
+        <button type="button" id="time-confirm-btn" class="edit-btn edit-btn-confirm">✓</button>
+        <button type="button" id="time-cancel-btn" class="edit-btn edit-btn-cancel">✕</button>
+      </div>
       <form method="POST" style="display: inline;" data-home-action="add_30">
         <input type="hidden" name="selected_date" value="{{ selected_date }}">
         <input type="hidden" name="action" value="add_30">

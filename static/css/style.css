@@ -858,6 +858,45 @@ h2 {
   font-size: inherit;
 }
 
+.time-picker-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0.25rem;
+}
+
+.edit-btn {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--selected-color);
+  border-radius: 10px;
+  background-color: var(--button-color);
+  color: var(--text-color);
+  font-size: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.edit-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.edit-btn:active {
+  transform: scale(95%);
+}
+
+.edit-btn-confirm {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.edit-btn-cancel {
+  color: #f44336;
+  font-weight: bold;
+}
+
 /* Overview Modal Styles */
 .overview-modal {
   background-color: var(--button-color);
