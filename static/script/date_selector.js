@@ -694,11 +694,21 @@ function openOverviewModal() {
         const body = modal.querySelector('.overview-body');
         if (body) {
             body.innerHTML = `
-                <div class="overview-loading-container">
-                    <div class="overview-spinner"></div>
-                    <div class="overview-loading-text">Übersicht wird geladen...</div>
+                <div class="overview-skeletons" aria-hidden="true">
+                    <span class="sr-only">Inhalte werden geladen</span>
+                    ${Array.from({ length: 6 }).map(() => `
+                        <div class="skeleton-row">
+                            <div class="skeleton-thumb"></div>
+                            <div class="skeleton-lines">
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line long"></div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             `;
+            // mark modal as busy for accessibility
+            modal.setAttribute('aria-busy', 'true');
         }
 
         fetchHomeState({ method: 'GET', dateValue: currentDate, includeOverview: true })
@@ -706,9 +716,16 @@ function openOverviewModal() {
                 if (state.overview_data) {
                     overviewCache.set(currentDate, state.overview_data);
                     renderOverviewData(state.overview_data);
+                    // loading finished
+                    modal.removeAttribute('aria-busy');
                 }
             })
             .catch((error) => {
+                const body = modal.querySelector('.overview-body');
+                if (body) {
+                    body.innerHTML = '<div class="overview-loading-container"><div class="overview-loading-text">Übersicht konnte nicht geladen werden.</div></div>';
+                }
+                modal.removeAttribute('aria-busy');
                 showActionError('Übersicht konnte nicht geladen werden. Bitte erneut versuchen.');
                 console.error('Overview loading failed:', error);
             });
