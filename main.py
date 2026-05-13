@@ -58,6 +58,23 @@ def get_month_start(target_date):
     return target_date.replace(day=1)
 
 
+def get_next_month_start(target_date):
+    month_start = get_month_start(target_date)
+    if month_start.month == 12:
+        return month_start.replace(year=month_start.year + 1, month=1)
+    return month_start.replace(month=month_start.month + 1)
+
+
+def get_month_total_hours(user_id, target_date):
+    month_start = get_month_start(target_date)
+    next_month_start = get_next_month_start(target_date)
+    return db.session.query(func.sum(data.data)).filter(
+        data.userid == user_id,
+        data.date >= month_start,
+        data.date < next_month_start
+    ).scalar() or Decimal('0')
+
+
 def get_effective_maxhours_for_month(user_id, target_date):
     first_of_month = get_month_start(target_date)
     return db.session.query(data.maxhours).filter(
@@ -134,12 +151,27 @@ def serialize_overview_data(overview_data):
     return serialized
 
 
-def build_home_context(user_id, selected_date):
+def build_home_context(user_id, selected_date, include_total_hours=True, include_overview=True):
     german_months = {
         1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
         5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
         9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
     }
+
+    month_maxhours_cache = {}
+    month_hours_cache = {}
+
+    def cached_month_maxhours(target_month):
+        month_key = target_month.isoformat()
+        if month_key not in month_maxhours_cache:
+            month_maxhours_cache[month_key] = get_effective_maxhours_for_month(user_id, target_month)
+        return month_maxhours_cache[month_key]
+
+    def cached_month_hours(target_month):
+        month_key = target_month.isoformat()
+        if month_key not in month_hours_cache:
+            month_hours_cache[month_key] = get_month_total_hours(user_id, target_month)
+        return month_hours_cache[month_key]
 
     selected_date_str = selected_date.isoformat()
     selected_date_display = 'Heute' if selected_date == date.today() else selected_date.strftime('%d.%m.%Y')
@@ -149,17 +181,16 @@ def build_home_context(user_id, selected_date):
         data.date == selected_date
     ).scalar() or Decimal('0')
 
-    month_hours_decimal = db.session.query(func.sum(data.data)).filter(
-        data.userid == user_id,
-        func.extract('month', data.date) == selected_date.month,
-        func.extract('year', data.date) == selected_date.year
-    ).scalar() or Decimal('0')
+    month_hours_decimal = cached_month_hours(selected_date)
 
-    current_max_hours = get_effective_maxhours_for_month(user_id, selected_date)
+    current_max_hours = cached_month_maxhours(selected_date)
     current_max_hours_display = format_decimal_hours(current_max_hours) if current_max_hours is not None else None
     suggested_max_hours_display = current_max_hours_display or ""
 
     def calculate_total_deficit():
+        if not include_total_hours:
+            return None
+
         earliest_entry = db.session.query(func.min(data.date)).filter(
             data.userid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
@@ -173,25 +204,20 @@ def build_home_context(user_id, selected_date):
         end_month = date.today().replace(day=1)
 
         while current_month <= end_month:
-            current_maxhours = get_effective_maxhours_for_month(user_id, current_month)
+            current_maxhours = cached_month_maxhours(current_month)
 
             if current_maxhours is not None:
-                month_actual_hours = db.session.query(func.sum(data.data)).filter(
-                    data.userid == user_id,
-                    func.extract('year', data.date) == current_month.year,
-                    func.extract('month', data.date) == current_month.month
-                ).scalar() or Decimal('0')
-
+                month_actual_hours = cached_month_hours(current_month)
                 total_deficit += month_actual_hours - current_maxhours
 
-            if current_month.month == 12:
-                current_month = current_month.replace(year=current_month.year + 1, month=1)
-            else:
-                current_month = current_month.replace(month=current_month.month + 1)
+            current_month = get_next_month_start(current_month)
 
         return total_deficit
 
     def create_overview_data():
+        if not include_overview:
+            return None
+
         earliest_entry = db.session.query(func.min(data.date)).filter(
             data.userid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
@@ -219,12 +245,8 @@ def build_home_context(user_id, selected_date):
             if month not in overview_data[year]:
                 overview_data[year][month] = {}
 
-            month_maxhours = get_effective_maxhours_for_month(user_id, current_month)
-            month_total = db.session.query(func.sum(data.data)).filter(
-                data.userid == user_id,
-                func.extract('year', data.date) == year,
-                func.extract('month', data.date) == month
-            ).scalar() or Decimal('0')
+            month_maxhours = cached_month_maxhours(current_month)
+            month_total = cached_month_hours(current_month)
 
             month_difference = None
             if month_maxhours is not None:
@@ -238,10 +260,7 @@ def build_home_context(user_id, selected_date):
                 'entries': []
             }
 
-            if current_month.month == 12:
-                current_month = current_month.replace(year=current_month.year + 1, month=1)
-            else:
-                current_month = current_month.replace(month=current_month.month + 1)
+            current_month = get_next_month_start(current_month)
 
         for entry in all_entries:
             year = entry.date.year
@@ -269,8 +288,8 @@ def build_home_context(user_id, selected_date):
         'current_max_hours_display': current_max_hours_display,
         'current_max_hours_numeric': float(current_max_hours) if current_max_hours is not None else 0,
         'suggested_max_hours_display': suggested_max_hours_display,
-        'total_hours': format_total_hours_with_sign(total_deficit),
-        'total_hours_numeric': float(total_deficit),
+        'total_hours': format_total_hours_with_sign(total_deficit) if total_deficit is not None else None,
+        'total_hours_numeric': float(total_deficit) if total_deficit is not None else None,
         'month_hours': format_decimal_hours(month_hours_decimal),
         'month_hours_numeric': float(month_hours_decimal),
         'overview_data': overview_data,
@@ -278,7 +297,7 @@ def build_home_context(user_id, selected_date):
 
 
 def build_home_json_state(home_context):
-    return {
+    response = {
         'selected_date': home_context['selected_date'],
         'selected_date_display': home_context['selected_date_display'],
         'selected_month_name': home_context['selected_month_name'],
@@ -287,13 +306,19 @@ def build_home_json_state(home_context):
         'current_max_hours_display': home_context['current_max_hours_display'],
         'current_max_hours_numeric': home_context['current_max_hours_numeric'],
         'suggested_max_hours_display': home_context['suggested_max_hours_display'],
-        'total_hours': home_context['total_hours'],
-        'total_hours_numeric': home_context['total_hours_numeric'],
         'month_hours': home_context['month_hours'],
         'month_hours_numeric': home_context['month_hours_numeric'],
         'day_total_hours': float(home_context['day_total_hours']),
-        'overview_data': serialize_overview_data(home_context['overview_data']),
     }
+
+    if home_context.get('total_hours') is not None:
+        response['total_hours'] = home_context['total_hours']
+        response['total_hours_numeric'] = home_context['total_hours_numeric']
+
+    if home_context.get('overview_data') is not None:
+        response['overview_data'] = serialize_overview_data(home_context['overview_data'])
+
+    return response
 
 db.init_app(app)
 
@@ -365,6 +390,8 @@ def home():
         action = request.form.get('action')
         selected_date_str = request.form.get('selected_date') or request.args.get('date')
         selected_date = parse_selected_date(selected_date_str)
+        day_delta = Decimal('0')
+        total_hours_delta = None
 
         try:
             if action == 'set_max_hours':
@@ -398,6 +425,15 @@ def home():
                         maxhours=stored_max_hours
                     ))
 
+                db.session.commit()
+
+                if wants_json:
+                    home_context = build_home_context(user_id, selected_date, include_total_hours=True, include_overview=False)
+                    response_state = build_home_json_state(home_context)
+                    return jsonify(response_state)
+
+                return redirect(f"/home?date={selected_date.isoformat()}")
+
             elif action in ['add_30', 'sub_30']:
                 current_entry = db.session.query(data).filter(
                     data.userid == user_id,
@@ -406,7 +442,12 @@ def home():
                 current_total = current_entry.data if current_entry and current_entry.data is not None else Decimal('0')
                 current_maxhours = current_entry.maxhours if current_entry else None
 
-                new_total = current_total + Decimal('0.5') if action == 'add_30' else max(Decimal('0'), current_total - Decimal('0.5'))
+                day_delta = Decimal('0.5') if action == 'add_30' else -Decimal('0.5')
+                new_total = current_total + day_delta
+
+                if new_total < 0:
+                    day_delta = -current_total
+                    new_total = Decimal('0')
 
                 db.session.query(data).filter(
                     data.userid == user_id,
@@ -436,7 +477,9 @@ def home():
                             data.userid == user_id,
                             data.date == selected_date
                         ).first()
+                        current_total = current_entry.data if current_entry and current_entry.data is not None else Decimal('0')
                         current_maxhours = current_entry.maxhours if current_entry else None
+                        day_delta = decimal_hours - current_total
 
                         db.session.query(data).filter(
                             data.userid == user_id,
@@ -460,13 +503,33 @@ def home():
             if wants_json:
                 return jsonify({"error": "action could not be saved"}), 400
 
-        home_context = build_home_context(user_id, selected_date)
         if wants_json:
-            return jsonify(build_home_json_state(home_context))
-        return redirect(f"/home?date={home_context['selected_date']}")
+            light_home_context = build_home_context(user_id, selected_date, include_total_hours=False, include_overview=False)
+            response_state = build_home_json_state(light_home_context)
+
+            if action in ['add_30', 'sub_30', 'set_time']:
+                response_state['day_total_hours_delta'] = float(day_delta)
+                response_state['month_hours_delta'] = float(day_delta)
+                response_state['total_hours_delta'] = float(day_delta)
+                response_state['data_changed'] = True
+
+            elif action == 'set_max_hours':
+                heavy_home_context = build_home_context(user_id, selected_date, include_total_hours=True, include_overview=False)
+                response_state = build_home_json_state(heavy_home_context)
+                response_state['data_changed'] = True
+
+            return jsonify(response_state)
+
+        return redirect(f"/home?date={selected_date.isoformat()}")
 
     selected_date = parse_selected_date(request.args.get('date', ''))
-    home_context = build_home_context(user_id, selected_date)
+    include_overview = request.args.get('include_overview') == '1'
+    home_context = build_home_context(
+        user_id,
+        selected_date,
+        include_total_hours=not wants_json,
+        include_overview=include_overview if wants_json else False
+    )
 
     if wants_json:
         return jsonify(build_home_json_state(home_context))

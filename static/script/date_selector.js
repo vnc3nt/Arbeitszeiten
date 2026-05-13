@@ -1,5 +1,6 @@
 // Date selector functionality
 let selectedDate = null;
+const overviewCache = new Map();
 
 function formatDecimalComma(value) {
     const number = Number(value);
@@ -20,11 +21,115 @@ function formatGermanDate(dateValue) {
     return date.toLocaleDateString('de-DE');
 }
 
-async function fetchHomeState({ method = 'GET', dateValue = null, formData = null } = {}) {
+function parseLocaleNumber(value) {
+    if (value === null || value === undefined || value === '') {
+        return 0;
+    }
+
+    const normalized = String(value).replace('h', '').replace(',', '.');
+    const number = Number.parseFloat(normalized);
+    return Number.isNaN(number) ? 0 : number;
+}
+
+function formatTimeDisplay(decimalHours) {
+    if (decimalHours === 0) {
+        return '0:00';
+    }
+
+    const hours = Math.trunc(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    return `${hours}:${String(minutes).padStart(2, '0')}`;
+}
+
+function formatTimeInputValue(decimalHours) {
+    if (decimalHours === 0) {
+        return '00:00';
+    }
+
+    const hours = Math.trunc(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+function parseClockToDecimal(clockValue) {
+    if (!clockValue || !clockValue.includes(':')) {
+        return 0;
+    }
+
+    const [hoursText, minutesText] = clockValue.split(':');
+    const hours = Number.parseInt(hoursText, 10);
+    const minutes = Number.parseInt(minutesText, 10);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+        return 0;
+    }
+
+    return hours + (minutes / 60);
+}
+
+function getSelectedDateValue() {
+    const datePicker = document.getElementById('date-picker');
+    return datePicker ? datePicker.value : selectedDate;
+}
+
+function updateNumericCard(cardId, delta, selector) {
+    const card = document.getElementById(cardId);
+    if (!card || !Number.isFinite(delta) || delta === 0) {
+        return;
+    }
+
+    const currentValue = parseLocaleNumber(card.getAttribute('data-hours') || card.getAttribute('data-current-hours'));
+    const newValue = currentValue + delta;
+    const valueElement = selector ? card.querySelector(selector) : card.querySelector('.card-value');
+
+    if (valueElement) {
+        valueElement.textContent = `${formatDecimalComma(newValue)}h`;
+    }
+
+    if (card.id === 'total-hours-card') {
+        card.setAttribute('data-hours', String(newValue));
+    } else {
+        card.setAttribute('data-current-hours', String(newValue));
+    }
+}
+
+function updateEditTimeDisplay(decimalHours) {
+    const editTimeDisplay = document.getElementById('edit-time-display');
+    const timePicker = document.getElementById('time-picker');
+
+    if (editTimeDisplay) {
+        editTimeDisplay.textContent = formatTimeDisplay(decimalHours);
+    }
+
+    if (timePicker) {
+        timePicker.value = formatTimeInputValue(decimalHours);
+    }
+}
+
+function applyOptimisticHomeAction(form) {
+    const action = form.dataset.homeAction;
+
+    if (action === 'add_30' || action === 'sub_30') {
+        const currentTime = parseClockToDecimal(document.getElementById('edit-time-display')?.textContent);
+        const requestedDelta = action === 'add_30' ? 0.5 : -0.5;
+        const nextTime = Math.max(0, currentTime + requestedDelta);
+        const appliedDelta = nextTime - currentTime;
+
+        updateNumericCard('month-card', appliedDelta, '.card-value');
+        updateNumericCard('total-hours-card', appliedDelta, '.card-value');
+        updateEditTimeDisplay(nextTime);
+    }
+}
+
+async function fetchHomeState({ method = 'GET', dateValue = null, formData = null, includeOverview = false } = {}) {
     const url = new URL(window.location.href);
 
     if (dateValue) {
         url.searchParams.set('date', dateValue);
+    }
+
+    if (includeOverview) {
+        url.searchParams.set('include_overview', '1');
     }
 
     const requestOptions = {
@@ -144,17 +249,32 @@ function applyHomeState(state) {
 
     const totalCard = document.getElementById('total-hours-card');
     if (totalCard) {
-        totalCard.setAttribute('data-hours', state.total_hours_numeric ?? 0);
+        const currentTotal = parseLocaleNumber(totalCard.getAttribute('data-hours'));
+        const nextTotal = state.total_hours_numeric !== undefined
+            ? Number(state.total_hours_numeric)
+            : currentTotal + (state.total_hours_delta !== undefined ? Number(state.total_hours_delta) : 0);
+        totalCard.setAttribute('data-hours', String(nextTotal));
         const totalValue = totalCard.querySelector('.card-value');
-        if (totalValue && state.total_hours !== undefined) {
-            totalValue.textContent = `${state.total_hours}h`;
+        if (totalValue) {
+            if (state.total_hours !== undefined) {
+                totalValue.textContent = `${state.total_hours}h`;
+            } else if (state.total_hours_delta !== undefined) {
+                totalValue.textContent = `${formatDecimalComma(nextTotal)}h`;
+            }
         }
     }
 
     const monthCard = document.getElementById('month-card');
     if (monthCard) {
-        monthCard.setAttribute('data-current-hours', state.month_hours_numeric ?? 0);
-        monthCard.setAttribute('data-max-hours', state.current_max_hours_numeric ?? 0);
+        const currentMonth = parseLocaleNumber(monthCard.getAttribute('data-current-hours'));
+        const nextMonth = state.month_hours_numeric !== undefined
+            ? Number(state.month_hours_numeric)
+            : currentMonth + (state.month_hours_delta !== undefined ? Number(state.month_hours_delta) : 0);
+        monthCard.setAttribute('data-current-hours', String(nextMonth));
+
+        if (state.current_max_hours_numeric !== undefined) {
+            monthCard.setAttribute('data-max-hours', String(state.current_max_hours_numeric));
+        }
 
         const monthTitle = monthCard.querySelector('.card-title');
         if (monthTitle && state.selected_month_name) {
@@ -162,8 +282,12 @@ function applyHomeState(state) {
         }
 
         const monthValue = monthCard.querySelector('.card-value');
-        if (monthValue && state.month_hours !== undefined) {
-            monthValue.textContent = `${state.month_hours}h`;
+        if (monthValue) {
+            if (state.month_hours !== undefined) {
+                monthValue.textContent = `${state.month_hours}h`;
+            } else if (state.month_hours_delta !== undefined) {
+                monthValue.textContent = `${formatDecimalComma(nextMonth)}h`;
+            }
         }
     }
 
@@ -182,7 +306,14 @@ function applyHomeState(state) {
         maxHoursInput.placeholder = `${state.suggested_max_hours_display || ''}h`;
     }
 
-    renderOverviewData(state.overview_data);
+    if (state.data_changed) {
+        overviewCache.delete(state.selected_date || getSelectedDateValue());
+    }
+
+    if (state.overview_data) {
+        renderOverviewData(state.overview_data);
+        overviewCache.set(state.selected_date || getSelectedDateValue(), state.overview_data);
+    }
 
     if (typeof setDynamicCardBackground === 'function') {
         setDynamicCardBackground();
@@ -208,7 +339,7 @@ async function updateSelectedDate(dateValue) {
     localStorage.setItem('selectedDate', dateValue);
 
     try {
-        const state = await fetchHomeState({ method: 'GET', dateValue });
+        const state = await fetchHomeState({ method: 'GET', dateValue, includeOverview: false });
         applyHomeState(state);
     } catch (error) {
         console.error('Could not update selected date without reload:', error);
@@ -284,6 +415,8 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            applyOptimisticHomeAction(form);
+
             try {
                 const state = await fetchHomeState({
                     method: 'POST',
@@ -329,6 +462,30 @@ function openOverviewModal() {
     const modal = document.getElementById('overviewModal');
     if (modal) {
         modal.style.display = 'block';
+
+        const currentDate = getSelectedDateValue();
+        const cachedOverview = overviewCache.get(currentDate);
+
+        if (cachedOverview) {
+            renderOverviewData(cachedOverview);
+            return;
+        }
+
+        const body = modal.querySelector('.overview-body');
+        if (body) {
+            body.innerHTML = '<div class="overview-loading">Übersicht wird geladen.</div>';
+        }
+
+        fetchHomeState({ method: 'GET', dateValue: currentDate, includeOverview: true })
+            .then((state) => {
+                if (state.overview_data) {
+                    overviewCache.set(currentDate, state.overview_data);
+                    renderOverviewData(state.overview_data);
+                }
+            })
+            .catch((error) => {
+                console.error('Overview loading failed:', error);
+            });
     }
 }
 
@@ -395,11 +552,18 @@ function updateTime(timeValue) {
     
     const roundedTime = roundToQuarterHour(timeValue);
     const selectedDate = document.getElementById('date-picker').value;
+    const currentDayTime = parseClockToDecimal(document.getElementById('edit-time-display')?.textContent);
+    const nextDayTime = parseClockToDecimal(roundedTime);
+    const timeDelta = nextDayTime - currentDayTime;
 
     const formData = new FormData();
     formData.append('action', 'set_time');
     formData.append('selected_date', selectedDate);
     formData.append('time_value', roundedTime);
+
+    updateEditTimeDisplay(nextDayTime);
+    updateNumericCard('month-card', timeDelta, '.card-value');
+    updateNumericCard('total-hours-card', timeDelta, '.card-value');
 
     fetchHomeState({
         method: 'POST',

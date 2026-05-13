@@ -97,36 +97,40 @@
       
     </div>
     <div class="modal-body overview-body">
-      {% for year in overview_data.keys()|sort(reverse=True) %}
-        <div class="overview-year">
-          <h4>{{ year }}</h4>
-          
-          {% for month_num in overview_data[year].keys()|sort(reverse=True) %}
-            {% set month_data = overview_data[year][month_num] %}
-            <div class="overview-month">
-              <div class="month-header">
-                <span class="month-name">{{ month_data.name }}</span>
-                {% if month_data.difference is not none %}
-                  {% if month_data.difference > 0 %}
-                    <span class="month-surplus">+{{ month_data.difference|decimal_comma }}h</span>
-                  {% elif month_data.difference < 0 %}
-                    <span class="month-deficit">{{ month_data.difference|decimal_comma }}h</span>
-                  {% else %}
-                    <span class="month-neutral">0h</span>
+      {% if overview_data %}
+        {% for year in overview_data.keys()|sort(reverse=True) %}
+          <div class="overview-year">
+            <h4>{{ year }}</h4>
+            
+            {% for month_num in overview_data[year].keys()|sort(reverse=True) %}
+              {% set month_data = overview_data[year][month_num] %}
+              <div class="overview-month">
+                <div class="month-header">
+                  <span class="month-name">{{ month_data.name }}</span>
+                  {% if month_data.difference is not none %}
+                    {% if month_data.difference > 0 %}
+                      <span class="month-surplus">+{{ month_data.difference|decimal_comma }}h</span>
+                    {% elif month_data.difference < 0 %}
+                      <span class="month-deficit">{{ month_data.difference|decimal_comma }}h</span>
+                    {% else %}
+                      <span class="month-neutral">0h</span>
+                    {% endif %}
                   {% endif %}
-                {% endif %}
-              </div>
-              
-              {% for entry in month_data.entries %}
-                <div class="overview-entry">
-                  <span class="entry-date">{{ entry.date.strftime('%d.%m.%Y') }}</span>
-                  <span class="entry-hours">{{ entry.hours|decimal_comma }}h</span>
                 </div>
-              {% endfor %}
-            </div>
-          {% endfor %}
-        </div>
-      {% endfor %}
+                
+                {% for entry in month_data.entries %}
+                  <div class="overview-entry">
+                    <span class="entry-date">{{ entry.date.strftime('%d.%m.%Y') }}</span>
+                    <span class="entry-hours">{{ entry.hours|decimal_comma }}h</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="overview-loading">Übersicht wird bei Bedarf geladen.</div>
+      {% endif %}
     </div>
   </div>
 </div>
