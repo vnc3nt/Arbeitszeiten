@@ -267,7 +267,7 @@ input[id=year]:checked~.glider {
 
 .action-loading-indicator {
   position: absolute;
-  bottom: 0;
+  bottom: -1rem;
   right: 0;
   width: 0.75rem;
   height: 0.75rem;
