@@ -676,7 +676,12 @@ function openOverviewModal() {
 
         const body = modal.querySelector('.overview-body');
         if (body) {
-            body.innerHTML = '<div class="overview-loading">Übersicht wird geladen.</div>';
+            body.innerHTML = `
+                <div class="overview-loading-container">
+                    <div class="overview-spinner"></div>
+                    <div class="overview-loading-text">Übersicht wird geladen...</div>
+                </div>
+            `;
         }
 
         fetchHomeState({ method: 'GET', dateValue: currentDate, includeOverview: true })

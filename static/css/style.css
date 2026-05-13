@@ -304,6 +304,33 @@ input[id=year]:checked~.glider {
   to { transform: rotate(360deg); }
 }
 
+.overview-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  min-height: 200px;
+}
+
+.overview-spinner {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.8);
+  border-right-color: rgba(255, 255, 255, 0.6);
+  animation: action-spin 0.8s linear infinite;
+}
+
+.overview-loading-text {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  letter-spacing: 0.01em;
+}
+
 
 .datalist {
   position: relative;
