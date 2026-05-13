@@ -833,15 +833,14 @@ function updateTime(timeValue) {
 
 // Initialize time picker buttons
 document.addEventListener('DOMContentLoaded', function() {
-    const timeConfirmBtn = document.getElementById('time-confirm-btn');
-    const timeCancelBtn = document.getElementById('time-cancel-btn');
-    
-    if (timeConfirmBtn) {
-        timeConfirmBtn.addEventListener('click', confirmTimeInput);
-    }
-    
-    if (timeCancelBtn) {
-        timeCancelBtn.addEventListener('click', cancelTimeInput);
+    // Use native OS time picker confirmation: submit only on the input's change event
+    const timePicker = document.getElementById('time-picker');
+    if (timePicker) {
+        timePicker.addEventListener('change', function() {
+            if (timePicker.value) {
+                confirmTimeInput();
+            }
+        });
     }
 });
 

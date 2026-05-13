@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 from models import category, db, data,users,token,update_expire_time
 import hashlib
@@ -27,6 +28,12 @@ def delete_account(pw: Optional[str]):
         return "Falsches Passwort"
 
 def delete_user_data(id: int):
+    user = db.session.query(users).filter(users.id == id).first()
+    if user and user.profile_image:
+        image_path = os.path.join(os.path.dirname(__file__), "static", user.profile_image)
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
     data.query.filter_by(userid=id).delete()
     token.query.filter_by(userid=id).delete()
     category.query.filter_by(userid=id).delete()

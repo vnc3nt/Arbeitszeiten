@@ -7,8 +7,9 @@ from login import change_password, change_username, check_username, checkuser, d
 import secrets
 from constants import USERID, TOKEN
 from time import time
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, text
 from decimal import Decimal, InvalidOperation
+from werkzeug.utils import secure_filename
 
 if os.path.exists(".env"):
     with open(".env", "r") as f:
@@ -39,6 +40,12 @@ app.config.update(
     SESSION_COOKIE_SECURE = True,  # Cloud Run nutzt HTTPS, also auf True setzen, bei render hatte ich False
     SESSION_COOKIE_SAMESITE = "Lax" # "Lax" ist oft kompatibler als "Strict" für Redirects
 )
+
+PROFILE_IMAGE_DEFAULT = "img/icons/512x512-profile.png"
+PROFILE_IMAGE_FOLDER = os.path.join("uploads", "profile_images")
+PROFILE_IMAGE_ABS_FOLDER = os.path.join(app.static_folder, PROFILE_IMAGE_FOLDER)
+PROFILE_IMAGE_ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+PROFILE_IMAGE_MAX_SIZE = 2 * 1024 * 1024
 
 #print(app.config["SQLALCHEMY_DATABASE_URI"])
 
@@ -149,6 +156,108 @@ def serialize_overview_data(overview_data):
         serialized[year] = serialized_year
 
     return serialized
+
+
+def ensure_profile_image_column():
+    column_exists = db.session.execute(text("""
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'arbeitszeiten'
+          AND table_name = 'users'
+          AND column_name = 'profile_image'
+    """)).first()
+
+    if column_exists:
+        return
+
+    db.session.execute(text("ALTER TABLE arbeitszeiten.users ADD COLUMN profile_image VARCHAR(255)"))
+    db.session.commit()
+
+
+def allowed_profile_image(filename: str) -> bool:
+    if "." not in filename:
+        return False
+    extension = filename.rsplit(".", 1)[1].lower()
+    return extension in PROFILE_IMAGE_ALLOWED_EXTENSIONS
+
+
+def get_current_user():
+    return db.session.query(users).filter(users.id == session.get(USERID)).first()
+
+
+def get_profile_image_url() -> str:
+    user = get_current_user()
+    if user and user.profile_image:
+        absolute_path = os.path.join(app.static_folder, user.profile_image)
+        if os.path.exists(absolute_path):
+            return url_for("static", filename=user.profile_image)
+
+    return url_for("static", filename=PROFILE_IMAGE_DEFAULT)
+
+
+def remove_profile_image_file(profile_image_path):
+    if not profile_image_path:
+        return
+
+    absolute_path = os.path.join(app.static_folder, profile_image_path)
+    if os.path.exists(absolute_path):
+        os.remove(absolute_path)
+
+
+def save_profile_image(uploaded_file, user):
+    if uploaded_file is None or not uploaded_file.filename:
+        return "Bitte eine Bilddatei auswählen"
+
+    if not allowed_profile_image(uploaded_file.filename):
+        return "Nur PNG, JPG oder WEBP sind erlaubt"
+
+    uploaded_file.stream.seek(0, os.SEEK_END)
+    file_size = uploaded_file.stream.tell()
+    uploaded_file.stream.seek(0)
+
+    if file_size > PROFILE_IMAGE_MAX_SIZE:
+        return "Die Datei darf maximal 2 MB groß sein"
+
+    extension = uploaded_file.filename.rsplit(".", 1)[1].lower()
+    if extension == "jpeg":
+        extension = "jpg"
+
+    os.makedirs(PROFILE_IMAGE_ABS_FOLDER, exist_ok=True)
+
+    previous_profile_image = user.profile_image
+
+    filename = secure_filename(f"profile_{user.id}.{extension}")
+    relative_path = os.path.join(PROFILE_IMAGE_FOLDER, filename).replace("\\", "/")
+    absolute_path = os.path.join(app.static_folder, relative_path)
+
+    try:
+        uploaded_file.save(absolute_path)
+        user.profile_image = relative_path
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        if os.path.exists(absolute_path):
+            os.remove(absolute_path)
+        return "Profilbild konnte nicht gespeichert werden"
+
+    if previous_profile_image and previous_profile_image != relative_path:
+        remove_profile_image_file(previous_profile_image)
+
+    return None
+
+
+def reset_profile_image(user):
+    previous_profile_image = user.profile_image
+    user.profile_image = None
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return "Profilbild konnte nicht zurückgesetzt werden"
+
+    remove_profile_image_file(previous_profile_image)
+    return None
 
 
 def build_home_context(user_id, selected_date, include_total_hours=True, include_overview=True):
@@ -324,6 +433,7 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+    ensure_profile_image_column()
 
 @app.route('/')
 def index():
@@ -538,6 +648,7 @@ def home():
         'home.html',
         user_id=user_id,
         get_username=get_username,
+        profile_image_url=get_profile_image_url(),
         selected_date=home_context['selected_date'],
         selected_date_display=home_context['selected_date_display'],
         selected_month_name=home_context['selected_month_name'],
@@ -561,10 +672,26 @@ def edit():
 @app.route('/profile', methods=["GET", "POST"])
 @validTokenChecker
 def profile():
+    profile_message = None
     if request.method == "POST":
         action = request.form.get("action")
         if action == "change-username":
             result = change_username(request.form.get("new_username"))
+
+        elif action == "change-profile-picture":
+            user = get_current_user()
+            result = save_profile_image(request.files.get("profile_image"), user) if user else "Benutzer nicht gefunden"
+            if result is None:
+                return redirect(url_for("profile"))
+
+        elif action == "reset-profile-picture":
+            user = get_current_user()
+            if user:
+                result = reset_profile_image(user)
+                if result is None:
+                    return redirect(url_for("profile"))
+            else:
+                result = "Benutzer nicht gefunden"
 
         elif action == "delete-account":
             result = delete_account(request.form.get("password"))
@@ -582,7 +709,8 @@ def profile():
         else:
             result = "Unbekannte Aktion"
         print(f"{result=}")
-    return render_template('profile.html', user_id=session.get(USERID), get_username=get_username)
+        profile_message = result
+    return render_template('profile.html', user_id=session.get(USERID), get_username=get_username, profile_image_url=get_profile_image_url(), profile_message=profile_message)
 
 @app.route("/logout")
 def logout():

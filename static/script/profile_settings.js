@@ -106,6 +106,50 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 })
 
+window.addEventListener("DOMContentLoaded", (e) => {
+    const changeProfilePicBtn = document.getElementById("changeProfilePic");
+    const changeProfilePicDialog = document.getElementById("change-profile-picture-dialog");
+
+    if (!changeProfilePicBtn || !changeProfilePicDialog) return;
+
+    const fileInput = changeProfilePicDialog.querySelector("#profile-image-input");
+    const preview = changeProfilePicDialog.querySelector("#profile-image-preview");
+    const defaultPreviewSrc = document.querySelector(".profile-pic")?.src;
+
+    changeProfilePicDialog.querySelector("input[type=reset]").addEventListener("click", () => {
+        changeProfilePicDialog.close();
+        fileInput.value = "";
+        if (defaultPreviewSrc) {
+            preview.src = defaultPreviewSrc;
+        }
+    });
+
+    fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) {
+            if (defaultPreviewSrc) {
+                preview.src = defaultPreviewSrc;
+            }
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            preview.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    changeProfilePicBtn.addEventListener("click", () => {
+        fileInput.value = "";
+        if (defaultPreviewSrc) {
+            preview.src = defaultPreviewSrc;
+        }
+        changeProfilePicDialog.showModal();
+        fileInput.focus();
+    });
+})
+
 // Touch-Funktionalität für das Profil-Menü
 window.addEventListener("DOMContentLoaded", (e) => {
     const profileMenu = document.getElementById('profile-menu');

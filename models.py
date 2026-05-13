@@ -18,6 +18,7 @@ class users(db.Model):
     id=db.Column(db.BIGINT, primary_key=True, nullable=False)
     username=db.Column(db.String(30), nullable=False)
     password=db.Column(db.String(128), nullable=False)
+    profile_image=db.Column(db.String(255), nullable=True)
 
 class data(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}

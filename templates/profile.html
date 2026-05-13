@@ -2,15 +2,12 @@
 {% block title %}
 <title>profile</title>
 {% endblock title %}
-{% block head_tags %}
-<script src="{{ url_for('static', filename='script/profile_settings.js') }}" type="text/javascript"></script>
-{% endblock head_tags %}
 {% block content %}
 <a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
 <div class="profile">
     <details id="profile-menu-btn">
         <summary>
-            <img class="profile-pic" src="{{url_for('static', filename='img/icons/512x512-profile.png')}}" alt="profile">
+            <img class="profile-pic" src="{{ profile_image_url }}" alt="profile">
         </summary>
             {% include "snippets/profile_menu.html" %}
     </details>
@@ -18,8 +15,11 @@
 <a class="backbutton" href="{{ url_for('home') }}"> ❮ Profil</a>
 
 <div class="profile-content">
+    {% if profile_message %}
+    <div class="profile-message">{{ profile_message }}</div>
+    {% endif %}
     <button class="not-implemented" id="changeLanguage">Sprache ändern</button>
-    <button class="not-implemented" id="changeProfilePic">Profilbild ändern</button>
+    <button id="changeProfilePic">Profilbild ändern</button>
     <button id="changeUsernameBtn">Benutzernamen ändern</button>
     <button id="changePasswordBtn">Passwort ändern</button>
     <button id="deleteAccountBtn" class="deleteAccountBtn">Account Löschen</button>
@@ -55,6 +55,24 @@
             <input type="password" name="new-password-confirmation" placeholder="Neues Passwort best&auml;tigen" autocomplete="new-password" /><br>
             <input type="reset" value="Abbrechen" />
             <input type="submit" value="Ändern" />
+        </form>
+    </dialog>
+
+    <dialog id="change-profile-picture-dialog">
+        <form action="" method="post" enctype="multipart/form-data">
+            <h2>Profilbild ändern</h2>
+            <input type="hidden" name="action" value="change-profile-picture">
+            <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}" alt="Vorschau Profilbild">
+            <input type="file" name="profile_image" id="profile-image-input" accept="image/png,image/jpeg,image/webp" />
+            <div class="profile-upload-hint">Erlaubt sind PNG, JPG und WEBP bis 2 MB.</div>
+            <div class="profile-upload-actions">
+                <input type="reset" value="Abbrechen" />
+                <input type="submit" value="Speichern" />
+            </div>
+        </form>
+        <form action="" method="post" class="profile-reset-form">
+            <input type="hidden" name="action" value="reset-profile-picture">
+            <input type="submit" value="Standardbild wiederherstellen" />
         </form>
     </dialog>
 </div>
