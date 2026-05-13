@@ -614,18 +614,17 @@ def home():
                 return jsonify({"error": "action could not be saved"}), 400
 
         if wants_json:
-            light_home_context = build_home_context(user_id, selected_date, include_total_hours=False, include_overview=False)
-            response_state = build_home_json_state(light_home_context)
+            # GEÄNDERT: Wir zwingen den Server IMMER include_total_hours=True zu nutzen
+            home_context = build_home_context(user_id, selected_date, include_total_hours=True, include_overview=False)
+            response_state = build_home_json_state(home_context)
 
             if action in ['add_30', 'sub_30', 'set_time']:
+                # Wir schicken nur noch die absolute Änderung für den Tagestext mit.
+                # Total und Month Deltas sind weg, weil der Server jetzt die echten Endwerte liefert!
                 response_state['day_total_hours_delta'] = float(day_delta)
-                response_state['month_hours_delta'] = float(day_delta)
-                response_state['total_hours_delta'] = float(day_delta)
                 response_state['data_changed'] = True
 
             elif action == 'set_max_hours':
-                heavy_home_context = build_home_context(user_id, selected_date, include_total_hours=True, include_overview=False)
-                response_state = build_home_json_state(heavy_home_context)
                 response_state['data_changed'] = True
 
             return jsonify(response_state)
