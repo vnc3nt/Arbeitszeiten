@@ -47,60 +47,42 @@
     }
   }
 
-
-/* New skeleton that matches the modal outline in the screenshot */
-.skeleton-month {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0.2rem 0;
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    touch-action: none;
+    overflow-y: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: var(--website-background-color);
 }
 
-.skeleton-month-title,
-.skeleton-month-badge {
-  height: 1.1rem;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.2s linear infinite;
+.addButton {
+  background-color: var(--button-color);
 }
 
-.skeleton-month-title { width: 20%; }
-.skeleton-month-badge { width: 12%; }
 
-.skeleton-entries { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.6rem; }
-
-.skeleton-entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.8rem;
-  border-radius: 12px;
-  background-color: rgba(255,255,255,0.02);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+.logo-pic {
+  position: absolute;
+  width: 3.14rem;
+  margin: 5px;
+  filter: invert(1);
+}
+.logo-pic-centered {
+  position: absolute;
+  top: -.72rem;
+  left: calc(50% - 3rem);
+  width: 6rem;
+  padding-top: 2rem;
+  filter: invert(1);
 }
 
-.skeleton-entry-left {
-  height: 1rem;
-  width: 55%;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.2s linear infinite;
-}
-
-.skeleton-entry-right {
-  height: 1.2rem;
-  width: 12%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.2s linear infinite;
-  flex-shrink: 0;
-}
+.login {
+    padding-top: 150px;
+    text-align: center;
     margin-left: auto;
     margin-right: auto;
     max-width: 80%;
