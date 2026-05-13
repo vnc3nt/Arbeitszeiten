@@ -69,6 +69,71 @@ function parseClockToDecimal(clockValue) {
     return hours + (minutes / 60);
 }
 
+// Easing function for smooth animation
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+// Animate number change with smooth counter animation
+function animateNumberChange(element, startValue, endValue, duration = 400) {
+    if (!element || startValue === endValue) {
+        return;
+    }
+
+    const difference = endValue - startValue;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = easeOutCubic(progress);
+        const currentValue = startValue + difference * easeProgress;
+
+        // Format and display the current value
+        element.textContent = `${formatDecimalComma(currentValue)}h`;
+
+        // Continue animation if not finished
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            // Ensure final value is exact
+            element.textContent = `${formatDecimalComma(endValue)}h`;
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+// Animate time display (format: H:MM)
+function animateTimeDisplay(element, startDecimal, endDecimal, duration = 400) {
+    if (!element || startDecimal === endDecimal) {
+        return;
+    }
+
+    const difference = endDecimal - startDecimal;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = easeOutCubic(progress);
+        const currentValue = startDecimal + difference * easeProgress;
+
+        // Format and display the current value
+        element.textContent = formatTimeDisplay(currentValue);
+
+        // Continue animation if not finished
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            // Ensure final value is exact
+            element.textContent = formatTimeDisplay(endDecimal);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
 function getSelectedDateValue() {
     const datePicker = document.getElementById('date-picker');
     return datePicker ? datePicker.value : selectedDate;
@@ -205,7 +270,7 @@ function updateNumericCard(cardId, delta, selector) {
     const valueElement = selector ? card.querySelector(selector) : card.querySelector('.card-value');
 
     if (valueElement) {
-        valueElement.textContent = `${formatDecimalComma(newValue)}h`;
+        animateNumberChange(valueElement, currentValue, newValue, 400);
     }
 
     if (card.id === 'total-hours-card') {
@@ -220,7 +285,8 @@ function updateEditTimeDisplay(decimalHours) {
     const timePicker = document.getElementById('time-picker');
 
     if (editTimeDisplay) {
-        editTimeDisplay.textContent = formatTimeDisplay(decimalHours);
+        const currentTime = parseClockToDecimal(editTimeDisplay.textContent);
+        animateTimeDisplay(editTimeDisplay, currentTime, decimalHours, 400);
     }
 
     if (timePicker) {
@@ -385,9 +451,9 @@ function applyHomeState(state) {
         const totalValue = totalCard.querySelector('.card-value');
         if (totalValue) {
             if (state.total_hours !== undefined) {
-                totalValue.textContent = `${state.total_hours}h`;
+                animateNumberChange(totalValue, currentTotal, nextTotal, 400);
             } else if (state.total_hours_delta !== undefined) {
-                totalValue.textContent = `${formatDecimalComma(nextTotal)}h`;
+                animateNumberChange(totalValue, currentTotal, nextTotal, 400);
             }
         }
     }
@@ -412,16 +478,22 @@ function applyHomeState(state) {
         const monthValue = monthCard.querySelector('.card-value');
         if (monthValue) {
             if (state.month_hours !== undefined) {
-                monthValue.textContent = `${state.month_hours}h`;
+                animateNumberChange(monthValue, currentMonth, nextMonth, 400);
             } else if (state.month_hours_delta !== undefined) {
-                monthValue.textContent = `${formatDecimalComma(nextMonth)}h`;
+                animateNumberChange(monthValue, currentMonth, nextMonth, 400);
             }
         }
     }
 
     const editTimeDisplay = document.getElementById('edit-time-display');
     if (editTimeDisplay && state.edit_time) {
-        editTimeDisplay.textContent = state.edit_time;
+        const currentTime = parseClockToDecimal(editTimeDisplay.textContent);
+        const nextTime = parseClockToDecimal(state.edit_time);
+        if (currentTime !== nextTime) {
+            animateTimeDisplay(editTimeDisplay, currentTime, nextTime, 400);
+        } else {
+            editTimeDisplay.textContent = state.edit_time;
+        }
     }
 
     const timePicker = document.getElementById('time-picker');
