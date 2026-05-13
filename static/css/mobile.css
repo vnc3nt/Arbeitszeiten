@@ -188,6 +188,7 @@
 .card-value {
     font-size: 2.2rem;
     font-weight: bold;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Bereich "Heute" */
