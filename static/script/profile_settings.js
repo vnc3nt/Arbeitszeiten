@@ -49,25 +49,29 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     change_username_dialog.querySelector("input[type=submit]").addEventListener("click", async (e) => {
         e.preventDefault();
-        let res = await fetch("/api/check-existance",
-            {
+        const form = change_username_dialog.querySelector("form");
+        const newUsername = form.querySelector("input[name=new_username]").value.trim();
+        const currentUsername = document.querySelector(".username").innerText.trim();
+        if (newUsername === currentUsername) {
+            form.submit();
+            return;
+        }
+        try {
+            const res = await fetch("/api/check-existance", {
                 method: "POST",
-                body:JSON.stringify({
-                    "type": "username",
-                    "value": change_username_dialog.querySelector("input[name=new_username]").value,
-                }),
+                body: JSON.stringify({"type": "username", "value": newUsername}),
                 headers: {
                     "Accept": "application/json, text/plain, */*",
                     "Content-type": "application/json; charset=UTF-8"
                 }
+            }).then((resp) => resp.json());
+            if (!res.exists) {
+                form.submit();
+            } else {
+                alert("Benutzername existiert bereits");
             }
-        ).then((resp) => resp.json());
-        console.log(res);
-        if (!res.exists) {
-            change_username_dialog.querySelector("form").submit();
-        }
-        else {
-            alert("Benutzername existiert bereits");
+        } catch (error) {
+            alert("Benutzername konnte nicht geprüft werden");
         }
     })
 
@@ -122,19 +126,42 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     const fileInput = changeProfilePicDialog.querySelector("#profile-image-input");
     const preview = changeProfilePicDialog.querySelector("#profile-image-preview");
+    const cropper = changeProfilePicDialog.querySelector("#profile-image-cropper");
+    const canvas = changeProfilePicDialog.querySelector("#profile-image-canvas");
+    const zoomInput = changeProfilePicDialog.querySelector("#profile-image-zoom");
+    const cropForm = changeProfilePicDialog.querySelector("form");
+    const context = canvas.getContext("2d");
+    const cropImage = new Image();
+    let imageScale = 1;
+    let imageOffsetX = 0;
+    let imageOffsetY = 0;
+    let dragStart = null;
     const defaultPreviewSrc = document.querySelector(".profile-pic")?.src;
 
     changeProfilePicDialog.querySelector("input[type=reset]").addEventListener("click", () => {
         changeProfilePicDialog.close();
         fileInput.value = "";
+        cropper.hidden = true;
+        cropImage.src = "";
         if (defaultPreviewSrc) {
             preview.src = defaultPreviewSrc;
         }
     });
 
+    const drawCrop = () => {
+        if (!cropImage.naturalWidth) return;
+        const baseScale = Math.max(canvas.width / cropImage.naturalWidth, canvas.height / cropImage.naturalHeight);
+        const scale = baseScale * imageScale;
+        const width = cropImage.naturalWidth * scale;
+        const height = cropImage.naturalHeight * scale;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(cropImage, imageOffsetX, imageOffsetY, width, height);
+    };
+
     fileInput.addEventListener("change", () => {
         const file = fileInput.files && fileInput.files[0];
         if (!file) {
+            cropper.hidden = true;
             if (defaultPreviewSrc) {
                 preview.src = defaultPreviewSrc;
             }
@@ -143,13 +170,68 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
         const reader = new FileReader();
         reader.onload = (event) => {
-            preview.src = event.target.result;
+            cropImage.onload = () => {
+                imageScale = 1;
+                const baseScale = Math.max(canvas.width / cropImage.naturalWidth, canvas.height / cropImage.naturalHeight);
+                imageOffsetX = (canvas.width - cropImage.naturalWidth * baseScale) / 2;
+                imageOffsetY = (canvas.height - cropImage.naturalHeight * baseScale) / 2;
+                zoomInput.value = "1";
+                cropper.hidden = false;
+                drawCrop();
+            };
+            cropImage.src = event.target.result;
         };
         reader.readAsDataURL(file);
     });
 
+    zoomInput.addEventListener("input", () => {
+        imageScale = Number(zoomInput.value);
+        drawCrop();
+    });
+
+    canvas.addEventListener("pointerdown", (event) => {
+        if (!cropImage.naturalWidth) return;
+        canvas.setPointerCapture(event.pointerId);
+        dragStart = {x: event.clientX, y: event.clientY};
+    });
+
+    canvas.addEventListener("pointermove", (event) => {
+        if (!dragStart) return;
+        const scaleX = canvas.width / canvas.getBoundingClientRect().width;
+        const scaleY = canvas.height / canvas.getBoundingClientRect().height;
+        imageOffsetX += (event.clientX - dragStart.x) * scaleX;
+        imageOffsetY += (event.clientY - dragStart.y) * scaleY;
+        dragStart = {x: event.clientX, y: event.clientY};
+        drawCrop();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+        dragStart = null;
+    });
+    canvas.addEventListener("pointercancel", () => {
+        dragStart = null;
+    });
+
+    cropForm.addEventListener("submit", (event) => {
+        if (!cropImage.naturalWidth) return;
+        event.preventDefault();
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                alert("Das Bild konnte nicht zugeschnitten werden");
+                return;
+            }
+            const croppedFile = new File([blob], "profile.png", {type: "image/png"});
+            const transfer = new DataTransfer();
+            transfer.items.add(croppedFile);
+            fileInput.files = transfer.files;
+            cropForm.submit();
+        }, "image/png");
+    });
+
     changeProfilePicBtn.addEventListener("click", () => {
         fileInput.value = "";
+        cropper.hidden = true;
+        cropImage.src = "";
         if (defaultPreviewSrc) {
             preview.src = defaultPreviewSrc;
         }

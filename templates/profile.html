@@ -65,7 +65,13 @@
             <input type="hidden" name="action" value="change-profile-picture">
             <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}" alt="Vorschau Profilbild">
             <input type="file" name="profile_image" id="profile-image-input" accept="image/png,image/jpeg,image/webp" />
-            <div class="profile-upload-hint">Erlaubt sind PNG, JPG und WEBP bis 2 MB.</div>
+            <div class="profile-upload-hint">Erlaubt sind PNG, JPG und WEBP bis 2 MB. Das Bild wird quadratisch zugeschnitten.</div>
+            <div id="profile-image-cropper" class="profile-image-cropper" hidden>
+                <canvas id="profile-image-canvas" width="280" height="280"></canvas>
+                <label for="profile-image-zoom">Zoom</label>
+                <input type="range" id="profile-image-zoom" min="1" max="3" step="0.01" value="1">
+                <p>Bild im Ausschnitt verschieben</p>
+            </div>
             <div class="profile-upload-actions">
                 <input type="reset" value="Abbrechen" />
                 <input type="submit" value="Speichern" />

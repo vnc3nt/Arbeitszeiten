@@ -3,6 +3,7 @@
 {% block head_tags %}
 <script type="text/javascript" src="{{ url_for('static', filename='script/date_selector.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='script/card_background.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='script/profile_switcher.js') }}"></script>
 {% endblock head_tags %}
 
 {% block title %}
@@ -19,6 +20,19 @@
         </summary>
             {% include "snippets/profile_menu.html" %}
     </details>
+    <form class="profile-selector-form" method="post" action="{{ url_for('switch_profile') }}">
+        <label for="profile-selector">Arbeitsprofil</label>
+        <select id="profile-selector" name="profile_id"
+                data-active-profile="{{ active_profile_id }}"
+                onchange="selectProfile(this)">
+            {% for profile in profiles %}
+            <option value="{{ profile.id }}" {% if profile.id == active_profile_id %}selected{% endif %}>
+                {{ profile.name }}
+            </option>
+            {% endfor %}
+            <option value="__new__">+ Neues Profil erstellen</option>
+        </select>
+    </form>
 </div>
 
 

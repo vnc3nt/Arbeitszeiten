@@ -503,6 +503,30 @@ details> summary {
   opacity: 0.8;
 }
 
+.profile-image-cropper {
+  margin: 0 auto 1rem;
+  user-select: none;
+}
+
+.profile-image-cropper canvas {
+  display: block;
+  width: 17.5rem;
+  height: 17.5rem;
+  max-width: 100%;
+  margin: 0 auto 0.75rem;
+  cursor: grab;
+  border: 1px solid var(--selected-color);
+  background: var(--button-color);
+}
+
+.profile-image-cropper canvas:active {
+  cursor: grabbing;
+}
+
+.profile-image-cropper input[type="range"] {
+  width: min(17.5rem, 100%);
+}
+
 .profile-message {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
@@ -536,6 +560,20 @@ details> summary {
   padding: 0;
   text-align: left;
   display: grid;
+}
+
+.profile-selector-form {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.profile-selector-form label {
+    font-size: 0.75rem;
+}
+
+.profile-selector-form select {
+    max-width: 12rem;
 }
 
 #profile-menu ul li {

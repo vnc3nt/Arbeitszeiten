@@ -1,20 +1,5 @@
 <menu id="profile-menu">
     <ul>
-        <li class="profile-selector-item">
-            <form method="post" action="{{ url_for('switch_profile') }}">
-                <label for="profile-selector">Arbeitsprofil</label>
-                <select id="profile-selector" name="profile_id"
-                        data-active-profile="{{ active_profile_id }}"
-                        onchange="selectProfile(this)">
-                    {% for profile in profiles %}
-                    <option value="{{ profile.id }}" {% if profile.id == active_profile_id %}selected{% endif %}>
-                        {{ profile.name }}
-                    </option>
-                    {% endfor %}
-                    <option value="__new__">+ Neues Profil erstellen</option>
-                </select>
-            </form>
-        </li>
         <a href="{{ url_for('profile') }}">
             <li>
                 <div class="username"> {{ get_username() }} </div>

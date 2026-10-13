@@ -10,6 +10,7 @@ from time import time
 from sqlalchemy import func, distinct, text
 from decimal import Decimal, InvalidOperation
 from werkzeug.utils import secure_filename
+from urllib.parse import quote
 
 if os.path.exists(".env"):
     with open(".env", "r") as f:
@@ -21,14 +22,33 @@ else:
     print("Keine .env Datei gefunden, nutze Cloud-Umgebungsvariablen.")
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://{}.{}:{}@{}:{}/{}".format(
-    os.environ.get("uname"),
-    os.environ.get("db"),
-    os.environ.get("password"),
-    os.environ.get("host"),
-    os.environ.get("port"),
-    os.environ.get("scheme")
-)
+database_url = os.environ.get("DATABASE_URL")
+if not database_url:
+    database_user = os.environ.get("uname")
+    database_project = os.environ.get("db")
+    database_password = os.environ.get("password")
+    database_host = os.environ.get("host")
+    database_port = os.environ.get("port", "6543")
+    database_name = os.environ.get("scheme", "postgres")
+    missing_database_values = [
+        name for name, value in {
+            "uname": database_user,
+            "db": database_project,
+            "password": database_password,
+            "host": database_host,
+        }.items() if not value
+    ]
+    if missing_database_values:
+        raise RuntimeError(
+            "Fehlende Supabase-Konfiguration in .env: "
+            + ", ".join(missing_database_values)
+            + ". Alternativ DATABASE_URL setzen."
+        )
+    database_url = (
+        f"postgresql://{quote(database_user, safe='')}.{quote(database_project, safe='')}:"
+        f"{quote(database_password, safe='')}@{database_host}:{database_port}/{database_name}"
+    )
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "connect_args": {
         "options": "-csearch_path=arbeitszeiten,public"
@@ -987,5 +1007,5 @@ def get_username() -> str:
 
 if __name__ == "__main__":
     # Cloud Run gibt den Port über die Umgebungsvariable PORT vor
-    port = int(os.environ.get("PORT", 5000)) 
+    port = int(os.environ.get("PORT", 5001)) 
     app.run(host="0.0.0.0", port=port, debug=os.environ.get("debug", False) == "True")

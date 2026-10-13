@@ -15,7 +15,7 @@ def checkuser(username:str, password:str) -> bool:
     return userpw == hash_pw(password)
 
 def check_username(username: str) -> bool:
-    return USERNAME_REGEX.fullmatch(username) is None
+    return USERNAME_REGEX.fullmatch(username) is not None
 
 def delete_account(pw: Optional[str]):
     if not pw:
@@ -56,7 +56,8 @@ def change_username(new_username: Optional[str]):
     print("Changed username")
     try:
         db.session.commit()
-    except:
+    except Exception:
+        db.session.rollback()
         return "Username already exists"
     return None  # no issues
 
