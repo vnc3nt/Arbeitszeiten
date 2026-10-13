@@ -1,0 +1,80 @@
+Collecting aniso8601==9.0.1
+  Using cached aniso8601-9.0.1-py2.py3-none-any.whl.metadata (23 kB)
+Collecting blinker==1.7.0
+  Using cached blinker-1.7.0-py3-none-any.whl.metadata (1.9 kB)
+Collecting click==8.1.7
+  Using cached click-8.1.7-py3-none-any.whl.metadata (3.0 kB)
+Collecting colorama==0.4.6
+  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+Collecting distlib==0.3.8
+  Using cached distlib-0.3.8-py2.py3-none-any.whl.metadata (5.1 kB)
+Collecting filelock==3.13.1
+  Using cached filelock-3.13.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting Flask==3.0.0
+  Using cached flask-3.0.0-py3-none-any.whl.metadata (3.6 kB)
+Collecting Flask-RESTful==0.3.10
+  Using cached Flask_RESTful-0.3.10-py2.py3-none-any.whl.metadata (1.0 kB)
+Collecting Flask-SQLAlchemy==3.1.1
+  Using cached flask_sqlalchemy-3.1.1-py3-none-any.whl.metadata (3.4 kB)
+Collecting greenlet
+  Using cached greenlet-3.5.6-cp313-cp313-macosx_11_0_universal2.whl.metadata (3.8 kB)
+Collecting gunicorn==22.0.0
+  Using cached gunicorn-22.0.0-py3-none-any.whl.metadata (4.4 kB)
+Collecting importlib_metadata==7.1.0
+  Using cached importlib_metadata-7.1.0-py3-none-any.whl.metadata (4.7 kB)
+Collecting itsdangerous==2.1.2
+  Using cached itsdangerous-2.1.2-py3-none-any.whl.metadata (2.9 kB)
+Collecting Jinja2==3.1.5
+  Using cached jinja2-3.1.5-py3-none-any.whl.metadata (2.6 kB)
+Collecting MarkupSafe==2.1.3
+  Using cached markupsafe-2.1.3-cp313-cp313-macosx_15_0_arm64.whl
+Collecting packaging==23.2
+  Using cached packaging-23.2-py3-none-any.whl.metadata (3.2 kB)
+Collecting platformdirs==4.1.0
+  Using cached platformdirs-4.1.0-py3-none-any.whl.metadata (11 kB)
+Collecting python-dotenv==1.0.1
+  Using cached python_dotenv-1.0.1-py3-none-any.whl.metadata (23 kB)
+Collecting pytz==2024.1
+  Using cached pytz-2024.1-py2.py3-none-any.whl.metadata (22 kB)
+Collecting six==1.16.0
+  Using cached six-1.16.0-py2.py3-none-any.whl.metadata (1.8 kB)
+Collecting SQLAlchemy==2.0.24
+  Using cached SQLAlchemy-2.0.24-py3-none-any.whl.metadata (9.6 kB)
+Collecting typing_extensions==4.9.0
+  Using cached typing_extensions-4.9.0-py3-none-any.whl.metadata (3.0 kB)
+Collecting virtualenv==20.26.6
+  Using cached virtualenv-20.26.6-py3-none-any.whl.metadata (4.5 kB)
+Collecting Werkzeug==3.0.6
+  Using cached werkzeug-3.0.6-py3-none-any.whl.metadata (3.7 kB)
+Collecting zipp==3.19.1
+  Using cached zipp-3.19.1-py3-none-any.whl.metadata (3.5 kB)
+Collecting psycopg2-binary==2.9.10
+  Using cached psycopg2_binary-2.9.10-cp313-cp313-macosx_14_0_arm64.whl.metadata (4.9 kB)
+Using cached aniso8601-9.0.1-py2.py3-none-any.whl (52 kB)
+Using cached blinker-1.7.0-py3-none-any.whl (13 kB)
+Using cached click-8.1.7-py3-none-any.whl (97 kB)
+Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Using cached distlib-0.3.8-py2.py3-none-any.whl (468 kB)
+Using cached filelock-3.13.1-py3-none-any.whl (11 kB)
+Using cached flask-3.0.0-py3-none-any.whl (99 kB)
+Using cached Flask_RESTful-0.3.10-py2.py3-none-any.whl (26 kB)
+Using cached flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
+Using cached gunicorn-22.0.0-py3-none-any.whl (84 kB)
+Using cached importlib_metadata-7.1.0-py3-none-any.whl (24 kB)
+Using cached itsdangerous-2.1.2-py3-none-any.whl (15 kB)
+Using cached jinja2-3.1.5-py3-none-any.whl (134 kB)
+Using cached packaging-23.2-py3-none-any.whl (53 kB)
+Using cached platformdirs-4.1.0-py3-none-any.whl (17 kB)
+Using cached python_dotenv-1.0.1-py3-none-any.whl (19 kB)
+Using cached pytz-2024.1-py2.py3-none-any.whl (505 kB)
+Using cached six-1.16.0-py2.py3-none-any.whl (11 kB)
+Using cached SQLAlchemy-2.0.24-py3-none-any.whl (1.9 MB)
+Using cached typing_extensions-4.9.0-py3-none-any.whl (32 kB)
+Using cached virtualenv-20.26.6-py3-none-any.whl (6.0 MB)
+Using cached werkzeug-3.0.6-py3-none-any.whl (227 kB)
+Using cached zipp-3.19.1-py3-none-any.whl (9.0 kB)
+Using cached psycopg2_binary-2.9.10-cp313-cp313-macosx_14_0_arm64.whl (3.3 MB)
+Using cached greenlet-3.5.6-cp313-cp313-macosx_11_0_universal2.whl (294 kB)
+Installing collected packages: pytz, distlib, aniso8601, zipp, typing_extensions, six, python-dotenv, psycopg2-binary, platformdirs, packaging, MarkupSafe, itsdangerous, greenlet, filelock, colorama, click, blinker, Werkzeug, virtualenv, SQLAlchemy, Jinja2, importlib_metadata, gunicorn, Flask, Flask-SQLAlchemy, Flask-RESTful
+
+Successfully installed Flask-3.0.0 Flask-RESTful-0.3.10 Flask-SQLAlchemy-3.1.1 Jinja2-3.1.5 MarkupSafe-2.1.3 SQLAlchemy-2.0.24 Werkzeug-3.0.6 aniso8601-9.0.1 blinker-1.7.0 click-8.1.7 colorama-0.4.6 distlib-0.3.8 filelock-3.13.1 greenlet-3.5.6 gunicorn-22.0.0 importlib_metadata-7.1.0 itsdangerous-2.1.2 packaging-23.2 platformdirs-4.1.0 psycopg2-binary-2.9.10 python-dotenv-1.0.1 pytz-2024.1 six-1.16.0 typing_extensions-4.9.0 virtualenv-20.26.6 zipp-3.19.1
