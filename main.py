@@ -185,6 +185,7 @@ def ensure_profiles():
             userid BIGINT NOT NULL REFERENCES arbeitszeiten.users(id),
             name VARCHAR(30) NOT NULL,
             maxhours NUMERIC(5, 2) NOT NULL DEFAULT 0,
+            visible BOOLEAN NOT NULL DEFAULT TRUE,
             CONSTRAINT uq_profiles_user_name UNIQUE (userid, name)
         )
     """))
@@ -196,6 +197,9 @@ def ensure_profiles():
     )
     db.session.execute(
         text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS maxhours NUMERIC(5, 2) NOT NULL DEFAULT 0")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS visible BOOLEAN NOT NULL DEFAULT TRUE")
     )
     db.session.execute(
         text("ALTER TABLE arbeitszeiten.profiles DROP COLUMN IF EXISTS profile_image")
@@ -250,6 +254,7 @@ def get_active_profile():
     profile = db.session.query(profiles).filter(
         profiles.id == profile_id,
         profiles.userid == account_id,
+        profiles.visible.is_(True),
     ).first()
     if profile is None and account_id is not None:
         profile = db.session.query(profiles).filter_by(userid=account_id).order_by(profiles.id).first()
@@ -259,7 +264,15 @@ def get_active_profile():
 
 
 def get_profile_list():
-    return db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).all()
+    return db.session.query(profiles).filter_by(
+        userid=session.get(USERID), visible=True
+    ).order_by(profiles.id).all()
+
+
+def get_all_profile_list():
+    return db.session.query(profiles).filter_by(
+        userid=session.get(USERID)
+    ).order_by(profiles.id).all()
 
 
 def get_active_profile_name():
@@ -576,7 +589,13 @@ def register():
             newUser = users(id=newUserId, username=username_input, password=hash_pw(password_1))
             db.session.add(newUser)
             db.session.commit()
-            db.session.add(profiles(id=newUserId, userid=newUserId, name="Standardprofil", maxhours=0))
+            db.session.add(profiles(
+                id=newUserId,
+                userid=newUserId,
+                name="Standardprofil",
+                maxhours=0,
+                visible=True,
+            ))
             db.session.commit()
             return redirect("/login")
     return render_template('register.html')
@@ -773,7 +792,7 @@ def home():
 def switch_profile():
     profile_id = request.form.get('profile_id', type=int)
     profile = db.session.query(profiles).filter_by(
-        id=profile_id, userid=session.get(USERID)
+        id=profile_id, userid=session.get(USERID), visible=True
     ).first()
     if profile is None:
         return jsonify(error="Profil nicht gefunden"), 404
@@ -796,23 +815,95 @@ def create_profile():
     if db.session.query(profiles).filter_by(userid=session.get(USERID), name=name).first():
         return jsonify(error="Dieses Profil existiert bereits"), 409
     next_id = (db.session.query(func.max(profiles.id)).scalar() or 0) + 1
-    profile = profiles(id=next_id, userid=session.get(USERID), name=name, maxhours=maxhours)
+    profile = profiles(
+        id=next_id,
+        userid=session.get(USERID),
+        name=name,
+        maxhours=maxhours,
+        visible=True,
+    )
     db.session.add(profile)
     db.session.commit()
     session[PROFILEID] = profile.id
     return redirect(url_for('home'))
+
+@app.route('/profiles/manage', methods=['POST'])
+@validTokenChecker
+def manage_profile():
+    profile_id = request.form.get('profile_id', type=int)
+    action = request.form.get('profile_action')
+    profile = db.session.query(profiles).filter_by(
+        id=profile_id, userid=session.get(USERID)
+    ).first()
+    if profile is None:
+        return redirect(url_for('profile', profile_message="Arbeitsprofil nicht gefunden"))
+
+    if action == 'rename':
+        name = (request.form.get('name') or '').strip()
+        if not name or len(name) > 30:
+            message = "Der Profilname muss zwischen 1 und 30 Zeichen lang sein"
+        elif db.session.query(profiles).filter(
+            profiles.userid == session.get(USERID),
+            profiles.name == name,
+            profiles.id != profile.id,
+        ).first():
+            message = "Dieses Arbeitsprofil existiert bereits"
+        else:
+            profile.name = name
+            db.session.commit()
+            message = "Arbeitsprofil umbenannt"
+    elif action == 'toggle-visibility':
+        if profile.visible and db.session.query(profiles).filter_by(
+            userid=session.get(USERID), visible=True
+        ).count() <= 1:
+            message = "Mindestens ein Arbeitsprofil muss sichtbar bleiben"
+        else:
+            profile.visible = not profile.visible
+            if not profile.visible and session.get(PROFILEID) == profile.id:
+                replacement = db.session.query(profiles).filter(
+                    profiles.userid == session.get(USERID),
+                    profiles.id != profile.id,
+                    profiles.visible.is_(True),
+                ).order_by(profiles.id).first()
+                if replacement:
+                    session[PROFILEID] = replacement.id
+            db.session.commit()
+            message = "Arbeitsprofil ausgeblendet" if not profile.visible else "Arbeitsprofil eingeblendet"
+    elif action == 'delete':
+        if db.session.query(profiles).filter_by(userid=session.get(USERID)).count() <= 1:
+            message = "Das letzte Arbeitsprofil kann nicht gelöscht werden"
+        else:
+            was_active = session.get(PROFILEID) == profile.id
+            db.session.query(data).filter_by(profileid=profile.id).delete()
+            db.session.query(category).filter_by(profileid=profile.id).delete()
+            db.session.delete(profile)
+            if was_active:
+                replacement = db.session.query(profiles).filter(
+                    profiles.userid == session.get(USERID),
+                    profiles.id != profile.id,
+                    profiles.visible.is_(True),
+                ).order_by(profiles.id).first()
+                if replacement:
+                    session[PROFILEID] = replacement.id
+            db.session.commit()
+            message = "Arbeitsprofil gelöscht"
+    else:
+        message = "Unbekannte Arbeitsprofil-Aktion"
+
+    return redirect(url_for('profile', profile_message=message))
 
 @app.route('/edit')
 @validTokenChecker
 def edit():
     return render_template('edit.html', user_id=session.get(USERID), get_username=get_username,
                            get_active_profile_name=get_active_profile_name,
-                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID))
+                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID),
+                           all_profiles=get_all_profile_list())
 
 @app.route('/profile', methods=["GET", "POST"])
 @validTokenChecker
 def profile():
-    profile_message = None
+    profile_message = request.args.get("profile_message")
     if request.method == "POST":
         action = request.form.get("action")
         if action == "change-username":
@@ -853,7 +944,8 @@ def profile():
     return render_template('profile.html', user_id=session.get(USERID), get_username=get_username,
                            get_active_profile_name=get_active_profile_name,
                            profile_image_url=get_profile_image_url(), profile_message=profile_message,
-                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID))
+                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID),
+                           all_profiles=get_all_profile_list())
 
 @app.route("/logout")
 def logout():

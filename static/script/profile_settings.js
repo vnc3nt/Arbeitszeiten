@@ -77,6 +77,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
     })
 })
 
+window.addEventListener("DOMContentLoaded", () => {
+    const manageProfilesBtn = document.getElementById("manageProfilesBtn");
+    const manageProfilesDialog = document.getElementById("manage-profiles-dialog");
+    if (manageProfilesBtn && manageProfilesDialog) {
+        manageProfilesBtn.addEventListener("click", () => manageProfilesDialog.showModal());
+    }
+});
+
 window.addEventListener("DOMContentLoaded", (e) => {
     let delete_account_btn = document.getElementById("deleteAccountBtn");
     let delete_acc_dialog = document.getElementById("delete-account-dialog");

@@ -21,6 +21,7 @@
     <button class="not-implemented" id="changeLanguage">Sprache ändern</button>
     <button id="changeProfilePic">Profilbild ändern</button>
     <button id="changeUsernameBtn">Benutzernamen ändern</button>
+    <button id="manageProfilesBtn">Profile bearbeiten</button>
     <button id="changePasswordBtn">Passwort ändern</button>
     <button id="deleteAccountBtn" class="deleteAccountBtn">Account Löschen</button>
 
@@ -74,6 +75,21 @@
             <input type="hidden" name="action" value="reset-profile-picture">
             <input type="submit" value="Standardbild wiederherstellen" />
         </form>
+    </dialog>
+    <dialog id="manage-profiles-dialog">
+        <h2>Arbeitsprofile bearbeiten</h2>
+            {% for work_profile in all_profiles %}
+            <form method="post" action="{{ url_for('manage_profile') }}" class="profile-management-row">
+                <input type="hidden" name="profile_id" value="{{ work_profile.id }}">
+                <input type="text" name="name" value="{{ work_profile.name }}" maxlength="30"
+                       aria-label="Name von {{ work_profile.name }}">
+                <button type="submit" name="profile_action" value="rename">Umbenennen</button>
+                <button type="submit" name="profile_action" value="toggle-visibility">{{ 'Einblenden' if not work_profile.visible else 'Ausblenden' }}</button>
+                <button type="submit" name="profile_action" value="delete"
+                        onclick="return confirm('Arbeitsprofil wirklich löschen?')">Löschen</button>
+            </form>
+            {% endfor %}
+            <button type="button" onclick="this.closest('dialog').close()">Schließen</button>
     </dialog>
 </div>
 {% endblock content %}

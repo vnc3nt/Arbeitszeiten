@@ -29,6 +29,7 @@ class profiles(db.Model):
     userid = db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False)
     name = db.Column(db.String(30), nullable=False)
     maxhours = db.Column(db.Numeric(5, 2), nullable=False, default=0)
+    visible = db.Column(db.Boolean, nullable=False, default=True)
 
 class data(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}
