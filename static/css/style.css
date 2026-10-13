@@ -566,6 +566,8 @@ details> summary {
     display: grid;
     gap: 0.25rem;
     margin-top: 0.5rem;
+    width: 12rem;
+    justify-items: stretch;
 }
 
 .profile-selector-form label {
@@ -573,7 +575,7 @@ details> summary {
 }
 
 .profile-selector-form select {
-    max-width: 12rem;
+    width: 100%;
 }
 
 #profile-menu ul li {

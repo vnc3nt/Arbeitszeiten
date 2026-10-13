@@ -56,6 +56,9 @@
         <input type="password" name="password_input" placeholder="Passwort"><br>
         <button class="prim_button_style" name="login_btn">Einloggen</button>
     </form>
+    {% if login_error %}
+    <div class="profile-message">{{ login_error }}</div>
+    {% endif %}
     <a href="{{ url_for('register') }}" class="register">Neu registrieren</a>
 </div>
 

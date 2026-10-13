@@ -355,6 +355,9 @@
     
     .profile {
         margin: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
     }
     
     /* Modal-Animationen für Mobile */
@@ -373,4 +376,3 @@
         }
     }
 }
-

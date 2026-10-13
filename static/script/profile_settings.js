@@ -57,7 +57,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             return;
         }
         try {
-            const res = await fetch("/api/check-existance", {
+            const res = await fetch("/api/check-existence", {
                 method: "POST",
                 body: JSON.stringify({"type": "username", "value": newUsername}),
                 headers: {

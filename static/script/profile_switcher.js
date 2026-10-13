@@ -5,7 +5,7 @@ function selectProfile(select) {
         if (!name || !name.trim()) {
             return;
         }
-        const maxhours = window.prompt('Monatsstunden für dieses Profil (z. B. 35,5):');
+        const maxhours = window.prompt('Monatsstunden für dieses Profil (z. B. 35, 35,5 oder 35.5):');
         if (!maxhours || !maxhours.trim()) {
             return;
         }

@@ -569,10 +569,11 @@ def index():
 @app.route('/login',methods=["GET","POST"])
 @loginChecker
 def login():
+    login_error = None
     if request.method == "POST":
-        username = request.form.get("username_input")
+        username = (request.form.get("username_input") or "").strip()
         password = request.form.get("password_input")
-        if username is not None and password is not None and checkuser(username, password):
+        if username and password and checkuser(username, password):
             # successful logged in
             # token cleanup
             for everySession in db.session.query(token).filter(token.expiretime < time()):
@@ -586,7 +587,8 @@ def login():
             db.session.add(newToken)
             db.session.commit()
             return redirect("/home")
-    return render_template('login.html')
+        login_error = "Benutzername oder Passwort ist falsch"
+    return render_template('login.html', login_error=login_error)
 
 @app.route('/register',methods=["GET","POST"])
 def register():
