@@ -1,9 +1,9 @@
 import os
 from typing import Optional
-from models import category, db, data,users,token,update_expire_time
+from models import category, db, data, users, profiles, token, update_expire_time
 import hashlib
 from flask import session, redirect
-from constants import USERID, TOKEN, USERNAME_REGEX
+from constants import USERID, TOKEN, PROFILEID, USERNAME_REGEX
 from functools import wraps
 from time import time
 
@@ -37,6 +37,7 @@ def delete_user_data(id: int):
     data.query.filter_by(userid=id).delete()
     token.query.filter_by(userid=id).delete()
     category.query.filter_by(userid=id).delete()
+    profiles.query.filter_by(userid=id).delete()
     users.query.filter_by(id=id).delete()
 
     db.session.commit()
@@ -141,5 +142,6 @@ def logoutUser(currentToken):
     db.session.commit()
     session.pop(TOKEN)
     session.pop(USERID)
+    session.pop(PROFILEID, None)
     print(session)
     return redirect("/login")

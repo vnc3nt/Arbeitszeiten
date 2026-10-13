@@ -1,11 +1,11 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify, session, send_file
 from datetime import datetime, date
-from models import db, users, token, data, category
+from models import db, users, profiles, token, data, category
 import os
 from api import app as api_app
 from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw
 import secrets
-from constants import USERID, TOKEN
+from constants import USERID, TOKEN, PROFILEID
 from time import time
 from sqlalchemy import func, distinct, text
 from decimal import Decimal, InvalidOperation
@@ -76,7 +76,7 @@ def get_month_total_hours(user_id, target_date):
     month_start = get_month_start(target_date)
     next_month_start = get_next_month_start(target_date)
     return db.session.query(func.sum(data.data)).filter(
-        data.userid == user_id,
+        data.profileid == user_id,
         data.date >= month_start,
         data.date < next_month_start
     ).scalar() or Decimal('0')
@@ -84,17 +84,21 @@ def get_month_total_hours(user_id, target_date):
 
 def get_effective_maxhours_for_month(user_id, target_date):
     first_of_month = get_month_start(target_date)
-    return db.session.query(data.maxhours).filter(
-        data.userid == user_id,
+    max_hours = db.session.query(data.maxhours).filter(
+        data.profileid == user_id,
         data.date <= first_of_month,
         data.maxhours.isnot(None)
     ).order_by(data.date.desc()).limit(1).scalar()
+    if max_hours is not None:
+        return max_hours
+    profile = db.session.query(profiles).filter_by(id=user_id).first()
+    return profile.maxhours if profile and profile.maxhours else None
 
 
 def get_previous_effective_maxhours(user_id, target_date):
     first_of_month = get_month_start(target_date)
     return db.session.query(data.maxhours).filter(
-        data.userid == user_id,
+        data.profileid == user_id,
         data.date < first_of_month,
         data.maxhours.isnot(None)
     ).order_by(data.date.desc()).limit(1).scalar()
@@ -172,6 +176,95 @@ def ensure_profile_image_column():
 
     db.session.execute(text("ALTER TABLE arbeitszeiten.users ADD COLUMN profile_image VARCHAR(255)"))
     db.session.commit()
+
+
+def ensure_profiles():
+    db.session.execute(text("""
+        CREATE TABLE IF NOT EXISTS arbeitszeiten.profiles (
+            id BIGINT PRIMARY KEY,
+            userid BIGINT NOT NULL REFERENCES arbeitszeiten.users(id),
+            name VARCHAR(30) NOT NULL,
+            maxhours NUMERIC(5, 2) NOT NULL DEFAULT 0,
+            CONSTRAINT uq_profiles_user_name UNIQUE (userid, name)
+        )
+    """))
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.data ADD COLUMN IF NOT EXISTS profileid BIGINT")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.category ADD COLUMN IF NOT EXISTS profileid BIGINT")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS maxhours NUMERIC(5, 2) NOT NULL DEFAULT 0")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.profiles DROP COLUMN IF EXISTS profile_image")
+    )
+    db.session.execute(text("ALTER TABLE arbeitszeiten.data DROP CONSTRAINT IF EXISTS data_pkey"))
+    for user in db.session.query(users).all():
+        default_profile = db.session.query(profiles).filter_by(
+            userid=user.id, name="Standardprofil"
+        ).first()
+        if default_profile is None:
+            default_profile = db.session.query(profiles).filter_by(
+                userid=user.id
+            ).order_by(profiles.id).first()
+            if default_profile is not None:
+                default_profile.name = "Standardprofil"
+        if default_profile is None:
+            next_id = db.session.query(func.max(profiles.id)).scalar() or 0
+            default_profile = profiles(
+                id=next_id + 1,
+                userid=user.id,
+                name="Standardprofil",
+                maxhours=0,
+            )
+            db.session.add(default_profile)
+            db.session.flush()
+        db.session.execute(text("""
+            UPDATE arbeitszeiten.data d
+            SET profileid = p.id
+            FROM arbeitszeiten.profiles p
+            WHERE d.userid = p.userid
+              AND d.profileid IS NULL
+              AND p.name = 'Standardprofil'
+        """))
+        db.session.execute(text("""
+            UPDATE arbeitszeiten.category c
+            SET profileid = p.id
+            FROM arbeitszeiten.profiles p
+            WHERE c.userid = p.userid
+              AND c.profileid IS NULL
+              AND p.name = 'Standardprofil'
+        """))
+    db.session.execute(text("""
+        ALTER TABLE arbeitszeiten.data
+        ADD CONSTRAINT data_pkey PRIMARY KEY (userid, date, profileid)
+    """))
+    db.session.commit()
+
+
+def get_active_profile():
+    profile_id = session.get(PROFILEID)
+    account_id = session.get(USERID)
+    profile = db.session.query(profiles).filter(
+        profiles.id == profile_id,
+        profiles.userid == account_id,
+    ).first()
+    if profile is None and account_id is not None:
+        profile = db.session.query(profiles).filter_by(userid=account_id).order_by(profiles.id).first()
+        if profile:
+            session[PROFILEID] = profile.id
+    return profile
+
+
+def get_profile_list():
+    return db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).all()
+
+
+def get_active_profile_name():
+    profile = get_active_profile()
+    return profile.name if profile else get_username()
 
 
 def allowed_profile_image(filename: str) -> bool:
@@ -286,7 +379,7 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
     selected_date_display = 'Heute' if selected_date == date.today() else selected_date.strftime('%d.%m.%Y')
 
     day_total_hours = db.session.query(func.sum(data.data)).filter(
-        data.userid == user_id,
+        data.profileid == user_id,
         data.date == selected_date
     ).scalar() or Decimal('0')
 
@@ -301,7 +394,7 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
             return None
 
         earliest_entry = db.session.query(func.min(data.date)).filter(
-            data.userid == user_id,
+            data.profileid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
         ).scalar()
 
@@ -328,7 +421,7 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
             return None
 
         earliest_entry = db.session.query(func.min(data.date)).filter(
-            data.userid == user_id,
+            data.profileid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
         ).scalar()
 
@@ -336,7 +429,7 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
             return {}
 
         all_entries = db.session.query(data).filter(
-            data.userid == user_id,
+            data.profileid == user_id,
             (data.data.isnot(None) | data.maxhours.isnot(None))
         ).order_by(data.date.desc()).all()
 
@@ -434,6 +527,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     ensure_profile_image_column()
+    ensure_profiles()
 
 @app.route('/')
 def index():
@@ -450,7 +544,10 @@ def login():
             # token cleanup
             for everySession in db.session.query(token).filter(token.expiretime < time()):
                 db.session.delete(everySession)
-            session[USERID] = db.session.query(users).filter(users.username==username).first().id #save in session[] currentUserId
+            session[USERID] = db.session.query(users).filter(users.username==username).first().id
+            default_profile = db.session.query(profiles).filter_by(userid=session[USERID]).order_by(profiles.id).first()
+            if default_profile:
+                session[PROFILEID] = default_profile.id
             newToken = token(userid=session[USERID], token=secrets.token_urlsafe(96)) # 96 always produces a 128-long string, but idk why
             session[TOKEN] = newToken.token
             db.session.add(newToken)
@@ -479,13 +576,16 @@ def register():
             newUser = users(id=newUserId, username=username_input, password=hash_pw(password_1))
             db.session.add(newUser)
             db.session.commit()
+            db.session.add(profiles(id=newUserId, userid=newUserId, name="Standardprofil", maxhours=0))
+            db.session.commit()
             return redirect("/login")
     return render_template('register.html')
 
 @app.route('/home', methods=["GET", "POST"])
 @validTokenChecker
 def home():
-    user_id = session.get(USERID)
+    active_profile = get_active_profile()
+    user_id = active_profile.id if active_profile else None
     wants_json = request.headers.get("X-Requested-With") == "fetch" or request.accept_mimetypes.best == "application/json"
 
     def parse_selected_date(date_string):
@@ -515,7 +615,7 @@ def home():
                     stored_max_hours = None
 
                 existing_entry = db.session.query(data).filter(
-                    data.userid == user_id,
+                    data.profileid == user_id,
                     data.date == first_of_month
                 ).first()
 
@@ -528,7 +628,8 @@ def home():
                     existing_entry.maxhours = stored_max_hours
                 else:
                     db.session.add(data(
-                        userid=user_id,
+                        userid=session.get(USERID),
+                        profileid=user_id,
                         date=first_of_month,
                         categoryid=None,
                         data=None,
@@ -546,7 +647,7 @@ def home():
 
             elif action in ['add_30', 'sub_30']:
                 current_entry = db.session.query(data).filter(
-                    data.userid == user_id,
+                    data.profileid == user_id,
                     data.date == selected_date
                 ).first()
                 current_total = current_entry.data if current_entry and current_entry.data is not None else Decimal('0')
@@ -560,13 +661,14 @@ def home():
                     new_total = Decimal('0')
 
                 db.session.query(data).filter(
-                    data.userid == user_id,
+                    data.profileid == user_id,
                     data.date == selected_date
                 ).delete()
 
                 if new_total > 0 or current_maxhours is not None:
                     db.session.add(data(
-                        userid=user_id,
+                        userid=session.get(USERID),
+                        profileid=user_id,
                         date=selected_date,
                         categoryid=None,
                         data=new_total if new_total > 0 else None,
@@ -584,7 +686,7 @@ def home():
                         decimal_hours = Decimal(hours) + Decimal(minutes) / Decimal(60)
 
                         current_entry = db.session.query(data).filter(
-                            data.userid == user_id,
+                            data.profileid == user_id,
                             data.date == selected_date
                         ).first()
                         current_total = current_entry.data if current_entry and current_entry.data is not None else Decimal('0')
@@ -592,13 +694,14 @@ def home():
                         day_delta = decimal_hours - current_total
 
                         db.session.query(data).filter(
-                            data.userid == user_id,
+                            data.profileid == user_id,
                             data.date == selected_date
                         ).delete()
 
                         if decimal_hours > 0 or current_maxhours is not None:
                             db.session.add(data(
-                                userid=user_id,
+                                userid=session.get(USERID),
+                                profileid=user_id,
                                 date=selected_date,
                                 categoryid=None,
                                 data=decimal_hours if decimal_hours > 0 else None,
@@ -647,6 +750,7 @@ def home():
         'home.html',
         user_id=user_id,
         get_username=get_username,
+        get_active_profile_name=get_active_profile_name,
         profile_image_url=get_profile_image_url(),
         selected_date=home_context['selected_date'],
         selected_date_display=home_context['selected_date_display'],
@@ -660,13 +764,50 @@ def home():
         month_hours_numeric=home_context['month_hours_numeric'],
         overview_data=home_context['overview_data'],
         edit_time=home_context['edit_time'],
-        edit_time_24h=home_context['edit_time_24h']
+        edit_time_24h=home_context['edit_time_24h'],
+        profiles=get_profile_list(), active_profile_id=user_id
     )
+
+@app.route('/profiles/switch', methods=['POST'])
+@validTokenChecker
+def switch_profile():
+    profile_id = request.form.get('profile_id', type=int)
+    profile = db.session.query(profiles).filter_by(
+        id=profile_id, userid=session.get(USERID)
+    ).first()
+    if profile is None:
+        return jsonify(error="Profil nicht gefunden"), 404
+    session[PROFILEID] = profile.id
+    return redirect(url_for('home'))
+
+@app.route('/profiles/create', methods=['POST'])
+@validTokenChecker
+def create_profile():
+    name = (request.form.get('name') or '').strip()
+    maxhours_value = (request.form.get('maxhours') or '').strip().replace(',', '.')
+    if not name or len(name) > 30:
+        return jsonify(error="Der Profilname muss zwischen 1 und 30 Zeichen lang sein"), 400
+    try:
+        maxhours = Decimal(maxhours_value)
+    except InvalidOperation:
+        return jsonify(error="Bitte gültige Monatsstunden angeben"), 400
+    if maxhours <= 0 or maxhours > Decimal("999.99"):
+        return jsonify(error="Die Monatsstunden müssen zwischen 0,01 und 999,99 liegen"), 400
+    if db.session.query(profiles).filter_by(userid=session.get(USERID), name=name).first():
+        return jsonify(error="Dieses Profil existiert bereits"), 409
+    next_id = (db.session.query(func.max(profiles.id)).scalar() or 0) + 1
+    profile = profiles(id=next_id, userid=session.get(USERID), name=name, maxhours=maxhours)
+    db.session.add(profile)
+    db.session.commit()
+    session[PROFILEID] = profile.id
+    return redirect(url_for('home'))
 
 @app.route('/edit')
 @validTokenChecker
 def edit():
-    return render_template('edit.html', user_id=session.get(USERID), get_username=get_username)
+    return render_template('edit.html', user_id=session.get(USERID), get_username=get_username,
+                           get_active_profile_name=get_active_profile_name,
+                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID))
 
 @app.route('/profile', methods=["GET", "POST"])
 @validTokenChecker
@@ -709,7 +850,10 @@ def profile():
             result = "Unbekannte Aktion"
         print(f"{result=}")
         profile_message = result
-    return render_template('profile.html', user_id=session.get(USERID), get_username=get_username, profile_image_url=get_profile_image_url(), profile_message=profile_message)
+    return render_template('profile.html', user_id=session.get(USERID), get_username=get_username,
+                           get_active_profile_name=get_active_profile_name,
+                           profile_image_url=get_profile_image_url(), profile_message=profile_message,
+                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID))
 
 @app.route("/logout")
 def logout():
@@ -723,7 +867,9 @@ def logout():
 def count_entries():  # sourcery skip: use-named-expression
     user = db.session.query(users).filter(users.id == session.get(USERID)).first()
     if user:
-        count = db.session.query(func.count(distinct(data.date))).filter(data.userid == user.id).scalar()
+        count = db.session.query(func.count(distinct(data.date))).filter(
+            data.profileid == session.get(PROFILEID)
+        ).scalar()
         #print(count)
         return jsonify(count=count)
     else:

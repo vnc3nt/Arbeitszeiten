@@ -2,11 +2,11 @@ from flask_restful import Resource, reqparse
 from flask_restful.reqparse import RequestParser
 from flask import json, jsonify, session
 from sqlalchemy import func
-from models import db, users, current_date, token, data, category #data und category statt data implementieren
+from models import db, users, profiles, current_date, token, data, category #data und category statt data implementieren
 
 from datetime import datetime
 from decimal import Decimal
-from constants import USERID
+from constants import USERID, PROFILEID
 
 #TODO export und import der Daten -> Backup
 
@@ -44,15 +44,20 @@ patch_arguments.add_argument(
 
 class Data(Resource):
     def get(self):
-        user_id = session.get(USERID)
+        user_id = session.get(PROFILEID)
+        if user_id is None:
+            profile = db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).first()
+            user_id = profile.id if profile else None
+            if user_id:
+                session[PROFILEID] = user_id
         
         # Abfrage der Kategorien für den Nutzer
-        categories = db.session.query(category).filter(category.userid == user_id).all()
+        categories = db.session.query(category).filter(category.profileid == user_id).all()
         category_map = {categ.id: categ.name for categ in categories}
         
         # Abfrage der Daten
-        existing_data = db.session.query(data).filter(data.userid == user_id).order_by(data.date).all()
-        username = db.session.query(users).filter(users.id == user_id).first().username
+        existing_data = db.session.query(data).filter(data.profileid == user_id).order_by(data.date).all()
+        username = db.session.query(users).filter(users.id == session.get(USERID)).first().username
         
         # Strukturierung der Daten für die Ausgabe
         output = []
@@ -68,7 +73,7 @@ class Data(Resource):
         # Maximalwerte für jede Kategorie berechnen
         max_values = {}
         for categ_id, categ_name in category_map.items():
-            max_value = db.session.query(func.max(data.data)).filter(data.userid == user_id, data.categoryid == categ_id).scalar()
+            max_value = db.session.query(func.max(data.data)).filter(data.profileid == user_id, data.categoryid == categ_id).scalar()
             max_values[categ_name] = float(max_value) if max_value is not None else None
         
         return jsonify({
@@ -82,12 +87,15 @@ class Data(Resource):
         user = db.session.query(users).filter(users.id == session.get(USERID)).first()
         
         if user:
-            user_id = user.id
+            user_id = session.get(PROFILEID)
+            if user_id is None:
+                profile = db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).first()
+                user_id = profile.id if profile else None
             
             # Kategorie-ID für den gegebenen Kategorienamen abrufen
             category_name = given_data["category"]
             value = given_data["data"]
-            category_obj = db.session.query(category).filter(category.userid == user_id, category.name == category_name).first()
+            category_obj = db.session.query(category).filter(category.profileid == user_id, category.name == category_name).first()
             
             if not category_obj:
                 print("Error: No such category found.")
@@ -95,11 +103,11 @@ class Data(Resource):
                 category_id = category_obj.id
             
             # Bestehende Daten für den aktuellen Tag und die Kategorie abrufen
-            existing_data = db.session.query(data).filter(data.userid == user_id, data.date == current_date(), data.categoryid == category_id).first()
+            existing_data = db.session.query(data).filter(data.profileid == user_id, data.date == current_date(), data.categoryid == category_id).first()
             
             if existing_data is None:
                 # Neue Datenzeile einfügen
-                new_data = data(userid=user_id, date=current_date(), categoryid=category_id, data=value)
+                new_data = data(userid=session.get(USERID), profileid=user_id, date=current_date(), categoryid=category_id, data=value)
                 db.session.add(new_data)
             else:
                 # Vorhandene Datenzeile aktualisieren
@@ -110,4 +118,3 @@ class Data(Resource):
         else:
             print("Benutzer nicht gefunden")
             return {"message": "Benutzer nicht gefunden"}, 404
-

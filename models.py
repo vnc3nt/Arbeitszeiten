@@ -20,11 +20,22 @@ class users(db.Model):
     password=db.Column(db.String(128), nullable=False)
     profile_image=db.Column(db.String(255), nullable=True)
 
+class profiles(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint("userid", "name", name="uq_profiles_user_name"),
+        {"schema": "arbeitszeiten"},
+    )
+    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
+    userid = db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False)
+    name = db.Column(db.String(30), nullable=False)
+    maxhours = db.Column(db.Numeric(5, 2), nullable=False, default=0)
+
 class data(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}
     userid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False, primary_key=True)
     date=db.Column(db.DATE, nullable=False, primary_key=True, default=current_date)
     categoryid=db.Column(db.BIGINT,ForeignKey("arbeitszeiten.category.id"), nullable=True, primary_key=False)
+    profileid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.profiles.id"), nullable=False, primary_key=True)
     data=db.Column(db.Numeric(5,2), nullable=True)
     maxhours=db.Column(db.Numeric(5,2), nullable=True)
 
@@ -34,6 +45,7 @@ class category(db.Model):
     userid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False, primary_key=True)
     name=db.Column(db.String(30), nullable=False)
     color=db.Column(db.String(7), nullable=False)
+    profileid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.profiles.id"), nullable=False)
 
 class token(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}
