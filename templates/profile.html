@@ -12,18 +12,58 @@
             {% include "snippets/profile_menu.html" %}
     </details>
 </div>
-<a class="backbutton" href="{{ url_for('home') }}"> ❮ Profil</a>
+<a class="backbutton" href="{{ url_for('home') }}">❮ Zur Startseite</a>
 
 <div class="profile-content">
     {% if profile_message %}
     <div class="profile-message">{{ profile_message }}</div>
     {% endif %}
-    <button class="not-implemented" id="changeLanguage">Sprache ändern</button>
-    <button id="changeProfilePic">Profilbild ändern</button>
-    <button id="changeUsernameBtn">Benutzernamen ändern</button>
-    <button id="manageProfilesBtn">Profile bearbeiten</button>
-    <button id="changePasswordBtn">Passwort ändern</button>
-    <button id="deleteAccountBtn" class="deleteAccountBtn">Account Löschen</button>
+    <header class="settings-header">
+        <h1>Kontoeinstellungen</h1>
+        <p>Verwalte dein Konto, dein Profilbild und deine Arbeitsprofile.</p>
+    </header>
+
+    <section class="settings-section">
+        <div class="settings-section-heading">
+            <h2>Konto</h2>
+            <p>Persönliche Kontodaten und Sicherheit</p>
+        </div>
+        <div class="settings-actions">
+            <button id="changeUsernameBtn">Benutzernamen ändern</button>
+            <button id="changePasswordBtn">Passwort ändern</button>
+        </div>
+    </section>
+
+    <section class="settings-section">
+        <div class="settings-section-heading">
+            <h2>Darstellung</h2>
+            <p>Profilbild und Spracheinstellungen</p>
+        </div>
+        <div class="settings-actions">
+            <button id="changeProfilePic">Profilbild ändern</button>
+            <button class="not-implemented" id="changeLanguage">Sprache ändern</button>
+        </div>
+    </section>
+
+    <section class="settings-section">
+        <div class="settings-section-heading">
+            <h2>Arbeitsprofile</h2>
+            <p>Profile umbenennen, ausblenden oder löschen</p>
+        </div>
+        <div class="settings-actions">
+            <button id="manageProfilesBtn">Profile bearbeiten</button>
+        </div>
+    </section>
+
+    <section class="settings-section settings-danger-section">
+        <div class="settings-section-heading">
+            <h2>Account</h2>
+            <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
+        </div>
+        <div class="settings-actions">
+            <button id="deleteAccountBtn" class="deleteAccountBtn">Account löschen</button>
+        </div>
+    </section>
 
     <div class="modal" id="modal-background"></div>
 

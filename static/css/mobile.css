@@ -359,6 +359,23 @@
         flex-direction: column;
         align-items: flex-end;
     }
+
+    .profile-selector-form {
+        width: min(13rem, 52vw);
+    }
+
+    .profile-content {
+        width: min(90vw, 32rem);
+        margin-top: 8rem;
+    }
+
+    .settings-section {
+        padding: 1rem;
+    }
+
+    .settings-actions {
+        grid-template-columns: 1fr;
+    }
     
     /* Modal-Animationen für Mobile */
     .modal-content {

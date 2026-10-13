@@ -41,6 +41,7 @@ body {
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     box-shadow: 0 16px 64px rgba(0,0,0,0.4);
+    font-size: 0.88rem;
     animation: desktop-profile-menu 0.2s ease-out;
     transition: all 0.2s ease-out;
 }
