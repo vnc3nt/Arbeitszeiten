@@ -21,7 +21,6 @@
             {% include "snippets/profile_menu.html" %}
     </details>
     <form class="profile-selector-form" method="post" action="{{ url_for('switch_profile') }}">
-        <label for="profile-selector">Arbeitsprofil</label>
         <select id="profile-selector" name="profile_id"
                 data-active-profile="{{ active_profile_id }}"
                 onchange="selectProfile(this)">
