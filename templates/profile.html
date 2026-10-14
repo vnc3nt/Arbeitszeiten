@@ -182,17 +182,17 @@
                         </path>
                         <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                    <form action="" method="post" class="profile-reset-form">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                        <input type="hidden" name="action" value="reset-profile-picture">
-                        <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
-                    </form>
                     <span>{{ t('dialog.avatar.choose') }}</span>
                 </label>
+
                 <input type="file" name="profile_image" id="profile-image-input"
                     accept="image/png,image/jpeg,image/webp" style="display: none;" />
             </div>
-
+            <form action="" method="post" class="profile-reset-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="action" value="reset-profile-picture">
+                <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
+            </form>
             <div class="profile-upload-hint">{{ t('dialog.avatar.hint') }}</div>
 
 
