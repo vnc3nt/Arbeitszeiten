@@ -1,12 +1,9 @@
 from decimal import Decimal, InvalidOperation
-
-from flask import jsonify, request, session
+from flask import jsonify, session
 from flask_restful import Resource, reqparse
-from sqlalchemy import func
-
-from constants import PROFILEID, USERID
-from models import db, profiles
-
+from constants import PROFILEID
+from models import db, profiles, category, data
+from login import get_authenticated_api_user_id
 
 create_parser = reqparse.RequestParser()
 create_parser.add_argument("name", type=str, required=True)
@@ -15,25 +12,6 @@ create_parser.add_argument("maxhours", type=float, required=True)
 update_parser = reqparse.RequestParser()
 update_parser.add_argument("name", type=str, required=False)
 update_parser.add_argument("visible", type=bool, required=False)
-
-
-def _user_id():
-    if session.get(USERID):
-        return session[USERID]
-
-    authorization = request.headers.get("Authorization", "")
-    if not authorization.startswith("Bearer "):
-        return None
-
-    from models import token
-
-    token_value = authorization.removeprefix("Bearer ").strip()
-    token_row = token.query.filter_by(token=token_value).first()
-    if token_row is None:
-        return None
-
-    session[USERID] = token_row.userid
-    return token_row.userid
 
 
 def _serialize(profile):
@@ -48,34 +26,21 @@ def _serialize(profile):
 def _owned_profile(profile_id, user_id):
     if user_id is None:
         return None
-    return profiles.query.filter_by(
-        id=profile_id,
-        userid=user_id,
-    ).first()
+    return profiles.query.filter_by(id=profile_id, userid=user_id).first()
 
 
 class Profiles(Resource):
     def get(self):
-        user_id = _user_id()
+        user_id = get_authenticated_api_user_id()
         if user_id is None:
             return {"message": "Nicht autorisiert"}, 401
 
-        profile_rows = profiles.query.filter_by(
-            userid=user_id,
-        ).order_by(profiles.id).all()
+        profile_rows = profiles.query.filter_by(userid=user_id).order_by(profiles.id).all()
 
         active_profile_id = session.get(PROFILEID)
-        if not any(
-            profile.id == active_profile_id
-            for profile in profile_rows
-        ):
-            active_profile = next(
-                (profile for profile in profile_rows if profile.visible),
-                None,
-            )
-            active_profile_id = (
-                active_profile.id if active_profile else None
-            )
+        if not any(profile.id == active_profile_id for profile in profile_rows):
+            active_profile = next((p for p in profile_rows if p.visible), None)
+            active_profile_id = active_profile.id if active_profile else None
             if active_profile_id is not None:
                 session[PROFILEID] = active_profile_id
 
@@ -85,7 +50,7 @@ class Profiles(Resource):
         })
 
     def post(self):
-        user_id = _user_id()
+        user_id = get_authenticated_api_user_id()
         if user_id is None:
             return {"message": "Nicht autorisiert"}, 401
 
@@ -102,17 +67,10 @@ class Profiles(Resource):
         if maxhours <= 0 or maxhours > Decimal("999.99"):
             return {"message": "Ungültige Monatsstunden"}, 400
 
-        if profiles.query.filter_by(
-            userid=user_id,
-            name=name,
-        ).first():
+        if profiles.query.filter_by(userid=user_id, name=name).first():
             return {"message": "Dieses Profil existiert bereits"}, 409
 
-        next_id = (
-            db.session.query(func.max(profiles.id)).scalar() or 0
-        ) + 1
         profile = profiles(
-            id=next_id,
             userid=user_id,
             name=name,
             maxhours=maxhours,
@@ -124,7 +82,10 @@ class Profiles(Resource):
         return _serialize(profile), 201
 
     def patch(self, profile_id):
-        user_id = _user_id()
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
+
         profile = _owned_profile(profile_id, user_id)
         if profile is None:
             return {"message": "Profil nicht gefunden"}, 404
@@ -146,64 +107,51 @@ class Profiles(Resource):
         if values.get("visible") is not None:
             visible = bool(values["visible"])
             if not visible and profile.visible and profiles.query.filter_by(
-                userid=user_id,
-                visible=True,
+                userid=user_id, visible=True
             ).count() <= 1:
-                return {
-                    "message": "Mindestens ein Profil muss sichtbar bleiben"
-                }, 400
+                return {"message": "Mindestens ein Profil muss sichtbar bleiben"}, 400
             profile.visible = visible
             if not visible and session.get(PROFILEID) == profile.id:
                 replacement = profiles.query.filter_by(
-                    userid=user_id,
-                    visible=True,
-                ).filter(profiles.id != profile.id).order_by(
-                    profiles.id
-                ).first()
-                session[PROFILEID] = (
-                    replacement.id if replacement else None
-                )
+                    userid=user_id, visible=True
+                ).filter(profiles.id != profile.id).order_by(profiles.id).first()
+                session[PROFILEID] = replacement.id if replacement else None
 
         db.session.commit()
         return _serialize(profile), 200
 
     def delete(self, profile_id):
-        user_id = _user_id()
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
+
         profile = _owned_profile(profile_id, user_id)
         if profile is None:
             return {"message": "Profil nicht gefunden"}, 404
 
         if profiles.query.filter_by(userid=user_id).count() <= 1:
-            return {
-                "message": "Das letzte Profil kann nicht gelöscht werden"
-            }, 400
+            return {"message": "Das letzte Profil kann nicht gelöscht werden"}, 400
 
-        from models import category, data
-
-        db.session.query(data).filter_by(
-            profileid=profile.id
-        ).delete()
-        db.session.query(category).filter_by(
-            profileid=profile.id
-        ).delete()
+        db.session.query(data).filter_by(profileid=profile.id).delete()
+        db.session.query(category).filter_by(profileid=profile.id).delete()
         db.session.delete(profile)
         db.session.commit()
 
         if session.get(PROFILEID) == profile_id:
             replacement = profiles.query.filter_by(
-                userid=user_id,
-                visible=True,
+                userid=user_id, visible=True
             ).order_by(profiles.id).first()
-            session[PROFILEID] = (
-                replacement.id if replacement else None
-            )
+            session[PROFILEID] = replacement.id if replacement else None
 
         return {"message": "Arbeitsprofil gelöscht"}, 200
 
 
 class ProfileSwitch(Resource):
     def post(self, profile_id):
-        user_id = _user_id()
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
+
         profile = _owned_profile(profile_id, user_id)
         if profile is None or not profile.visible:
             return {"message": "Profil nicht gefunden"}, 404

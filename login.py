@@ -3,7 +3,7 @@ import hashlib
 from typing import Optional
 from functools import wraps
 from time import time
-from flask import session, redirect
+from flask import session, redirect, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import category, db, data, users, profiles, token, update_expire_time
 from constants import USERID, TOKEN, PROFILEID, USERNAME_REGEX
@@ -181,3 +181,30 @@ def logoutUser(currentToken):
     session.pop(USERID, None)
     session.pop(PROFILEID, None)
     return redirect("/login")
+
+
+def get_authenticated_api_user_id() -> Optional[int]:
+    """Prüft für API-Aufrufe Session-Token oder Bearer-Token inklusive Ablaufzeit."""
+    # 1. Prüfe reguläre Cookie-Session
+    valid_session_token = _get_valid_token()
+    if valid_session_token:
+        valid_session_token.expiretime = update_expire_time()
+        db.session.commit()
+        return valid_session_token.userid
+
+    # 2. Prüfe Authorization Bearer Header
+    authorization = request.headers.get("Authorization", "")
+    if authorization.startswith("Bearer "):
+        token_value = authorization.removeprefix("Bearer ").strip()
+        if token_value:
+            token_row = db.session.query(token).filter(
+                token.token == token_value,
+                token.expiretime > int(time())
+            ).first()
+            if token_row:
+                token_row.expiretime = update_expire_time()
+                db.session.commit()
+                session[USERID] = token_row.userid
+                return token_row.userid
+
+    return None

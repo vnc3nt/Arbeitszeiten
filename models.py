@@ -43,11 +43,11 @@ class data(db.Model):
 
 class category(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}
-    id=db.Column(db.BIGINT, primary_key=True, nullable=False)
-    userid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False, primary_key=True)
-    name=db.Column(db.String(30), nullable=False)
-    color=db.Column(db.String(7), nullable=False)
-    profileid=db.Column(db.BIGINT, ForeignKey("arbeitszeiten.profiles.id"), nullable=False)
+    id = db.Column(db.BIGINT, primary_key=True, autoincrement=True, nullable=False)
+    userid = db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False)
+    name = db.Column(db.String(30), nullable=False)
+    color = db.Column(db.String(7), nullable=False)
+    profileid = db.Column(db.BIGINT, ForeignKey("arbeitszeiten.profiles.id"), nullable=False)
 
 class token(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}

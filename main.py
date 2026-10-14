@@ -16,11 +16,14 @@ from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from PIL import Image
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # 1. Sauberes Laden der .env über python-dotenv
 load_dotenv()
 
 app = Flask(__name__)
+# Vertraut dem Cloud Run Load Balancer (1 Proxy-Ebene), damit Rate-Limiting die echte User-IP nutzt
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     database_user = os.environ.get("uname")
@@ -72,7 +75,7 @@ csrf = CSRFProtect(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "60 per hour"],
+    default_limits=["3000 per day", "500 per hour"],
     storage_uri="memory://",
 )
 
@@ -85,7 +88,6 @@ PROFILE_IMAGE_MAX_SIZE = 2 * 1024 * 1024
 #print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 app.register_blueprint(api_app)
-csrf.exempt(api_app)
 
 # Jinja2-Filter für deutsche Zahlenformatierung
 @app.template_filter('decimal_comma')
@@ -217,7 +219,7 @@ def ensure_profile_image_column():
 def ensure_profiles():
     db.session.execute(text("""
         CREATE TABLE IF NOT EXISTS arbeitszeiten.profiles (
-            id BIGINT PRIMARY KEY,
+            id BIGSERIAL PRIMARY KEY,
             userid BIGINT NOT NULL REFERENCES arbeitszeiten.users(id),
             name VARCHAR(30) NOT NULL,
             maxhours NUMERIC(5, 2) NOT NULL DEFAULT 0,
@@ -241,6 +243,23 @@ def ensure_profiles():
         text("ALTER TABLE arbeitszeiten.profiles DROP COLUMN IF EXISTS profile_image")
     )
     db.session.execute(text("ALTER TABLE arbeitszeiten.data DROP CONSTRAINT IF EXISTS data_pkey"))
+
+    # Synchronisiere einmalig die PostgreSQL-Sequenzen mit den höchsten vorhandenen IDs
+    db.session.execute(text("""
+        SELECT setval(
+            pg_get_serial_sequence('arbeitszeiten.profiles', 'id'),
+            COALESCE((SELECT MAX(id) FROM arbeitszeiten.profiles), 1),
+            (SELECT MAX(id) FROM arbeitszeiten.profiles) IS NOT NULL
+        );
+    """))
+    db.session.execute(text("""
+        SELECT setval(
+            pg_get_serial_sequence('arbeitszeiten.users', 'id'),
+            COALESCE((SELECT MAX(id) FROM arbeitszeiten.users), 1),
+            (SELECT MAX(id) FROM arbeitszeiten.users) IS NOT NULL
+        );
+    """))
+
     for user in db.session.query(users).all():
         default_profile = db.session.query(profiles).filter_by(
             userid=user.id, name="Standardprofil"
@@ -252,31 +271,32 @@ def ensure_profiles():
             if default_profile is not None:
                 default_profile.name = "Standardprofil"
         if default_profile is None:
-            next_id = db.session.query(func.max(profiles.id)).scalar() or 0
+            # Keine manuelle ID mehr übergeben -> Datenbank vergibt sie sauber!
             default_profile = profiles(
-                id=next_id + 1,
                 userid=user.id,
                 name="Standardprofil",
                 maxhours=0,
             )
             db.session.add(default_profile)
             db.session.flush()
-        db.session.execute(text("""
-            UPDATE arbeitszeiten.data d
-            SET profileid = p.id
-            FROM arbeitszeiten.profiles p
-            WHERE d.userid = p.userid
-              AND d.profileid IS NULL
-              AND p.name = 'Standardprofil'
-        """))
-        db.session.execute(text("""
-            UPDATE arbeitszeiten.category c
-            SET profileid = p.id
-            FROM arbeitszeiten.profiles p
-            WHERE c.userid = p.userid
-              AND c.profileid IS NULL
-              AND p.name = 'Standardprofil'
-        """))
+
+    # Bulk-Update einmalig außerhalb der User-Schleife (deutlich schneller beim Start!)
+    db.session.execute(text("""
+        UPDATE arbeitszeiten.data d
+        SET profileid = p.id
+        FROM arbeitszeiten.profiles p
+        WHERE d.userid = p.userid
+          AND d.profileid IS NULL
+          AND p.name = 'Standardprofil'
+    """))
+    db.session.execute(text("""
+        UPDATE arbeitszeiten.category c
+        SET profileid = p.id
+        FROM arbeitszeiten.profiles p
+        WHERE c.userid = p.userid
+          AND c.profileid IS NULL
+          AND p.name = 'Standardprofil'
+    """))
     db.session.execute(text("""
         ALTER TABLE arbeitszeiten.data
         ADD CONSTRAINT data_pkey PRIMARY KEY (userid, date, profileid)
@@ -363,6 +383,9 @@ def save_profile_image(uploaded_file, user):
         return "Ungültige oder beschädigte Bilddatei"
 
     # Bild auf max. 512x512 begrenzen und als sauberes WEBP/PNG speichern
+    if img.mode not in ("RGB", "RGBA"):
+        img = img.convert("RGBA")
+
     img.thumbnail((512, 512))
     os.makedirs(PROFILE_IMAGE_ABS_FOLDER, exist_ok=True)
 
@@ -661,8 +684,10 @@ def home():
 
         try:
             if action == 'set_max_hours':
-                max_hours_str = request.form.get('max_hours', '').replace(',', '.')
+                max_hours_str = request.form.get('max_hours', '').strip().replace(',', '.')
                 max_hours = Decimal(max_hours_str) if max_hours_str else None
+                if max_hours is not None and not (Decimal('0') < max_hours <= Decimal('999.99')):
+                    raise ValueError("Monatsstunden müssen zwischen 0,01 und 999,99 liegen")
                 first_of_month = selected_date.replace(day=1)
                 previous_effective_maxhours = get_previous_effective_maxhours(user_id, selected_date)
                 stored_max_hours = max_hours
@@ -739,6 +764,8 @@ def home():
                     if len(time_parts) == 2:
                         hours = int(time_parts[0])
                         minutes = int(time_parts[1])
+                        if not (0 <= hours <= 24 and 0 <= minutes < 60) or (hours == 24 and minutes > 0):
+                            raise ValueError("Tagesarbeitszeit muss zwischen 00:00 und 24:00 liegen")
                         decimal_hours = Decimal(hours) + Decimal(minutes) / Decimal(60)
 
                         current_entry = db.session.query(data).filter(
@@ -936,6 +963,7 @@ def edit():
                            all_profiles=get_all_profile_list())
 
 @app.route('/profile', methods=["GET", "POST"])
+@limiter.limit("20 per minute")
 @validTokenChecker
 def profile():
     profile_message = request.args.get("profile_message")

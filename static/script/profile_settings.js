@@ -1,39 +1,38 @@
 let dialogNormalShowModal = HTMLDialogElement.prototype.showModal;
 
 let dialogCloseOnClick = (e) => {
-    // close when clicking outside of the modal
     e.stopPropagation();
-    let elem = e.target;
-    while (elem.tagName != "DIALOG") {
-        elem = elem.parentNode;
-    }
-    if (elem.offsetTop > e.y || elem.offsetTop + elem.offsetHeight < e.y || elem.offsetLeft - elem.offsetWidth / 2 > e.x || elem.offsetLeft + elem.offsetWidth / 2 < e.x) {
+    let elem = e.target.closest("dialog");
+    if (!elem) return;
+
+    if (
+        elem.offsetTop > e.y ||
+        elem.offsetTop + elem.offsetHeight < e.y ||
+        elem.offsetLeft - elem.offsetWidth / 2 > e.x ||
+        elem.offsetLeft + elem.offsetWidth / 2 < e.x
+    ) {
         elem.close();
     }
 };
 
 window.addEventListener("keydown", (e) => {
-    if (e.key == "Escape") {
+    if (e.key === "Escape") {
         let bg_modal = document.getElementById("modal-background");
-        bg_modal.style.display = "none";
+        if (bg_modal) bg_modal.style.display = "none";
     }
-}, true)
+}, true);
 
 HTMLDialogElement.prototype.showModal = function () {
     let bg_modal = document.getElementById("modal-background");
-    bg_modal.style.display = "block";
+    if (bg_modal) bg_modal.style.display = "block";
     dialogNormalShowModal.apply(this, arguments);
     this.addEventListener("click", dialogCloseOnClick);
 };
 
 let dialogNormalModalClose = HTMLDialogElement.prototype.close;
 HTMLDialogElement.prototype.close = function () {
-    
     let bg_modal = document.querySelector("#modal-background");
-    bg_modal.style.display = "none";
-    background_modal_event = undefined;
-    
-
+    if (bg_modal) bg_modal.style.display = "none";
     dialogNormalModalClose.apply(this, arguments);
     this.removeEventListener("click", dialogCloseOnClick);
 };

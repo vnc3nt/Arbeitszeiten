@@ -1,154 +1,121 @@
-from flask_restful import Resource, reqparse
+import re
+from flask_restful import Resource
 from flask_restful.reqparse import RequestParser
-from flask import json, jsonify, session
-from sqlalchemy import func
-from models import db, users, profiles, current_date, token, data, category #data und category statt data implementieren
+from flask import jsonify, session
+from models import db, profiles, data, category
+from constants import PROFILEID
+from login import get_authenticated_api_user_id
 
-from datetime import datetime
-from decimal import Decimal
-from constants import USERID, PROFILEID
-
-#TODO export und import der Daten -> Backup
+HEX_COLOR_REGEX = re.compile(r"^#[0-9a-fA-F]{6}$")
 
 post_arguments = RequestParser(bundle_errors=True)
-
-post_arguments.add_argument(
-    name = "name",
-    type = str,
-    nullable = False,
-    required = True
-)
-
-post_arguments.add_argument(
-    name = "color", # mit # vor color-Wert
-    type = str,
-    nullable = False,
-    required = True
-)
-
-post_arguments.add_argument(
-    name = "unit",
-    type = str,
-    nullable = False,
-    required = True
-)
-
+post_arguments.add_argument(name="name", type=str, nullable=False, required=True)
+post_arguments.add_argument(name="color", type=str, nullable=False, required=True)
 
 patch_arguments = post_arguments.copy()
 
 
+def _get_active_owned_profile_id(user_id: int):
+    profile_id = session.get(PROFILEID)
+    if profile_id is not None:
+        owned = db.session.query(profiles).filter_by(id=profile_id, userid=user_id).first()
+        if owned:
+            return owned.id
+    first_profile = db.session.query(profiles).filter_by(userid=user_id).order_by(profiles.id).first()
+    if first_profile:
+        session[PROFILEID] = first_profile.id
+        return first_profile.id
+    return None
+
+
 class Categories(Resource):
     def get(self):
-        profile_id = session.get(PROFILEID)
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
+
+        profile_id = _get_active_owned_profile_id(user_id)
         if profile_id is None:
-            profile = db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).first()
-            profile_id = profile.id if profile else None
-        categories = category.query.filter_by(profileid=profile_id).all()
+            return jsonify([])
+
+        categories = category.query.filter_by(profileid=profile_id, userid=user_id).all()
         return jsonify([{
             'id': categ.id,
             'userid': categ.userid,
             'name': categ.name,
             'color': categ.color,
-            'unit': categ.unit
         } for categ in categories])
 
     def post(self):
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
+
         given_data = post_arguments.parse_args(strict=False)
-        user = db.session.query(users).filter(users.id == session.get(USERID)).first()
+        profile_id = _get_active_owned_profile_id(user_id)
+        if profile_id is None:
+            return {"message": "Kein Profil gefunden"}, 404
 
+        category_name = (given_data["name"] or "").strip()
+        category_color = (given_data["color"] or "").strip()
 
-        if user:
-            user_id = session.get(PROFILEID)
-            if user_id is None:
-                profile = db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).first()
-                user_id = profile.id if profile else None
-            
-            # Kategorie-ID für den gegebenen Kategorienamen abrufen
-            category_id = db.session.query(func.max(category.id)).scalar() + 1
-            category_name = given_data["name"]
-            category_unit = given_data["unit"]
-            category_color = given_data["color"]
-            print(category_name)
-            
-            # Bestehende Daten für den aktuellen Tag und die Kategorie abrufen
-            existing_category = db.session.query(category).filter(category.profileid == user_id, category.name == category_name).first()
-            
-            if existing_category is None:
-                # Neue Datenzeile einfügen
-                new_category = category(
-                    id=category_id,
-                    userid=session.get(USERID),
-                    profileid=user_id,
-                    name=category_name,
-                    unit=category_unit,
-                    color=category_color
-                )
-                db.session.add(new_category)
-                
-            else:
-                # Kategorie existiert bereits
-                print("Kategorie existiert bereits")
-                return {}, 403
-            
-            db.session.commit()
-            return {}, 201
-        else:
-            print("Benutzer nicht gefunden")
-            return {"message": "Benutzer nicht gefunden"}, 404
-        
+        if not category_name or len(category_name) > 30:
+            return {"message": "Ungültiger Kategoriename"}, 400
+        if not HEX_COLOR_REGEX.fullmatch(category_color):
+            return {"message": "Ungültiger Farbcode (Format: #RRGGBB)"}, 400
+
+        existing_category = db.session.query(category).filter_by(
+            profileid=profile_id, name=category_name
+        ).first()
+        if existing_category is not None:
+            return {"message": "Kategorie existiert bereits"}, 409
+
+        new_category = category(
+            userid=user_id,
+            profileid=profile_id,
+            name=category_name,
+            color=category_color
+        )
+        db.session.add(new_category)
+        db.session.commit()
+        return {}, 201
+
     def put(self, category_id):
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
 
-        print("something")
         given_data = patch_arguments.parse_args(strict=False)
-        user = db.session.query(users).filter(users.id == session.get(USERID)).first()
+        profile_id = _get_active_owned_profile_id(user_id)
 
+        existing_category = db.session.query(category).filter_by(
+            profileid=profile_id, userid=user_id, id=category_id
+        ).first()
+        if not existing_category:
+            return {"message": "Kategorie nicht gefunden"}, 404
 
-        
+        category_name = (given_data["name"] or "").strip()
+        category_color = (given_data["color"] or "").strip()
+        if not category_name or len(category_name) > 30 or not HEX_COLOR_REGEX.fullmatch(category_color):
+            return {"message": "Ungültige Eingabedaten"}, 400
 
-        if user:
-            user_id = session.get(PROFILEID)
-            if user_id is None:
-                profile = db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).first()
-                user_id = profile.id if profile else None
-            print(f"Benutzer gefunden: {user_id}")
-
-            existing_category = db.session.query(category).filter(category.profileid == user_id, category.id == category_id).first()
-            
-            if existing_category:
-                print(f"Kategorie gefunden: {existing_category.name}")
-                existing_category.name = given_data["name"]
-                existing_category.unit = given_data["unit"]
-                existing_category.color = given_data["color"]
-                
-                db.session.commit()
-                return {}, 200
-            else:
-                print("Kategorie nicht gefunden")
-                return {"message": "Kategorie nicht gefunden"}, 404
-        else:
-            print("Benutzer nicht gefunden")
-            return {"message": "Benutzer nicht gefunden"}, 404
-        
+        existing_category.name = category_name
+        existing_category.color = category_color
+        db.session.commit()
+        return {}, 200
 
     def delete(self, category_id):
-        user = db.session.query(users).filter(users.id == session.get(USERID)).first()
-        
-        if user:
-            user_id = session.get(PROFILEID)
-            if user_id is None:
-                profile = db.session.query(profiles).filter_by(userid=session.get(USERID)).order_by(profiles.id).first()
-                user_id = profile.id if profile else None
-            category_to_delete = db.session.query(category).filter(category.profileid == user_id, category.id == category_id).delete()
-            
-            if category_to_delete:
-                # Löschen aller verknüpften Daten
-                db.session.query(data).filter(data.profileid == user_id, data.categoryid == category_id).delete()
-                
-                # Löschen der Kategorie
-                db.session.commit()
-                
-                return {"message": "Kategorie erfolgreich gelöscht"}, 200
-            else:
-                return {"message": "Kategorie nicht gefunden"}, 404
-        else:
-            return {"message": "Benutzer nicht gefunden"}, 404
+        user_id = get_authenticated_api_user_id()
+        if user_id is None:
+            return {"message": "Nicht autorisiert"}, 401
+
+        profile_id = _get_active_owned_profile_id(user_id)
+        deleted = db.session.query(category).filter_by(
+            profileid=profile_id, userid=user_id, id=category_id
+        ).delete()
+
+        if deleted:
+            db.session.query(data).filter_by(profileid=profile_id, categoryid=category_id).delete()
+            db.session.commit()
+            return {"message": "Kategorie erfolgreich gelöscht"}, 200
+        return {"message": "Kategorie nicht gefunden"}, 404
