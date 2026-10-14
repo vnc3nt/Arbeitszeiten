@@ -143,10 +143,12 @@ function validateForm() {
 }
 
 async function checkUsernameExists(username) {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   const response = await fetch('/api/check-existence', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken || ''
     },
     body: JSON.stringify({
       type: 'username',

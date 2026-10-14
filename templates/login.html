@@ -52,6 +52,7 @@
 <img class="logo-pic-centered" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten">
 <div class="login">
     <form action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="text" name="username_input" placeholder="Benutzername"><br>
         <input type="password" name="password_input" placeholder="Passwort"><br>
         <button class="prim_button_style" name="login_btn">Einloggen</button>

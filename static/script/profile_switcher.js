@@ -5,18 +5,22 @@ function selectProfile(select) {
         if (!name || !name.trim()) {
             return;
         }
-        const maxhours = window.prompt('Monatsstunden für dieses Profil (z. B. 35, 35,5 oder 35.5):');
+        const maxhours = window.prompt('Monatsstunden für dieses Profil:');
         if (!maxhours || !maxhours.trim()) {
             return;
         }
 
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         const formData = new FormData();
         formData.append('name', name.trim());
         formData.append('maxhours', maxhours.trim());
         fetch('/profiles/create', {
             method: 'POST',
             body: formData,
-            headers: { 'X-Requested-With': 'fetch' }
+            headers: {
+                'X-Requested-With': 'fetch',
+                'X-CSRFToken': csrfToken || ''
+            }
         }).then((response) => {
             if (!response.ok) {
                 return response.json().then((body) => {

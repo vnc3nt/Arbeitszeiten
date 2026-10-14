@@ -59,6 +59,7 @@
         <div class="error-message">{{ error }}</div>
     {% endif %}
     <form action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="text" id="username_input" name="username_input" placeholder="Benutzername"><br>
         <img class="regex" id="usernameCheck"><div class="regexFeedback" id="usernameAvailable">Benutzername ist verfügbar</div>
         <img class="regex" id="usernameX"><div class="regexFeedback" id="usernameNotAvailable">Benutzername ist bereits vergeben</div><br>

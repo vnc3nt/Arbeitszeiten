@@ -42,12 +42,13 @@ HTMLDialogElement.prototype.close = function () {
 window.addEventListener("DOMContentLoaded", (e) => {
     let change_user_name_btn = document.getElementById("changeUsernameBtn");
     let change_username_dialog = document.getElementById("change-user-name-dialog");
+    if (!change_user_name_btn || !change_username_dialog) return;
     
     change_username_dialog.querySelector("input[type=reset]").addEventListener("click", (e) => {
         change_username_dialog.close();
     })
 
-    change_username_dialog.querySelector("input[type=submit]").addEventListener("click", async (e) => {
+    change_username_dialog.querySelector("form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = change_username_dialog.querySelector("form");
         const newUsername = form.querySelector("input[name=new_username]").value.trim();
@@ -57,12 +58,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
             return;
         }
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             const res = await fetch("/api/check-existence", {
                 method: "POST",
                 body: JSON.stringify({"type": "username", "value": newUsername}),
                 headers: {
                     "Accept": "application/json, text/plain, */*",
-                    "Content-type": "application/json; charset=UTF-8"
+                    "Content-type": "application/json; charset=UTF-8",
+                    "X-CSRFToken": csrfToken || ""
                 }
             }).then((resp) => resp.json());
             if (!res.exists) {
@@ -92,6 +95,7 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("DOMContentLoaded", (e) => {
     let delete_account_btn = document.getElementById("deleteAccountBtn");
     let delete_acc_dialog = document.getElementById("delete-account-dialog");
+    if (!delete_account_btn || !delete_acc_dialog) return;
 
     delete_acc_dialog.querySelector("input[type=reset]").addEventListener("click", (e) => {
         delete_acc_dialog.close();
@@ -107,6 +111,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
 window.addEventListener("DOMContentLoaded", (e) => {
     let change_password_btn = document.getElementById("changePasswordBtn");
     let change_password_dialog = document.getElementById("change-password-dialog");
+    if (!change_password_btn || !change_password_dialog) return;
 
     change_password_dialog.querySelector("input[type=reset]").addEventListener("click", (e) => {
         change_password_dialog.close();

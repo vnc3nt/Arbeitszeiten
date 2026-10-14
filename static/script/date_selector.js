@@ -370,11 +370,13 @@ async function fetchHomeState({ method = 'GET', dateValue = null, formData = nul
     showActionLoading();
 
     try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         const requestOptions = {
             method,
             headers: {
                 'Accept': 'application/json',
-                'X-Requested-With': 'fetch'
+                'X-Requested-With': 'fetch',
+                'X-CSRFToken': csrfToken || ''
             }
         };
 

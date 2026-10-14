@@ -11,15 +11,14 @@ from sqlalchemy import func, distinct, text
 from decimal import Decimal, InvalidOperation
 from werkzeug.utils import secure_filename
 from urllib.parse import quote
+from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from PIL import Image
 
-if os.path.exists(".env"):
-    with open(".env", "r") as f:
-        for line in f.readlines():
-            if line.strip() and not line.strip().startswith("#"):
-                attr, val = line.lstrip().split("=", 1)
-                os.environ[attr] = val.rstrip("\n")
-else:
-    print("Keine .env Datei gefunden, nutze Cloud-Umgebungsvariablen.")
+# 1. Sauberes Laden der .env über python-dotenv
+load_dotenv()
 
 app = Flask(__name__)
 database_url = os.environ.get("DATABASE_URL")
@@ -54,11 +53,27 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
         "options": "-csearch_path=arbeitszeiten,public"
     }
 }
+
+secret_key = os.environ.get("SECRET_KEY")
+if not secret_key:
+    raise RuntimeError("KRITISCH: SECRET_KEY Umgebungsvariable ist nicht gesetzt!")
+
 app.config.update(
-    BUNDLE_ERRORS = True,
-    SECRET_KEY = os.environ.get("SECRET_KEY"),
-    SESSION_COOKIE_SECURE = True,  # Cloud Run nutzt HTTPS, also auf True setzen, bei render hatte ich False
-    SESSION_COOKIE_SAMESITE = "Lax" # "Lax" ist oft kompatibler als "Strict" für Redirects
+    BUNDLE_ERRORS=True,
+    SECRET_KEY=secret_key,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,  # Verhindert Zugriff auf Session-Cookie via JavaScript (XSS-Schutz)
+    SESSION_COOKIE_SAMESITE="Lax",
+    MAX_CONTENT_LENGTH=2 * 1024 * 1024,  # Blockiert Uploads > 2 MB sofort auf Server-Ebene (DoS-Schutz)
+)
+
+# 2. CSRF-Schutz und Rate-Limiter initialisieren
+csrf = CSRFProtect(app)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "60 per hour"],
+    storage_uri="memory://",
 )
 
 PROFILE_IMAGE_DEFAULT = "img/icons/512x512-profile.png"
@@ -70,6 +85,7 @@ PROFILE_IMAGE_MAX_SIZE = 2 * 1024 * 1024
 #print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 app.register_blueprint(api_app)
+csrf.exempt(api_app)
 
 # Jinja2-Filter für deutsche Zahlenformatierung
 @app.template_filter('decimal_comma')
@@ -337,27 +353,26 @@ def save_profile_image(uploaded_file, user):
     if not allowed_profile_image(uploaded_file.filename):
         return "Nur PNG, JPG oder WEBP sind erlaubt"
 
-    uploaded_file.stream.seek(0, os.SEEK_END)
-    file_size = uploaded_file.stream.tell()
-    uploaded_file.stream.seek(0)
+    try:
+        # Prüft, ob es sich wirklich um eine valide Bilddatei handelt
+        img = Image.open(uploaded_file.stream)
+        img.verify()
+        uploaded_file.stream.seek(0)
+        img = Image.open(uploaded_file.stream)
+    except Exception:
+        return "Ungültige oder beschädigte Bilddatei"
 
-    if file_size > PROFILE_IMAGE_MAX_SIZE:
-        return "Die Datei darf maximal 2 MB groß sein"
-
-    extension = uploaded_file.filename.rsplit(".", 1)[1].lower()
-    if extension == "jpeg":
-        extension = "jpg"
-
+    # Bild auf max. 512x512 begrenzen und als sauberes WEBP/PNG speichern
+    img.thumbnail((512, 512))
     os.makedirs(PROFILE_IMAGE_ABS_FOLDER, exist_ok=True)
 
     previous_profile_image = user.profile_image
-
-    filename = secure_filename(f"profile_{user.id}.{extension}")
+    filename = secure_filename(f"profile_{user.id}.webp")
     relative_path = os.path.join(PROFILE_IMAGE_FOLDER, filename).replace("\\", "/")
     absolute_path = os.path.join(app.static_folder, relative_path)
 
     try:
-        uploaded_file.save(absolute_path)
+        img.save(absolute_path, format="WEBP", quality=85)
         user.profile_image = relative_path
         db.session.commit()
     except Exception:
@@ -566,7 +581,8 @@ with app.app_context():
 def index():
     return redirect("/login")
 
-@app.route('/login',methods=["GET","POST"])
+@app.route('/login', methods=["GET", "POST"])
+@limiter.limit("10 per minute")  # Schutz gegen Brute-Force
 @loginChecker
 def login():
     login_error = None
@@ -574,15 +590,13 @@ def login():
         username = (request.form.get("username_input") or "").strip()
         password = request.form.get("password_input")
         if username and password and checkuser(username, password):
-            # successful logged in
-            # token cleanup
-            for everySession in db.session.query(token).filter(token.expiretime < time()):
-                db.session.delete(everySession)
-            session[USERID] = db.session.query(users).filter(users.username==username).first().id
+            db.session.query(token).filter(token.expiretime < int(time())).delete()
+            user_obj = db.session.query(users).filter(users.username == username).first()
+            session[USERID] = user_obj.id
             default_profile = db.session.query(profiles).filter_by(userid=session[USERID]).order_by(profiles.id).first()
             if default_profile:
                 session[PROFILEID] = default_profile.id
-            newToken = token(userid=session[USERID], token=secrets.token_urlsafe(96)) # 96 always produces a 128-long string, but idk why
+            newToken = token(userid=session[USERID], token=secrets.token_urlsafe(96))
             session[TOKEN] = newToken.token
             db.session.add(newToken)
             db.session.commit()
@@ -590,36 +604,37 @@ def login():
         login_error = "Benutzername oder Passwort ist falsch"
     return render_template('login.html', login_error=login_error)
 
-@app.route('/register',methods=["GET","POST"])
+
+@app.route('/register', methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def register():
     if request.method == "POST":
-        username_input = request.form.get("username_input")
+        username_input = (request.form.get("username_input") or "").strip()
         password_1 = request.form.get("password_input_1")
         password_2 = request.form.get("password_input_2")
         terms_checkbox = request.form.get("terms_checkbox")
-        
-        # Check if terms checkbox is checked
+
         if not terms_checkbox:
-            # You could add a flash message here for better UX
             return render_template('register.html', error="Sie müssen den Datenschutzbestimmungen zustimmen.")
-        
-        if username_input is not None and password_1 is not None and password_2 is not None and checkRegistration(username_input, password_1, password_2) and check_username(username_input):
-            # successful logged in
-            # token cleanup
-            last_id = db.session.query(func.max(users.id)).scalar()
-            newUserId = (last_id or 0) + 1
-            newUser = users(id=newUserId, username=username_input, password=hash_pw(password_1))
-            db.session.add(newUser)
-            db.session.commit()
-            db.session.add(profiles(
-                id=newUserId,
-                userid=newUserId,
-                name="Standardprofil",
-                maxhours=0,
-                visible=True,
-            ))
-            db.session.commit()
-            return redirect("/login")
+
+        if username_input and password_1 and password_2 and checkRegistration(username_input, password_1, password_2) and check_username(username_input):
+            try:
+                # Datenbank vergibt die ID automatisch (kein func.max + 1 mehr!)
+                newUser = users(username=username_input, password=hash_pw(password_1))
+                db.session.add(newUser)
+                db.session.flush()  # Holt die generierte newUser.id aus der DB
+
+                db.session.add(profiles(
+                    userid=newUser.id,
+                    name="Standardprofil",
+                    maxhours=0,
+                    visible=True,
+                ))
+                db.session.commit()
+                return redirect("/login")
+            except Exception:
+                db.session.rollback()
+                return render_template('register.html', error="Benutzername existiert bereits.")
     return render_template('register.html')
 
 @app.route('/home', methods=["GET", "POST"])
@@ -836,9 +851,7 @@ def create_profile():
         return jsonify(error="Die Monatsstunden müssen zwischen 0,01 und 999,99 liegen"), 400
     if db.session.query(profiles).filter_by(userid=session.get(USERID), name=name).first():
         return jsonify(error="Dieses Profil existiert bereits"), 409
-    next_id = (db.session.query(func.max(profiles.id)).scalar() or 0) + 1
     profile = profiles(
-        id=next_id,
         userid=session.get(USERID),
         name=name,
         maxhours=maxhours,
@@ -961,7 +974,7 @@ def profile():
         
         else:
             result = "Unbekannte Aktion"
-        print(f"{result=}")
+
         profile_message = result
     return render_template('profile.html', user_id=session.get(USERID), get_username=get_username,
                            get_active_profile_name=get_active_profile_name,
@@ -997,10 +1010,11 @@ def impressum():
 @app.route('/dpa')
 def dpa():
     try:
-        return send_file('static/docs/dpa.pdf', 
-                         as_attachment=True)
-    except Exception as e:
-        return str(e)
+        return send_file('static/docs/dpa.pdf', as_attachment=True)
+    except FileNotFoundError:
+        return "Dokument nicht gefunden", 404
+    except Exception:
+        return "Interner Serverfehler", 500
 
 
 def get_username() -> str:

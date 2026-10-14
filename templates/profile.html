@@ -69,6 +69,7 @@
 
     <dialog id="change-user-name-dialog">
         <form action="" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <h2>Benutzernamen ändern</h2>
             <input type="hidden" value="change-username" name="action" />
             <input type="text" placeholder="Neuer Benutzername" name="new_username" /><br>
@@ -78,6 +79,7 @@
     </dialog>
     <dialog id="delete-account-dialog">
         <form action="" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <h2>Account löschen</h2>
             <input type="hidden" name="action" value="delete-account">
             <input type="password" name="password" id="password" placeholder="Passwort">
@@ -88,6 +90,7 @@
     </dialog>
     <dialog id="change-password-dialog">
         <form action="" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <h2>Passwort ändern</h2>
 
             <input type="hidden" name="action" value="change-password">
@@ -101,6 +104,7 @@
 
     <dialog id="change-profile-picture-dialog">
         <form action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <h2>Profilbild ändern</h2>
             <input type="hidden" name="action" value="change-profile-picture">
             <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}" alt="Vorschau Profilbild">
@@ -118,6 +122,7 @@
             </div>
         </form>
         <form action="" method="post" class="profile-reset-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="hidden" name="action" value="reset-profile-picture">
             <input type="submit" value="Standardbild wiederherstellen" />
         </form>
@@ -126,6 +131,7 @@
         <h2>Arbeitsprofile bearbeiten</h2>
             {% for work_profile in all_profiles %}
             <form method="post" action="{{ url_for('manage_profile') }}" class="profile-management-row">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="profile_id" value="{{ work_profile.id }}">
                 <input type="text" name="name" value="{{ work_profile.name }}" maxlength="30"
                        aria-label="Name von {{ work_profile.name }}">

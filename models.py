@@ -15,21 +15,22 @@ def update_expire_time():
 
 class users(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}
-    id=db.Column(db.BIGINT, primary_key=True, nullable=False)
-    username=db.Column(db.String(30), nullable=False)
-    password=db.Column(db.String(128), nullable=False)
-    profile_image=db.Column(db.String(255), nullable=True)
+    id = db.Column(db.BIGINT, primary_key=True, autoincrement=True, nullable=False)
+    username = db.Column(db.String(30), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)  # Erweitert auf 255 für sichere Hashes
+    profile_image = db.Column(db.String(255), nullable=True)
 
 class profiles(db.Model):
     __table_args__ = (
         db.UniqueConstraint("userid", "name", name="uq_profiles_user_name"),
         {"schema": "arbeitszeiten"},
     )
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
+    id = db.Column(db.BIGINT, primary_key=True, autoincrement=True, nullable=False)
     userid = db.Column(db.BIGINT, ForeignKey("arbeitszeiten.users.id"), nullable=False)
     name = db.Column(db.String(30), nullable=False)
     maxhours = db.Column(db.Numeric(5, 2), nullable=False, default=0)
     visible = db.Column(db.Boolean, nullable=False, default=True)
+
 
 class data(db.Model):
     __table_args__ = {'schema': 'arbeitszeiten'}
