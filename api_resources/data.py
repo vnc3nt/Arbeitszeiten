@@ -63,6 +63,8 @@ class Data(Resource):
 
         category_name = (given_data["category"] or "").strip()
         value = given_data["data"]
+        if value is not None and not (0 <= value <= 999.99):
+            return {"message": "Wert muss zwischen 0 und 999,99 liegen"}, 400
 
         category_obj = db.session.query(category).filter_by(
             profileid=profile_id, name=category_name

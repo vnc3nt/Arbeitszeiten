@@ -52,6 +52,8 @@ if not database_url:
     )
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,   # Prüft vor jedem Query, ob die SSL-Verbindung noch lebt
+    "pool_recycle": 300,     # Erneuert Verbindungen im Pool automatisch alle 5 Minuten
     "connect_args": {
         "options": "-csearch_path=arbeitszeiten,public"
     }
@@ -257,6 +259,16 @@ def ensure_profiles():
             pg_get_serial_sequence('arbeitszeiten.users', 'id'),
             COALESCE((SELECT MAX(id) FROM arbeitszeiten.users), 1),
             (SELECT MAX(id) FROM arbeitszeiten.users) IS NOT NULL
+        );
+    """))
+
+    db.session.execute(text("""
+        CREATE SEQUENCE IF NOT EXISTS arbeitszeiten.category_id_seq;
+        ALTER TABLE arbeitszeiten.category ALTER COLUMN id SET DEFAULT nextval('arbeitszeiten.category_id_seq');
+        SELECT setval(
+            'arbeitszeiten.category_id_seq',
+            COALESCE((SELECT MAX(id) FROM arbeitszeiten.category), 1),
+            (SELECT MAX(id) FROM arbeitszeiten.category) IS NOT NULL
         );
     """))
 
@@ -599,6 +611,8 @@ with app.app_context():
     db.create_all()
     ensure_profile_image_column()
     ensure_profiles()
+    db.session.remove()
+    db.engine.dispose()  # Schließt den initialen SSL-Socket vor dem Gunicorn-Worker-Fork
 
 @app.route('/')
 def index():
@@ -954,14 +968,6 @@ def manage_profile():
 
     return redirect(url_for('profile', profile_message=message))
 
-@app.route('/edit')
-@validTokenChecker
-def edit():
-    return render_template('edit.html', user_id=session.get(USERID), get_username=get_username,
-                           get_active_profile_name=get_active_profile_name,
-                           profiles=get_profile_list(), active_profile_id=session.get(PROFILEID),
-                           all_profiles=get_all_profile_list())
-
 @app.route('/profile', methods=["GET", "POST"])
 @limiter.limit("20 per minute")
 @validTokenChecker
@@ -1010,11 +1016,10 @@ def profile():
                            profiles=get_profile_list(), active_profile_id=session.get(PROFILEID),
                            all_profiles=get_all_profile_list())
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     token = session.get(TOKEN)
     logoutUser(token)
-
     return redirect("/login")
 
 @app.route('/count', methods=['GET'])

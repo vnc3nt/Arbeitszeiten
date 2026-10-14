@@ -2,8 +2,8 @@ import csv
 
 #data -> newdata
 
-input_file = r'C:\Users\vnc3n\Downloads\data_rows.csv'
-output_file = r'C:\Users\vnc3n\Downloads\transformed_data.csv'
+input_file = 'data_rows.csv'
+output_file = 'transformed_data.csv'
 
 categories = {
     'fat': 1,

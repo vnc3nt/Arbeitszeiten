@@ -13,7 +13,7 @@
             "purpose": "maskable"
           }
     ],
-    "start_url": "https://arbeitszeiten.onrender.com/home",
+    "start_url": "/home",
     "display": "standalone",
     "background_color": "#121212",
     "theme_color": "#121212"

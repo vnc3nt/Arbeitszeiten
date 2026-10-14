@@ -27,16 +27,19 @@
         
     
 
-        <a href="{{ url_for('logout') }}">
-            <li>
-                <ul>
-                    <img class="icon" src="{{url_for('static', filename='img/icons/96x96-logout.png')}}" alt="logout">
-                </ul>
-                <ul>
-                    <div class="logout">Abmelden</div>
-                </ul>
-            </li>
-        </a>
+        <form action="{{ url_for('logout') }}" method="post" style="margin: 0;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" style="all: unset; cursor: pointer; width: 100%; display: block;">
+                <li>
+                    <ul>
+                        <img class="icon" src="{{url_for('static', filename='img/icons/96x96-logout.png')}}" alt="logout">
+                    </ul>
+                    <ul>
+                        <div class="logout">Abmelden</div>
+                    </ul>
+                </li>
+            </button>
+        </form>
 
         <div class="legal">
             <a href="{{ url_for('impressum') }}">
