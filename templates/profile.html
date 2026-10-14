@@ -13,7 +13,12 @@
         {% include "snippets/profile_menu.html" %}
     </details>
 </div>
-<a class="backbutton" href="{{ url_for('home') }}">{{ t('common.back') }}</a>
+<a class="backbutton" href="{{ url_for('home') }}" aria-label="{{ t('common.back') }}">
+    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="backbutton-icon">
+        <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    <span class="backbutton-text">{{ t('common.back') }}</span>
+</a>
 
 <div class="profile-content">
     {% if profile_message %}
