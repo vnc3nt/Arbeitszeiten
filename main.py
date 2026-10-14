@@ -256,35 +256,23 @@ def ensure_profiles():
     )
     db.session.execute(text("ALTER TABLE arbeitszeiten.data DROP CONSTRAINT IF EXISTS data_pkey"))
 
-    # Synchronisiere einmalig die PostgreSQL-Sequenzen mit den höchsten vorhandenen IDs
-    db.session.execute(text("""
-        SELECT setval(
-            pg_get_serial_sequence('arbeitszeiten.profiles', 'id'),
-            COALESCE((SELECT MAX(id) FROM arbeitszeiten.profiles), 1),
-            (SELECT MAX(id) FROM arbeitszeiten.profiles) IS NOT NULL
-        );
-    """))
-    db.session.execute(text("""
-        SELECT setval(
-            pg_get_serial_sequence('arbeitszeiten.users', 'id'),
-            COALESCE((SELECT MAX(id) FROM arbeitszeiten.users), 1),
-            (SELECT MAX(id) FROM arbeitszeiten.users) IS NOT NULL
-        );
-    """))
-
+    # Synchronisiere einmalig die PostgreSQL-Sequenzen mit den höchsten vorhandenen IDs (sicher für SERIAL & IDENTITY)
     db.session.execute(text("""
         DO $$
         DECLARE
+            tbl text;
             seq text;
         BEGIN
-            seq := pg_get_serial_sequence('arbeitszeiten.category', 'id');
-            IF seq IS NOT NULL THEN
-                PERFORM setval(
-                    seq,
-                    COALESCE((SELECT MAX(id) FROM arbeitszeiten.category), 1),
-                    (SELECT MAX(id) FROM arbeitszeiten.category) IS NOT NULL
-                );
-            END IF;
+            FOR tbl IN SELECT unnest(ARRAY['profiles', 'users', 'category'])
+            LOOP
+                seq := pg_get_serial_sequence('arbeitszeiten.' || tbl, 'id');
+                IF seq IS NOT NULL THEN
+                    EXECUTE format(
+                        'SELECT setval(%L, COALESCE((SELECT MAX(id) FROM arbeitszeiten.%I), 1), (SELECT MAX(id) FROM arbeitszeiten.%I) IS NOT NULL)',
+                        seq, tbl, tbl
+                    );
+                END IF;
+            END LOOP;
         END $$;
     """))
 
