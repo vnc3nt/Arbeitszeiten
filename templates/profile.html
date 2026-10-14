@@ -173,6 +173,12 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="change-profile-picture">
 
+            <form action="" method="post" class="profile-reset-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="action" value="reset-profile-picture">
+                <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
+            </form>
+
             <div class="avatar-picker-wrap">
                 <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}"
                     alt="Vorschau Profilbild">
@@ -207,12 +213,6 @@
                     onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.avatar.submit') }}</button>
             </div>
-        </form>
-
-        <form action="" method="post" class="profile-reset-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <input type="hidden" name="action" value="reset-profile-picture">
-            <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
         </form>
     </dialog>
 
