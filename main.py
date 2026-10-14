@@ -66,7 +66,7 @@ if not secret_key:
 app.config.update(
     BUNDLE_ERRORS=True,
     SECRET_KEY=secret_key,
-    SESSION_COOKIE_SECURE=True,
+SESSION_COOKIE_SECURE = os.environ.get("debug", "False") != "True",
     SESSION_COOKIE_HTTPONLY=True,  # Verhindert Zugriff auf Session-Cookie via JavaScript (XSS-Schutz)
     SESSION_COOKIE_SAMESITE="Lax",
     MAX_CONTENT_LENGTH=2 * 1024 * 1024,  # Blockiert Uploads > 2 MB sofort auf Server-Ebene (DoS-Schutz)
