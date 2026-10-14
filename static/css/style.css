@@ -1914,3 +1914,38 @@ h2 {
     line-height: 1rem;
     font-size: 0.8rem;
 }
+
+/* Fix für abgeschnittenes Datum und "Heute"-Überlappung */
+.day-selection {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 10.5rem;
+}
+
+.styled-date-picker {
+    width: auto !important;
+    min-width: 10.5rem !important;
+    max-width: none !important;
+    margin: 0 !important;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Versteckt die Browser-Zahlen komplett (auch bei Klick/Fokus), wenn "Heute" aktiv ist */
+.styled-date-picker.is-today {
+    opacity: 0 !important;
+    color: transparent !important;
+}
+
+#today-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    color: var(--text-color);
+    font-weight: 600;
+    white-space: nowrap;
+}

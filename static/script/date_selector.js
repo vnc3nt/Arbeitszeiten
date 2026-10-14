@@ -610,39 +610,26 @@ function formatDateInput() {
     const datePicker = document.getElementById('date-picker');
     if (!datePicker || !datePicker.value) return;
     
-    const selectedDateObj = new Date(datePicker.value);
-    const today = new Date();
-    
-    // Check if the selected date is today
-    const isToday = selectedDateObj.toDateString() === today.toDateString();
+    // Zeitzonen-sicherer Vergleich für "Heute" (lokales Datum YYYY-MM-DD)
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const isToday = datePicker.value === todayStr;
     
     if (isToday) {
-        // Create a custom display for "today"
-        datePicker.style.color = 'transparent';
-        const displaySpan = document.createElement('span');
+        datePicker.classList.add('is-today');
+        let displaySpan = document.getElementById('today-label');
+        if (!displaySpan) {
+            displaySpan = document.createElement('span');
+            displaySpan.id = 'today-label';
+            datePicker.parentElement.appendChild(displaySpan);
+        }
         displaySpan.textContent = document.documentElement.lang === 'en' ? 'Today' : 'Heute';
-        displaySpan.style.position = 'absolute';
-        displaySpan.style.top = '50%';
-        displaySpan.style.left = '50%';
-        displaySpan.style.transform = 'translate(-50%, -50%)';
-        displaySpan.style.pointerEvents = 'none';
-        displaySpan.style.color = 'inherit';
-        displaySpan.id = 'today-label';
-        
-        // Remove existing label if any
-        const existingLabel = document.getElementById('today-label');
-        if (existingLabel) {
-            existingLabel.remove();
-        }
-        
-        datePicker.parentElement.appendChild(displaySpan);
     } else {
-        // Remove "today" label if it exists
+        datePicker.classList.remove('is-today');
         const existingLabel = document.getElementById('today-label');
         if (existingLabel) {
             existingLabel.remove();
         }
-        datePicker.style.color = 'inherit';
     }
 }
 

@@ -62,7 +62,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="selected_date" value="{{ selected_date }}">
         <input type="hidden" name="action" value="sub_30">
-        <button type="submit" class="edit-btn">-30min</button>
+        <button type="submit" class="edit-btn">-</button>
       </form>
       <span class="edit-time-value" id="edit-time-display" onclick="openTimeInput()">{{ edit_time }}</span>
       <div id="time-picker-container" class="time-picker-container" style="display: none;">
@@ -72,7 +72,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="selected_date" value="{{ selected_date }}">
         <input type="hidden" name="action" value="add_30">
-        <button type="submit" class="edit-btn">+30min</button>
+        <button type="submit" class="edit-btn">+</button>
       </form>
     </div>
   </div>
