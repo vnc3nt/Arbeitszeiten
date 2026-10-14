@@ -818,6 +818,163 @@ dialog {
   text-align: center;
 }
 
+#manage-profiles-dialog {
+  max-width: 520px;
+  width: min(92vw, 520px);
+  padding: 1.5rem 1.25rem 1.25rem;
+  box-sizing: border-box;
+}
+
+#manage-profiles-dialog h2 {
+  margin: 0 0 0.35rem 0;
+  text-align: center;
+  font-size: 1.35rem;
+}
+
+.manage-profiles-subtitle {
+  font-size: 0.82rem;
+  opacity: 0.72;
+  text-align: center;
+  margin: 0 0 1.2rem 0;
+  line-height: 1.3;
+}
+
+.manage-profiles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: 2px;
+  margin-bottom: 1.2rem;
+}
+
+.profile-management-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(120, 120, 120, 0.25);
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s, opacity 0.2s;
+}
+
+.profile-management-row:hover {
+  border-color: rgba(120, 120, 120, 0.45);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.profile-management-row.is-hidden {
+  opacity: 0.65;
+}
+
+.profile-input-wrapper {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-management-row input.profile-name-input {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 2.6rem !important;
+  height: 2.6rem !important;
+  margin: 0 !important;
+  padding: 0 0.85rem !important;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px !important;
+  border: 1px solid rgba(120, 120, 120, 0.5) !important;
+  background-color: var(--selected-color) !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.profile-management-row input.profile-name-input:focus {
+  outline: none;
+  border-color: #a600ff !important;
+  box-shadow: 0 0 0 2px rgba(166, 0, 255, 0.25) !important;
+}
+
+.profile-management-row input.profile-name-input.save-success {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3) !important;
+}
+
+.profile-management-row input.profile-name-input.save-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
+}
+
+.profile-actions-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.profile-actions-wrapper .icon-btn {
+  width: 2.6rem !important;
+  height: 2.6rem !important;
+  min-width: 2.6rem !important;
+  max-width: 2.6rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(120, 120, 120, 0.5) !important;
+  background-color: var(--button-color) !important;
+  color: var(--text-color) !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: all 0.18s ease-in-out;
+}
+
+.profile-actions-wrapper .icon-btn svg {
+  display: block;
+}
+
+.profile-actions-wrapper .icon-btn:hover {
+  background-color: var(--selected-color) !important;
+  transform: translateY(-1px);
+}
+
+.profile-actions-wrapper .icon-btn:active {
+  transform: translateY(0);
+}
+
+.profile-actions-wrapper .visibility-btn.is-hidden {
+  opacity: 0.55;
+  color: #a0a0a0 !important;
+}
+
+.profile-actions-wrapper .delete-btn:hover {
+  color: #ff5252 !important;
+  border-color: rgba(255, 82, 82, 0.5) !important;
+  background-color: rgba(255, 82, 82, 0.12) !important;
+}
+
+#manage-profiles-dialog .dialog-close-btn {
+  width: auto !important;
+  min-width: 140px;
+  max-width: 200px;
+  margin: 0.5rem auto 0 !important;
+  display: block;
+  padding: 0.65rem 1.5rem !important;
+  border-radius: 10px !important;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
 .not-implemented {
   filter: opacity(50%);
 }

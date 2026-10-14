@@ -86,9 +86,165 @@ window.addEventListener("DOMContentLoaded", (e) => {
 window.addEventListener("DOMContentLoaded", () => {
     const manageProfilesBtn = document.getElementById("manageProfilesBtn");
     const manageProfilesDialog = document.getElementById("manage-profiles-dialog");
-    if (manageProfilesBtn && manageProfilesDialog) {
+    if (!manageProfilesDialog) return;
+
+    if (manageProfilesBtn) {
         manageProfilesBtn.addEventListener("click", () => manageProfilesDialog.showModal());
     }
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    manageProfilesDialog.querySelectorAll(".profile-management-row").forEach(row => {
+        const input = row.querySelector(".profile-name-input");
+        const profileId = row.querySelector("input[name=profile_id]")?.value;
+        if (!input || !profileId) return;
+
+        // Prevent standard form submission (e.g. on Enter)
+        row.addEventListener("submit", (e) => e.preventDefault());
+
+        // 1. Auto-save profile name on blur or enter
+        const saveName = async () => {
+            const originalName = input.getAttribute("data-original-name");
+            const newName = input.value.trim();
+
+            if (!newName) {
+                input.value = originalName;
+                return;
+            }
+
+            if (newName === originalName) {
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append("csrf_token", csrfToken || "");
+                formData.append("profile_id", profileId);
+                formData.append("profile_action", "rename");
+                formData.append("name", newName);
+
+                const response = await fetch("/profiles/manage", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "fetch"
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || "Fehler beim Umbenennen");
+                }
+
+                input.setAttribute("data-original-name", newName);
+                input.classList.add("save-success");
+                setTimeout(() => input.classList.remove("save-success"), 1200);
+            } catch (err) {
+                input.classList.add("save-error");
+                setTimeout(() => input.classList.remove("save-error"), 1500);
+                alert(err.message || "Profil konnte nicht umbenannt werden");
+                input.value = originalName;
+            }
+        };
+
+        input.addEventListener("blur", saveName);
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                input.blur();
+            } else if (e.key === "Escape") {
+                input.value = input.getAttribute("data-original-name");
+                input.blur();
+            }
+        });
+
+        // 2. AJAX for visibility toggle
+        const visBtn = row.querySelector(".visibility-btn");
+        if (visBtn) {
+            visBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                try {
+                    const formData = new FormData();
+                    formData.append("csrf_token", csrfToken || "");
+                    formData.append("profile_id", profileId);
+                    formData.append("profile_action", "toggle-visibility");
+
+                    const response = await fetch("/profiles/manage", {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "fetch"
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || "Fehler beim Ändern der Sichtbarkeit");
+                    }
+
+                    const isVisible = data.visible;
+                    const eyeOpen = visBtn.querySelector(".eye-open-icon");
+                    const eyeClosed = visBtn.querySelector(".eye-closed-icon");
+
+                    if (isVisible) {
+                        row.classList.remove("is-hidden");
+                        visBtn.classList.remove("is-hidden");
+                        visBtn.title = "Profil ausblenden";
+                        visBtn.setAttribute("aria-label", "Profil ausblenden");
+                        if (eyeOpen) eyeOpen.style.display = "";
+                        if (eyeClosed) eyeClosed.style.display = "none";
+                    } else {
+                        row.classList.add("is-hidden");
+                        visBtn.classList.add("is-hidden");
+                        visBtn.title = "Profil einblenden";
+                        visBtn.setAttribute("aria-label", "Profil einblenden");
+                        if (eyeOpen) eyeOpen.style.display = "none";
+                        if (eyeClosed) eyeClosed.style.display = "";
+                    }
+                } catch (err) {
+                    alert(err.message || "Sichtbarkeit konnte nicht geändert werden");
+                }
+            });
+        }
+
+        // 3. AJAX for delete
+        const delBtn = row.querySelector(".delete-btn");
+        if (delBtn) {
+            delBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                if (!confirm("Arbeitsprofil wirklich löschen?")) {
+                    return;
+                }
+
+                try {
+                    const formData = new FormData();
+                    formData.append("csrf_token", csrfToken || "");
+                    formData.append("profile_id", profileId);
+                    formData.append("profile_action", "delete");
+
+                    const response = await fetch("/profiles/manage", {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "fetch"
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || "Fehler beim Löschen des Profils");
+                    }
+
+                    row.style.transition = "all 0.25s ease-out";
+                    row.style.opacity = "0";
+                    row.style.transform = "scale(0.95)";
+                    setTimeout(() => row.remove(), 250);
+                } catch (err) {
+                    alert(err.message || "Profil konnte nicht gelöscht werden");
+                }
+            });
+        }
+    });
 });
 
 window.addEventListener("DOMContentLoaded", (e) => {

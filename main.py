@@ -912,33 +912,44 @@ def create_profile():
 @app.route('/profiles/manage', methods=['POST'])
 @validTokenChecker
 def manage_profile():
+    wants_json = request.headers.get("X-Requested-With") == "fetch" or request.is_json
     profile_id = request.form.get('profile_id', type=int)
     action = request.form.get('profile_action')
     profile = db.session.query(profiles).filter_by(
         id=profile_id, userid=session.get(USERID)
     ).first()
     if profile is None:
+        if wants_json:
+            return jsonify(error="Arbeitsprofil nicht gefunden"), 404
         return redirect(url_for('profile', profile_message="Arbeitsprofil nicht gefunden"))
 
     if action == 'rename':
         name = (request.form.get('name') or '').strip()
         if not name or len(name) > 30:
             message = "Der Profilname muss zwischen 1 und 30 Zeichen lang sein"
+            if wants_json:
+                return jsonify(error=message), 400
         elif db.session.query(profiles).filter(
             profiles.userid == session.get(USERID),
             profiles.name == name,
             profiles.id != profile.id,
         ).first():
             message = "Dieses Arbeitsprofil existiert bereits"
+            if wants_json:
+                return jsonify(error=message), 409
         else:
             profile.name = name
             db.session.commit()
             message = "Arbeitsprofil umbenannt"
+            if wants_json:
+                return jsonify(success=True, message=message, name=profile.name)
     elif action == 'toggle-visibility':
         if profile.visible and db.session.query(profiles).filter_by(
             userid=session.get(USERID), visible=True
         ).count() <= 1:
             message = "Mindestens ein Arbeitsprofil muss sichtbar bleiben"
+            if wants_json:
+                return jsonify(error=message), 400
         else:
             profile.visible = not profile.visible
             if not profile.visible and session.get(PROFILEID) == profile.id:
@@ -951,9 +962,13 @@ def manage_profile():
                     session[PROFILEID] = replacement.id
             db.session.commit()
             message = "Arbeitsprofil ausgeblendet" if not profile.visible else "Arbeitsprofil eingeblendet"
+            if wants_json:
+                return jsonify(success=True, message=message, visible=profile.visible)
     elif action == 'delete':
         if db.session.query(profiles).filter_by(userid=session.get(USERID)).count() <= 1:
             message = "Das letzte Arbeitsprofil kann nicht gelöscht werden"
+            if wants_json:
+                return jsonify(error=message), 400
         else:
             was_active = session.get(PROFILEID) == profile.id
             db.session.query(data).filter_by(profileid=profile.id).delete()
@@ -969,8 +984,12 @@ def manage_profile():
                     session[PROFILEID] = replacement.id
             db.session.commit()
             message = "Arbeitsprofil gelöscht"
+            if wants_json:
+                return jsonify(success=True, message=message, deleted=True)
     else:
         message = "Unbekannte Arbeitsprofil-Aktion"
+        if wants_json:
+            return jsonify(error=message), 400
 
     return redirect(url_for('profile', profile_message=message))
 
