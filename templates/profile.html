@@ -159,6 +159,12 @@
 
     <!-- Dialog: Profilbild ändern -->
     <dialog id="change-profile-picture-dialog" class="modern-dialog">
+        <form action="" method="post" class="profile-reset-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="action" value="reset-profile-picture">
+            <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
+        </form>
+
         <div class="dialog-header">
             <h2>{{ t('dialog.avatar.title') }}</h2>
             <p class="dialog-subtitle">{{ t('dialog.avatar.desc') }}</p>
@@ -185,11 +191,7 @@
 
             <div class="profile-upload-hint">{{ t('dialog.avatar.hint') }}</div>
 
-            <form action="" method="post" class="profile-reset-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <input type="hidden" name="action" value="reset-profile-picture">
-                <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
-            </form>
+
 
             <div id="profile-image-cropper" class="profile-image-cropper" hidden>
                 <canvas id="profile-image-canvas" width="280" height="280"></canvas>
