@@ -282,6 +282,38 @@ body {
     background: #333;
 }
 
+.time-picker-container {
+    margin: 0 0.5rem;
+    display: inline-flex;
+}
+
+.styled-time-picker {
+    background: #222 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-size: 1.8rem !important;
+    font-weight: bold !important;
+    font-family: inherit !important;
+    padding: 1rem 2.5rem !important;
+    width: 8rem !important;
+    height: 2rem !important;
+    margin: 0 !important;
+    max-width: none !important;
+    box-sizing: content-box !important;
+    text-align: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+}
+
+/* Versteckt das kleine Uhr-Icon im Input, damit die Zahl perfekt mittig bleibt */
+.styled-time-picker::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none;
+}
+
 /* Scrollbar für Desktop */
 .scrollwindow::-webkit-scrollbar {
     width: 8px;

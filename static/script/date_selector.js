@@ -800,6 +800,9 @@ function openTimeInput() {
         timeDisplay.style.display = 'none';
         timePickerContainer.style.display = 'inline-flex';
         timePicker.focus();
+        if (typeof timePicker.showPicker === 'function') {
+            try { timePicker.showPicker(); } catch (e) {}
+        }
     }
 }
 
@@ -808,7 +811,7 @@ function closeTimeInput() {
     const timePickerContainer = document.getElementById('time-picker-container');
     
     if (timeDisplay && timePickerContainer) {
-        timeDisplay.style.display = 'inline-block';
+        timeDisplay.style.display = ''; // Nutzt wieder das originale display: flex aus dem CSS!
         timePickerContainer.style.display = 'none';
     }
 }
@@ -894,6 +897,16 @@ document.addEventListener('DOMContentLoaded', function() {
         timePicker.addEventListener('blur', function() {
             if (pendingTimeInputValue) {
                 confirmTimeInput();
+            }
+        });
+
+        timePicker.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                pendingTimeInputValue = timePicker.value;
+                timePicker.blur();
+            } else if (e.key === 'Escape') {
+                cancelTimeInput();
             }
         });
     }
