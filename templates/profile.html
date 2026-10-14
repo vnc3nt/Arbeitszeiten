@@ -3,13 +3,14 @@
 <title>{{ t('settings.title') }}</title>
 {% endblock title %}
 {% block content %}
-<a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
+<a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}"
+        alt="Arbeitszeiten"></a>
 <div class="profile">
     <details id="profile-menu-btn">
         <summary>
             <img class="profile-pic" src="{{ profile_image_url }}" alt="profile">
         </summary>
-            {% include "snippets/profile_menu.html" %}
+        {% include "snippets/profile_menu.html" %}
     </details>
 </div>
 <a class="backbutton" href="{{ url_for('home') }}">{{ t('common.back') }}</a>
@@ -44,21 +45,28 @@
         <div class="theme-selector-container">
             <span class="theme-selector-label">{{ t('settings.appearance.theme') }}</span>
             <div class="theme-segmented-control" role="radiogroup" aria-label="{{ t('settings.appearance.theme') }}">
-                <button type="button" class="theme-btn {% if current_theme == 'auto' or not current_theme %}is-active{% endif %}" data-theme-value="auto">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button"
+                    class="theme-btn {% if current_theme == 'auto' or not current_theme %}is-active{% endif %}"
+                    data-theme-value="auto">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"></path>
                     </svg>
                     <span>{{ t('settings.appearance.theme_auto') }}</span>
                 </button>
-                <button type="button" class="theme-btn {% if current_theme == 'dark' %}is-active{% endif %}" data-theme-value="dark">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" class="theme-btn {% if current_theme == 'dark' %}is-active{% endif %}"
+                    data-theme-value="dark">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                     <span>{{ t('settings.appearance.theme_dark') }}</span>
                 </button>
-                <button type="button" class="theme-btn {% if current_theme == 'light' %}is-active{% endif %}" data-theme-value="light">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" class="theme-btn {% if current_theme == 'light' %}is-active{% endif %}"
+                    data-theme-value="light">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -75,7 +83,8 @@
         </div>
 
         <div class="settings-actions">
-            <button id="changeLanguage">{{ t('settings.appearance.change_language') }} ({{ 'Deutsch' if current_lang == 'de' else 'English' }})</button>
+            <button id="changeLanguage">{{ t('settings.appearance.change_language') }} ({{ 'Deutsch' if current_lang ==
+                'de' else 'English' }})</button>
         </div>
     </section>
 
@@ -108,13 +117,15 @@
             <p class="dialog-subtitle">{{ t('dialog.username.desc') }}</p>
         </div>
         <form action="" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" value="change-username" name="action" />
             <div class="dialog-form-group">
-                <input type="text" class="dialog-input" placeholder="{{ t('dialog.username.placeholder') }}" name="new_username" maxlength="30" required autocomplete="username" />
+                <input type="text" class="dialog-input" placeholder="{{ t('dialog.username.placeholder') }}"
+                    name="new_username" maxlength="30" required autocomplete="username" />
             </div>
             <div class="dialog-actions">
-                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
+                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.username.submit') }}</button>
             </div>
         </form>
@@ -127,15 +138,20 @@
             <p class="dialog-subtitle">{{ t('dialog.password.desc') }}</p>
         </div>
         <form action="" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="change-password">
             <div class="dialog-form-group">
-                <input type="password" class="dialog-input" name="current-password" id="current_passwor" placeholder="{{ t('dialog.password.current') }}" autocomplete="current-password" required />
-                <input type="password" class="dialog-input" name="new-password" placeholder="{{ t('dialog.password.new') }}" autocomplete="new-password" minlength="8" required />
-                <input type="password" class="dialog-input" name="new-password-confirmation" placeholder="{{ t('dialog.password.confirm') }}" autocomplete="new-password" minlength="8" required />
+                <input type="password" class="dialog-input" name="current-password" id="current_passwor"
+                    placeholder="{{ t('dialog.password.current') }}" autocomplete="current-password" required />
+                <input type="password" class="dialog-input" name="new-password"
+                    placeholder="{{ t('dialog.password.new') }}" autocomplete="new-password" minlength="8" required />
+                <input type="password" class="dialog-input" name="new-password-confirmation"
+                    placeholder="{{ t('dialog.password.confirm') }}" autocomplete="new-password" minlength="8"
+                    required />
             </div>
             <div class="dialog-actions">
-                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
+                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.password.submit') }}</button>
             </div>
         </form>
@@ -148,22 +164,32 @@
             <p class="dialog-subtitle">{{ t('dialog.avatar.desc') }}</p>
         </div>
         <form action="" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="change-profile-picture">
-            
+
             <div class="avatar-picker-wrap">
-                <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}" alt="Vorschau Profilbild">
+                <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}"
+                    alt="Vorschau Profilbild">
                 <label for="profile-image-input" class="file-upload-btn">
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                        </path>
                         <circle cx="12" cy="13" r="4"></circle>
                     </svg>
                     <span>{{ t('dialog.avatar.choose') }}</span>
                 </label>
-                <input type="file" name="profile_image" id="profile-image-input" accept="image/png,image/jpeg,image/webp" style="display: none;" />
+                <input type="file" name="profile_image" id="profile-image-input"
+                    accept="image/png,image/jpeg,image/webp" style="display: none;" />
             </div>
 
             <div class="profile-upload-hint">{{ t('dialog.avatar.hint') }}</div>
+
+            <form action="" method="post" class="profile-reset-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="action" value="reset-profile-picture">
+                <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
+            </form>
 
             <div id="profile-image-cropper" class="profile-image-cropper" hidden>
                 <canvas id="profile-image-canvas" width="280" height="280"></canvas>
@@ -175,15 +201,10 @@
             </div>
 
             <div class="dialog-actions">
-                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
+                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.avatar.submit') }}</button>
             </div>
-        </form>
-
-        <form action="" method="post" class="profile-reset-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <input type="hidden" name="action" value="reset-profile-picture">
-            <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
         </form>
     </dialog>
 
@@ -194,33 +215,36 @@
             <p class="dialog-subtitle">{{ t('dialog.language.desc') }}</p>
         </div>
         <form action="{{ url_for('set_language') }}" method="post" id="change-language-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <div class="language-options-grid">
                 <label class="language-card {% if current_lang == 'de' %}is-selected{% endif %}">
-                    <input type="radio" name="language" value="de" {% if current_lang == 'de' %}checked{% endif %}>
+                    <input type="radio" name="language" value="de" {% if current_lang=='de' %}checked{% endif %}>
                     <span class="language-flag">🇩🇪</span>
                     <div class="language-info">
                         <span class="language-name">Deutsch</span>
                         <span class="language-sub">German</span>
                     </div>
-                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                        stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </label>
                 <label class="language-card {% if current_lang == 'en' %}is-selected{% endif %}">
-                    <input type="radio" name="language" value="en" {% if current_lang == 'en' %}checked{% endif %}>
+                    <input type="radio" name="language" value="en" {% if current_lang=='en' %}checked{% endif %}>
                     <span class="language-flag">🇬🇧</span>
                     <div class="language-info">
                         <span class="language-name">English</span>
                         <span class="language-sub">Englisch</span>
                     </div>
-                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                        stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </label>
             </div>
             <div class="dialog-actions">
-                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
+                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.language.submit') }}</button>
             </div>
         </form>
@@ -234,11 +258,14 @@
         </div>
         <div class="manage-profiles-list">
             {% for work_profile in all_profiles %}
-            <form method="post" action="{{ url_for('manage_profile') }}" class="profile-management-row {% if not work_profile.visible %}is-hidden{% endif %}" data-profile-id="{{ work_profile.id }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <form method="post" action="{{ url_for('manage_profile') }}"
+                class="profile-management-row {% if not work_profile.visible %}is-hidden{% endif %}"
+                data-profile-id="{{ work_profile.id }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <input type="hidden" name="profile_id" value="{{ work_profile.id }}">
-                
-                <div class="drag-handle" title="{{ t('dialog.profiles.drag_hint') }}" aria-label="{{ t('dialog.profiles.drag_hint') }}">
+
+                <div class="drag-handle" title="{{ t('dialog.profiles.drag_hint') }}"
+                    aria-label="{{ t('dialog.profiles.drag_hint') }}">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                         <circle cx="8.5" cy="6" r="1.6"></circle>
                         <circle cx="8.5" cy="12" r="1.6"></circle>
@@ -251,35 +278,40 @@
 
                 <div class="profile-input-wrapper">
                     <input type="text" name="name" value="{{ work_profile.name }}" maxlength="30"
-                           class="profile-name-input"
-                           aria-label="{{ work_profile.name }}"
-                           data-original-name="{{ work_profile.name }}"
-                           placeholder="{{ t('dialog.profiles.placeholder') }}">
+                        class="profile-name-input" aria-label="{{ work_profile.name }}"
+                        data-original-name="{{ work_profile.name }}"
+                        placeholder="{{ t('dialog.profiles.placeholder') }}">
                 </div>
 
                 <div class="profile-actions-wrapper">
                     <button type="submit" name="profile_action" value="toggle-visibility"
-                            class="icon-btn visibility-btn {% if not work_profile.visible %}is-hidden{% endif %}"
-                            title="{{ t('dialog.profiles.show') if not work_profile.visible else t('dialog.profiles.hide') }}"
-                            aria-label="{{ t('dialog.profiles.show') if not work_profile.visible else t('dialog.profiles.hide') }}">
-                        <svg class="eye-open-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" {% if not work_profile.visible %}style="display: none;"{% endif %}>
+                        class="icon-btn visibility-btn {% if not work_profile.visible %}is-hidden{% endif %}"
+                        title="{{ t('dialog.profiles.show') if not work_profile.visible else t('dialog.profiles.hide') }}"
+                        aria-label="{{ t('dialog.profiles.show') if not work_profile.visible else t('dialog.profiles.hide') }}">
+                        <svg class="eye-open-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" {% if not
+                            work_profile.visible %}style="display: none;" {% endif %}>
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                             <circle cx="12" cy="12" r="3"></circle>
                         </svg>
-                        <svg class="eye-closed-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" {% if work_profile.visible %}style="display: none;"{% endif %}>
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <svg class="eye-closed-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" {% if
+                            work_profile.visible %}style="display: none;" {% endif %}>
+                            <path
+                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                            </path>
                             <line x1="1" y1="1" x2="23" y2="23"></line>
                         </svg>
                     </button>
-                    
-                    <button type="submit" name="profile_action" value="delete"
-                            class="icon-btn delete-btn"
-                            title="{{ t('dialog.profiles.delete') }}"
-                            aria-label="{{ t('dialog.profiles.delete') }}"
-                            onclick="return confirm('{{ t('dialog.profiles.delete_confirm') }}')">
-                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+
+                    <button type="submit" name="profile_action" value="delete" class="icon-btn delete-btn"
+                        title="{{ t('dialog.profiles.delete') }}" aria-label="{{ t('dialog.profiles.delete') }}"
+                        onclick="return confirm('{{ t('dialog.profiles.delete_confirm') }}')">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
                             <line x1="10" y1="11" x2="10" y2="17"></line>
                             <line x1="14" y1="11" x2="14" y2="17"></line>
                         </svg>
@@ -288,7 +320,8 @@
             </form>
             {% endfor %}
         </div>
-        <button type="button" class="dialog-close-btn" onclick="this.closest('dialog').close()">{{ t('common.close') }}</button>
+        <button type="button" class="dialog-close-btn" onclick="this.closest('dialog').close()">{{ t('common.close')
+            }}</button>
     </dialog>
 
     <!-- Dialog: Account löschen -->
@@ -298,13 +331,15 @@
             <p class="dialog-subtitle">{{ t('dialog.delete_acc.desc') }}</p>
         </div>
         <form action="" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="delete-account">
             <div class="dialog-form-group">
-                <input type="password" name="password" id="password" class="dialog-input" placeholder="{{ t('dialog.delete_acc.password') }}" required>
+                <input type="password" name="password" id="password" class="dialog-input"
+                    placeholder="{{ t('dialog.delete_acc.password') }}" required>
             </div>
             <div class="dialog-actions">
-                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
+                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-danger">{{ t('dialog.delete_acc.submit') }}</button>
             </div>
         </form>
