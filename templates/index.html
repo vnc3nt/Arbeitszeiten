@@ -1,8 +1,24 @@
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ current_lang or 'de' }}" class="{% if current_theme == 'dark' %}dark-mode{% elif current_theme == 'light' %}light-mode{% endif %}" data-theme="{{ current_theme or 'auto' }}">
     <head>
         <meta charset="utf-8" />
+        <script>
+            (function() {
+                var serverTheme = '{{ current_theme or "auto" }}';
+                var localTheme = localStorage.getItem('app-theme') || serverTheme;
+                if (localTheme === 'dark') {
+                    document.documentElement.classList.add('dark-mode');
+                    document.documentElement.classList.remove('light-mode');
+                } else if (localTheme === 'light') {
+                    document.documentElement.classList.add('light-mode');
+                    document.documentElement.classList.remove('dark-mode');
+                } else {
+                    document.documentElement.classList.remove('dark-mode', 'light-mode');
+                }
+                document.documentElement.setAttribute('data-theme', localTheme);
+            })();
+        </script>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
         <meta name="color-scheme" content="light dark" />

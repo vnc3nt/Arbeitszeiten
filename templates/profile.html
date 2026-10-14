@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block title %}
-<title>profile</title>
+<title>{{ t('settings.title') }}</title>
 {% endblock title %}
 {% block content %}
 <a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
@@ -12,143 +12,256 @@
             {% include "snippets/profile_menu.html" %}
     </details>
 </div>
-<a class="backbutton" href="{{ url_for('home') }}">❮ Zur Startseite</a>
+<a class="backbutton" href="{{ url_for('home') }}">{{ t('common.back') }}</a>
 
 <div class="profile-content">
     {% if profile_message %}
     <div class="profile-message">{{ profile_message }}</div>
     {% endif %}
     <header class="settings-header">
-        <h1>Kontoeinstellungen</h1>
-        <p>Verwalte dein Konto, dein Profilbild und deine Arbeitsprofile.</p>
+        <h1>{{ t('settings.title') }}</h1>
+        <p>{{ t('settings.subtitle') }}</p>
     </header>
 
     <section class="settings-section">
         <div class="settings-section-heading">
-            <h2>Konto</h2>
-            <p>Persönliche Kontodaten und Sicherheit</p>
+            <h2>{{ t('settings.account.title') }}</h2>
+            <p>{{ t('settings.account.desc') }}</p>
         </div>
         <div class="settings-actions">
-            <button id="changeUsernameBtn">Benutzernamen ändern</button>
-            <button id="changePasswordBtn">Passwort ändern</button>
+            <button id="changeProfilePic">{{ t('settings.account.change_avatar') }}</button>
+            <button id="changeUsernameBtn">{{ t('settings.account.change_username') }}</button>
+            <button id="changePasswordBtn">{{ t('settings.account.change_password') }}</button>
         </div>
     </section>
 
     <section class="settings-section">
         <div class="settings-section-heading">
-            <h2>Darstellung</h2>
-            <p>Profilbild und Spracheinstellungen</p>
+            <h2>{{ t('settings.appearance.title') }}</h2>
+            <p>{{ t('settings.appearance.desc') }}</p>
         </div>
+
+        <div class="theme-selector-container">
+            <span class="theme-selector-label">{{ t('settings.appearance.theme') }}</span>
+            <div class="theme-segmented-control" role="radiogroup" aria-label="{{ t('settings.appearance.theme') }}">
+                <button type="button" class="theme-btn {% if current_theme == 'auto' or not current_theme %}is-active{% endif %}" data-theme-value="auto">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"></path>
+                    </svg>
+                    <span>{{ t('settings.appearance.theme_auto') }}</span>
+                </button>
+                <button type="button" class="theme-btn {% if current_theme == 'dark' %}is-active{% endif %}" data-theme-value="dark">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span>{{ t('settings.appearance.theme_dark') }}</span>
+                </button>
+                <button type="button" class="theme-btn {% if current_theme == 'light' %}is-active{% endif %}" data-theme-value="light">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span>{{ t('settings.appearance.theme_light') }}</span>
+                </button>
+            </div>
+        </div>
+
         <div class="settings-actions">
-            <button id="changeProfilePic">Profilbild ändern</button>
-            <button class="not-implemented" id="changeLanguage">Sprache ändern</button>
+            <button id="changeLanguage">{{ t('settings.appearance.change_language') }} ({{ 'Deutsch' if current_lang == 'de' else 'English' }})</button>
         </div>
     </section>
 
     <section class="settings-section">
         <div class="settings-section-heading">
-            <h2>Arbeitsprofile</h2>
-            <p>Profile umbenennen, ausblenden oder löschen</p>
+            <h2>{{ t('settings.profiles.title') }}</h2>
+            <p>{{ t('settings.profiles.desc') }}</p>
         </div>
         <div class="settings-actions">
-            <button id="manageProfilesBtn">Profile bearbeiten</button>
+            <button id="manageProfilesBtn">{{ t('settings.profiles.manage') }}</button>
         </div>
     </section>
 
     <section class="settings-section settings-danger-section">
         <div class="settings-section-heading">
-            <h2>Account</h2>
-            <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
+            <h2>{{ t('settings.danger.title') }}</h2>
+            <p>{{ t('settings.danger.desc') }}</p>
         </div>
         <div class="settings-actions">
-            <button id="deleteAccountBtn" class="deleteAccountBtn">Account löschen</button>
+            <button id="deleteAccountBtn" class="deleteAccountBtn">{{ t('settings.danger.delete') }}</button>
         </div>
     </section>
 
     <div class="modal" id="modal-background"></div>
 
-    <dialog id="change-user-name-dialog">
+    <!-- Dialog: Benutzernamen ändern -->
+    <dialog id="change-user-name-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.username.title') }}</h2>
+            <p class="dialog-subtitle">{{ t('dialog.username.desc') }}</p>
+        </div>
         <form action="" method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <h2>Benutzernamen ändern</h2>
             <input type="hidden" value="change-username" name="action" />
-            <input type="text" placeholder="Neuer Benutzername" name="new_username" /><br>
-            <input type="reset" value="Abbrechen" />
-            <input type="submit" value="Ändern" />
+            <div class="dialog-form-group">
+                <input type="text" class="dialog-input" placeholder="{{ t('dialog.username.placeholder') }}" name="new_username" maxlength="30" required autocomplete="username" />
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.username.submit') }}</button>
+            </div>
         </form>
     </dialog>
-    <dialog id="delete-account-dialog">
-        <form action="" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <h2>Account löschen</h2>
-            <input type="hidden" name="action" value="delete-account">
-            <input type="password" name="password" id="password" placeholder="Passwort">
-            <br>
-            <input type="reset" value="Abbrechen" />
-            <input type="submit" value="Löschen" class="deleteAccountBtn">
-        </form>
-    </dialog>
-    <dialog id="change-password-dialog">
-        <form action="" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <h2>Passwort ändern</h2>
 
+    <!-- Dialog: Passwort ändern -->
+    <dialog id="change-password-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.password.title') }}</h2>
+            <p class="dialog-subtitle">{{ t('dialog.password.desc') }}</p>
+        </div>
+        <form action="" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="hidden" name="action" value="change-password">
-            <input type="password" name="current-password" id="current_passwor" placeholder="Aktuelles Passwort" autocomplete="current-password" /><br><br>
-            <input type="password" name="new-password" placeholder="Neues Passwort" autocomplete="new-password" /><br>
-            <input type="password" name="new-password-confirmation" placeholder="Neues Passwort best&auml;tigen" autocomplete="new-password" /><br>
-            <input type="reset" value="Abbrechen" />
-            <input type="submit" value="Ändern" />
+            <div class="dialog-form-group">
+                <input type="password" class="dialog-input" name="current-password" id="current_passwor" placeholder="{{ t('dialog.password.current') }}" autocomplete="current-password" required />
+                <input type="password" class="dialog-input" name="new-password" placeholder="{{ t('dialog.password.new') }}" autocomplete="new-password" minlength="8" required />
+                <input type="password" class="dialog-input" name="new-password-confirmation" placeholder="{{ t('dialog.password.confirm') }}" autocomplete="new-password" minlength="8" required />
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.password.submit') }}</button>
+            </div>
         </form>
     </dialog>
 
-    <dialog id="change-profile-picture-dialog">
+    <!-- Dialog: Profilbild ändern -->
+    <dialog id="change-profile-picture-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.avatar.title') }}</h2>
+            <p class="dialog-subtitle">{{ t('dialog.avatar.desc') }}</p>
+        </div>
         <form action="" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <h2>Profilbild ändern</h2>
             <input type="hidden" name="action" value="change-profile-picture">
-            <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}" alt="Vorschau Profilbild">
-            <input type="file" name="profile_image" id="profile-image-input" accept="image/png,image/jpeg,image/webp" />
-            <div class="profile-upload-hint">Erlaubt sind PNG, JPG und WEBP bis 2 MB. Das Bild wird quadratisch zugeschnitten.</div>
+            
+            <div class="avatar-picker-wrap">
+                <img id="profile-image-preview" class="profile-image-preview" src="{{ profile_image_url }}" alt="Vorschau Profilbild">
+                <label for="profile-image-input" class="file-upload-btn">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <span>{{ t('dialog.avatar.choose') }}</span>
+                </label>
+                <input type="file" name="profile_image" id="profile-image-input" accept="image/png,image/jpeg,image/webp" style="display: none;" />
+            </div>
+
+            <div class="profile-upload-hint">{{ t('dialog.avatar.hint') }}</div>
+
             <div id="profile-image-cropper" class="profile-image-cropper" hidden>
                 <canvas id="profile-image-canvas" width="280" height="280"></canvas>
-                <label for="profile-image-zoom">Zoom</label>
-                <input type="range" id="profile-image-zoom" min="1" max="3" step="0.01" value="1">
-                <p>Bild im Ausschnitt verschieben</p>
+                <div class="zoom-slider-wrap">
+                    <label for="profile-image-zoom">{{ t('dialog.avatar.zoom') }}</label>
+                    <input type="range" id="profile-image-zoom" min="1" max="3" step="0.01" value="1">
+                </div>
+                <p class="cropper-tip">{{ t('dialog.avatar.move_hint') }}</p>
             </div>
-            <div class="profile-upload-actions">
-                <input type="reset" value="Abbrechen" />
-                <input type="submit" value="Speichern" />
+
+            <div class="dialog-actions">
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.avatar.submit') }}</button>
             </div>
         </form>
+
         <form action="" method="post" class="profile-reset-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="hidden" name="action" value="reset-profile-picture">
-            <input type="submit" value="Standardbild wiederherstellen" />
+            <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
         </form>
     </dialog>
-    <dialog id="manage-profiles-dialog">
-        <h2>Arbeitsprofile bearbeiten</h2>
-        <p class="manage-profiles-subtitle">Namen direkt im Feld bearbeiten (wird automatisch gespeichert)</p>
+
+    <!-- Dialog: Sprache ändern -->
+    <dialog id="change-language-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.language.title') }}</h2>
+            <p class="dialog-subtitle">{{ t('dialog.language.desc') }}</p>
+        </div>
+        <form action="{{ url_for('set_language') }}" method="post" id="change-language-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="language-options-grid">
+                <label class="language-card {% if current_lang == 'de' %}is-selected{% endif %}">
+                    <input type="radio" name="language" value="de" {% if current_lang == 'de' %}checked{% endif %}>
+                    <span class="language-flag">🇩🇪</span>
+                    <div class="language-info">
+                        <span class="language-name">Deutsch</span>
+                        <span class="language-sub">German</span>
+                    </div>
+                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </label>
+                <label class="language-card {% if current_lang == 'en' %}is-selected{% endif %}">
+                    <input type="radio" name="language" value="en" {% if current_lang == 'en' %}checked{% endif %}>
+                    <span class="language-flag">🇬🇧</span>
+                    <div class="language-info">
+                        <span class="language-name">English</span>
+                        <span class="language-sub">Englisch</span>
+                    </div>
+                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </label>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.language.submit') }}</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Dialog: Arbeitsprofile bearbeiten -->
+    <dialog id="manage-profiles-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.profiles.title') }}</h2>
+            <p class="manage-profiles-subtitle">{{ t('dialog.profiles.desc') }}</p>
+        </div>
         <div class="manage-profiles-list">
             {% for work_profile in all_profiles %}
             <form method="post" action="{{ url_for('manage_profile') }}" class="profile-management-row {% if not work_profile.visible %}is-hidden{% endif %}" data-profile-id="{{ work_profile.id }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="profile_id" value="{{ work_profile.id }}">
                 
+                <div class="drag-handle" title="{{ t('dialog.profiles.drag_hint') }}" aria-label="{{ t('dialog.profiles.drag_hint') }}">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <circle cx="8.5" cy="6" r="1.6"></circle>
+                        <circle cx="8.5" cy="12" r="1.6"></circle>
+                        <circle cx="8.5" cy="18" r="1.6"></circle>
+                        <circle cx="15.5" cy="6" r="1.6"></circle>
+                        <circle cx="15.5" cy="12" r="1.6"></circle>
+                        <circle cx="15.5" cy="18" r="1.6"></circle>
+                    </svg>
+                </div>
+
                 <div class="profile-input-wrapper">
                     <input type="text" name="name" value="{{ work_profile.name }}" maxlength="30"
                            class="profile-name-input"
-                           aria-label="Name von {{ work_profile.name }}"
+                           aria-label="{{ work_profile.name }}"
                            data-original-name="{{ work_profile.name }}"
-                           placeholder="Profilname">
+                           placeholder="{{ t('dialog.profiles.placeholder') }}">
                 </div>
 
                 <div class="profile-actions-wrapper">
                     <button type="submit" name="profile_action" value="toggle-visibility"
                             class="icon-btn visibility-btn {% if not work_profile.visible %}is-hidden{% endif %}"
-                            title="{{ 'Profil einblenden' if not work_profile.visible else 'Profil ausblenden' }}"
-                            aria-label="{{ 'Profil einblenden' if not work_profile.visible else 'Profil ausblenden' }}">
+                            title="{{ t('dialog.profiles.show') if not work_profile.visible else t('dialog.profiles.hide') }}"
+                            aria-label="{{ t('dialog.profiles.show') if not work_profile.visible else t('dialog.profiles.hide') }}">
                         <svg class="eye-open-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" {% if not work_profile.visible %}style="display: none;"{% endif %}>
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                             <circle cx="12" cy="12" r="3"></circle>
@@ -161,9 +274,9 @@
                     
                     <button type="submit" name="profile_action" value="delete"
                             class="icon-btn delete-btn"
-                            title="Profil löschen"
-                            aria-label="Profil löschen"
-                            onclick="return confirm('Arbeitsprofil wirklich löschen?')">
+                            title="{{ t('dialog.profiles.delete') }}"
+                            aria-label="{{ t('dialog.profiles.delete') }}"
+                            onclick="return confirm('{{ t('dialog.profiles.delete_confirm') }}')">
                         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -175,7 +288,26 @@
             </form>
             {% endfor %}
         </div>
-        <button type="button" class="dialog-close-btn" onclick="this.closest('dialog').close()">Schließen</button>
+        <button type="button" class="dialog-close-btn" onclick="this.closest('dialog').close()">{{ t('common.close') }}</button>
+    </dialog>
+
+    <!-- Dialog: Account löschen -->
+    <dialog id="delete-account-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.delete_acc.title') }}</h2>
+            <p class="dialog-subtitle">{{ t('dialog.delete_acc.desc') }}</p>
+        </div>
+        <form action="" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="action" value="delete-account">
+            <div class="dialog-form-group">
+                <input type="password" name="password" id="password" class="dialog-input" placeholder="{{ t('dialog.delete_acc.password') }}" required>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn" onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="submit" class="btn-dialog btn-danger">{{ t('dialog.delete_acc.submit') }}</button>
+            </div>
+        </form>
     </dialog>
 </div>
 {% endblock content %}

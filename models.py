@@ -19,6 +19,8 @@ class users(db.Model):
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)  # Erweitert auf 255 für sichere Hashes
     profile_image = db.Column(db.String(255), nullable=True)
+    language = db.Column(db.String(10), nullable=False, default='de')
+    theme = db.Column(db.String(10), nullable=False, default='auto')
 
 class profiles(db.Model):
     __table_args__ = (
@@ -30,6 +32,7 @@ class profiles(db.Model):
     name = db.Column(db.String(30), nullable=False)
     maxhours = db.Column(db.Numeric(5, 2), nullable=False, default=0)
     visible = db.Column(db.Boolean, nullable=False, default=True)
+    position = db.Column(db.Integer, nullable=False, default=0)
 
 
 class data(db.Model):

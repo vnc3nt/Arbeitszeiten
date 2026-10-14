@@ -9,7 +9,7 @@
                     <img class="icon" src="{{url_for('static', filename='img/icons/96x96-heart.png')}}" alt="donate">
                 </ul>
                 <ul>
-                    <div >Spenden</div>
+                    <div>{{ t('menu.donate') }}</div>
                 </ul>
             </li>
         </a>
@@ -20,12 +20,10 @@
                     <img class="icon" src="{{url_for('static', filename='img/icons/96x96-settings.png')}}" alt="settings">
                 </ul>
                 <ul>
-                    <div>Einstellungen</div>
+                    <div>{{ t('menu.settings') }}</div>
                 </ul>
             </li>
         </a>
-        
-    
 
         <form action="{{ url_for('logout') }}" method="post" style="margin: 0;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -35,7 +33,7 @@
                         <img class="icon" src="{{url_for('static', filename='img/icons/96x96-logout.png')}}" alt="logout">
                     </ul>
                     <ul>
-                        <div class="logout">Abmelden</div>
+                        <div class="logout">{{ t('menu.logout') }}</div>
                     </ul>
                 </li>
             </button>
@@ -44,12 +42,12 @@
         <div class="legal">
             <a href="{{ url_for('impressum') }}">
                 <li>
-                    <ul>Impressum</ul>
+                    <ul>{{ t('menu.impressum') }}</ul>
                 </li>
             </a>
             <a href="{{ url_for('dpa') }}" download>
                 <li>
-                    <ul>Datenschutzerklärung</ul>
+                    <ul>{{ t('menu.dpa') }}</ul>
                 </li>
             </a>
         </div>

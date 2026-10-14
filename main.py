@@ -17,6 +17,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from PIL import Image
 from werkzeug.middleware.proxy_fix import ProxyFix
+from translations import SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, get_translation, get_month_name
 
 # 1. Sauberes Laden der .env über python-dotenv
 load_dotenv()
@@ -242,6 +243,15 @@ def ensure_profiles():
         text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS visible BOOLEAN NOT NULL DEFAULT TRUE")
     )
     db.session.execute(
+        text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS position INT NOT NULL DEFAULT 0")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.users ADD COLUMN IF NOT EXISTS language VARCHAR(10) NOT NULL DEFAULT 'de'")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.users ADD COLUMN IF NOT EXISTS theme VARCHAR(10) NOT NULL DEFAULT 'auto'")
+    )
+    db.session.execute(
         text("ALTER TABLE arbeitszeiten.profiles DROP COLUMN IF EXISTS profile_image")
     )
     db.session.execute(text("ALTER TABLE arbeitszeiten.data DROP CONSTRAINT IF EXISTS data_pkey"))
@@ -322,6 +332,54 @@ def ensure_profiles():
     db.session.commit()
 
 
+def get_current_language() -> str:
+    lang = session.get('lang')
+    if lang in SUPPORTED_LANGUAGES:
+        return lang
+    user_id = session.get(USERID)
+    if user_id:
+        user = db.session.query(users).filter_by(id=user_id).first()
+        if user and getattr(user, 'language', None) in SUPPORTED_LANGUAGES:
+            session['lang'] = user.language
+            return user.language
+    cookie_lang = request.cookies.get('lang')
+    if cookie_lang in SUPPORTED_LANGUAGES:
+        return cookie_lang
+    return DEFAULT_LANGUAGE
+
+
+SUPPORTED_THEMES = {'auto': 'Automatisch', 'dark': 'Darkmode', 'light': 'Lightmode'}
+
+
+def get_current_theme() -> str:
+    theme = session.get('theme')
+    if theme in SUPPORTED_THEMES:
+        return theme
+    user_id = session.get(USERID)
+    if user_id:
+        user = db.session.query(users).filter_by(id=user_id).first()
+        if user and getattr(user, 'theme', None) in SUPPORTED_THEMES:
+            session['theme'] = user.theme
+            return user.theme
+    cookie_theme = request.cookies.get('theme')
+    if cookie_theme in SUPPORTED_THEMES:
+        return cookie_theme
+    return 'auto'
+
+
+@app.context_processor
+def inject_translations():
+    lang = get_current_language()
+    theme = get_current_theme()
+    return {
+        'current_lang': lang,
+        'current_theme': theme,
+        'supported_languages': SUPPORTED_LANGUAGES,
+        'supported_themes': SUPPORTED_THEMES,
+        't': lambda key, **kwargs: get_translation(key, lang, **kwargs),
+    }
+
+
 def get_active_profile():
     profile_id = session.get(PROFILEID)
     account_id = session.get(USERID)
@@ -340,13 +398,13 @@ def get_active_profile():
 def get_profile_list():
     return db.session.query(profiles).filter_by(
         userid=session.get(USERID), visible=True
-    ).order_by(profiles.id).all()
+    ).order_by(profiles.position.asc(), profiles.id.asc()).all()
 
 
 def get_all_profile_list():
     return db.session.query(profiles).filter_by(
         userid=session.get(USERID)
-    ).order_by(profiles.id).all()
+    ).order_by(profiles.position.asc(), profiles.id.asc()).all()
 
 
 def get_active_profile_name():
@@ -443,11 +501,7 @@ def reset_profile_image(user):
 
 
 def build_home_context(user_id, selected_date, include_total_hours=True, include_overview=True):
-    german_months = {
-        1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
-        5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
-        9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
-    }
+    current_lang = get_current_language()
 
     month_maxhours_cache = {}
     month_hours_cache = {}
@@ -465,7 +519,8 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
         return month_hours_cache[month_key]
 
     selected_date_str = selected_date.isoformat()
-    selected_date_display = 'Heute' if selected_date == date.today() else selected_date.strftime('%d.%m.%Y')
+    today_label = get_translation('common.today', current_lang)
+    selected_date_display = today_label if selected_date == date.today() else selected_date.strftime('%d.%m.%Y')
 
     day_total_hours = db.session.query(func.sum(data.data)).filter(
         data.profileid == user_id,
@@ -544,7 +599,7 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
                 month_difference = month_total - month_maxhours
 
             overview_data[year][month] = {
-                'name': german_months[month],
+                'name': get_month_name(month, current_lang),
                 'total_hours': month_total,
                 'max_hours': month_maxhours,
                 'difference': month_difference,
@@ -571,7 +626,7 @@ def build_home_context(user_id, selected_date, include_total_hours=True, include
     return {
         'selected_date': selected_date_str,
         'selected_date_display': selected_date_display,
-        'selected_month_name': german_months[selected_date.month],
+        'selected_month_name': get_month_name(selected_date.month, current_lang),
         'day_total_hours': day_total_hours,
         'edit_time': format_hours(day_total_hours),
         'edit_time_24h': format_time_24h(day_total_hours),
@@ -898,11 +953,13 @@ def create_profile():
         return jsonify(error="Die Monatsstunden müssen zwischen 0,01 und 999,99 liegen"), 400
     if db.session.query(profiles).filter_by(userid=session.get(USERID), name=name).first():
         return jsonify(error="Dieses Profil existiert bereits"), 409
+    next_pos = (db.session.query(func.max(profiles.position)).filter_by(userid=session.get(USERID)).scalar() or 0) + 1
     profile = profiles(
         userid=session.get(USERID),
         name=name,
         maxhours=maxhours,
         visible=True,
+        position=next_pos,
     )
     db.session.add(profile)
     db.session.commit()
@@ -913,8 +970,37 @@ def create_profile():
 @validTokenChecker
 def manage_profile():
     wants_json = request.headers.get("X-Requested-With") == "fetch" or request.is_json
-    profile_id = request.form.get('profile_id', type=int)
     action = request.form.get('profile_action')
+
+    if action == 'reorder':
+        order_raw = request.form.get('order') or request.form.getlist('order[]')
+        if isinstance(order_raw, str):
+            try:
+                import json
+                order_list = json.loads(order_raw)
+            except Exception:
+                order_list = [x.strip() for x in order_raw.split(',') if x.strip()]
+        elif isinstance(order_raw, list):
+            order_list = order_raw
+        else:
+            order_list = []
+
+        if order_list:
+            for idx, p_id in enumerate(order_list):
+                try:
+                    p_id_int = int(p_id)
+                    db.session.query(profiles).filter_by(
+                        id=p_id_int, userid=session.get(USERID)
+                    ).update({"position": idx})
+                except (ValueError, TypeError):
+                    continue
+            db.session.commit()
+
+        if wants_json:
+            return jsonify(success=True, message="Reihenfolge gespeichert")
+        return redirect(url_for('profile', profile_message="Reihenfolge gespeichert"))
+
+    profile_id = request.form.get('profile_id', type=int)
     profile = db.session.query(profiles).filter_by(
         id=profile_id, userid=session.get(USERID)
     ).first()
@@ -1040,6 +1126,54 @@ def profile():
                            profile_image_url=get_profile_image_url(), profile_message=profile_message,
                            profiles=get_profile_list(), active_profile_id=session.get(PROFILEID),
                            all_profiles=get_all_profile_list())
+
+@app.route('/set-language', methods=['POST'])
+@csrf.exempt
+def set_language():
+    lang = (request.form.get('language') or (request.get_json(silent=True) or {}).get('language') or '').strip().lower()
+    if lang in SUPPORTED_LANGUAGES:
+        session['lang'] = lang
+        user_id = session.get(USERID)
+        if user_id:
+            user = db.session.query(users).filter_by(id=user_id).first()
+            if user:
+                user.language = lang
+                db.session.commit()
+
+    wants_json = request.headers.get("X-Requested-With") == "fetch" or request.is_json
+    if wants_json:
+        return jsonify(success=True, language=lang)
+
+    referrer = request.referrer or url_for('profile')
+    resp = redirect(referrer)
+    if lang in SUPPORTED_LANGUAGES:
+        resp.set_cookie('lang', lang, max_age=365 * 24 * 3600, samesite='Lax')
+    return resp
+
+
+@app.route('/set-theme', methods=['POST'])
+@csrf.exempt
+def set_theme():
+    theme = (request.form.get('theme') or (request.get_json(silent=True) or {}).get('theme') or '').strip().lower()
+    if theme in SUPPORTED_THEMES:
+        session['theme'] = theme
+        user_id = session.get(USERID)
+        if user_id:
+            user = db.session.query(users).filter_by(id=user_id).first()
+            if user:
+                user.theme = theme
+                db.session.commit()
+
+    wants_json = request.headers.get("X-Requested-With") == "fetch" or request.is_json
+    if wants_json:
+        return jsonify(success=True, theme=theme)
+
+    referrer = request.referrer or url_for('profile')
+    resp = redirect(referrer)
+    if theme in SUPPORTED_THEMES:
+        resp.set_cookie('theme', theme, max_age=365 * 24 * 3600, samesite='Lax')
+    return resp
+
 
 @app.route("/logout", methods=["POST"])
 def logout():

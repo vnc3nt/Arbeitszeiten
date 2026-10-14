@@ -30,7 +30,7 @@
                 {{ profile.name }}
             </option>
             {% endfor %}
-            <option value="__new__">+ Neues Profil erstellen</option>
+            <option value="__new__">{{ t('home.new_profile') }}</option>
         </select>
     </form>
 </div>
@@ -39,7 +39,7 @@
 <div class="container">
   <div class="top-cards">
     <div class="card card-overall" id="total-hours-card" data-hours="{{ total_hours_numeric }}" onclick="openOverviewModal()">
-      <div class="card-title">Insgesamt</div>
+      <div class="card-title">{{ t('common.total') }}</div>
       <div class="card-value">{{ total_hours }}h</div>
     </div>
     <div class="card card-month" onclick="openMaxHoursModal()" id="month-card" 
@@ -85,7 +85,7 @@
   <div class="modal-content maxHours-modal">
     <span class="modal-close" onclick="closeMaxHoursModal()">&times;</span>
     <div class="modal-header">
-      <h3>Maximale Stunden pro Monat</h3>
+      <h3>{{ t('home.max_hours_title') }}</h3>
     </div>
     <form method="POST" action="{{ url_for('home') }}" data-home-action="set_max_hours">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -97,12 +97,12 @@
            name="max_hours" 
            placeholder="{% if suggested_max_hours %}{{ suggested_max_hours }}h{% endif %}"
                pattern="[0-9]+([,.][0-9]+)?"
-               title="Bitte geben Sie die Stundenanzahl pro Monat ein (z.B. 35, 35.5 oder 35,5)"
+               title="{{ t('home.max_hours_hint') }}"
                required>
       </div>
       <div class="modal-footer">
-        <button type="button" onclick="closeMaxHoursModal()" class="btn-cancel">Abbrechen</button>
-        <button type="submit" class="btn-save">Speichern</button>
+        <button type="button" onclick="closeMaxHoursModal()" class="btn-cancel">{{ t('common.cancel') }}</button>
+        <button type="submit" class="btn-save">{{ t('common.save') }}</button>
       </div>
     </form>
   </div>
@@ -113,7 +113,7 @@
   <div class="modal-content overview-modal">
     <span class="modal-close" onclick="closeOverviewModal()">&times;</span>
     <div class="modal-header">
-      <h3>Arbeitszeiten-Übersicht</h3>
+      <h3>{{ t('home.overview_title') }}</h3>
     </div>
     <div class="overview-fixed-header">
       
@@ -151,8 +151,11 @@
           </div>
         {% endfor %}
       {% else %}
-        <div class="overview-loading">Übersicht wird bei Bedarf geladen.</div>
+        <div class="overview-loading">{{ t('home.overview_loading') }}</div>
       {% endif %}
+    </div>
+  </div>
+</div>
     </div>
   </div>
 </div>

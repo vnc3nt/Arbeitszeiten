@@ -53,19 +53,19 @@
 <div class="login">
     <form action="" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <input type="text" name="username_input" placeholder="Benutzername"><br>
-        <input type="password" name="password_input" placeholder="Passwort"><br>
-        <button class="prim_button_style" name="login_btn">Einloggen</button>
+        <input type="text" name="username_input" placeholder="{{ t('auth.username') }}"><br>
+        <input type="password" name="password_input" placeholder="{{ t('auth.password') }}"><br>
+        <button class="prim_button_style" name="login_btn">{{ t('auth.login') }}</button>
     </form>
     {% if login_error %}
     <div class="profile-message">{{ login_error }}</div>
     {% endif %}
-    <a href="{{ url_for('register') }}" class="register">Neu registrieren</a>
+    <a href="{{ url_for('register') }}" class="register">{{ t('auth.register') }}</a>
 </div>
 
 <div class="legal">
-    <a href="{{ url_for('impressum') }}">Impressum</a>
-    <a href="{{ url_for('dpa') }}" download>Datenschutzerklärung</a>
+    <a href="{{ url_for('impressum') }}">{{ t('menu.impressum') }}</a>
+    <a href="{{ url_for('dpa') }}" download>{{ t('menu.dpa') }}</a>
 </div>
 
 {% endblock content %}

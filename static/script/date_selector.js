@@ -620,7 +620,7 @@ function formatDateInput() {
         // Create a custom display for "today"
         datePicker.style.color = 'transparent';
         const displaySpan = document.createElement('span');
-        displaySpan.textContent = 'Heute';
+        displaySpan.textContent = document.documentElement.lang === 'en' ? 'Today' : 'Heute';
         displaySpan.style.position = 'absolute';
         displaySpan.style.top = '50%';
         displaySpan.style.left = '50%';

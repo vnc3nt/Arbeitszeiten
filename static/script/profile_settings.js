@@ -43,15 +43,16 @@ window.addEventListener("DOMContentLoaded", (e) => {
     let change_username_dialog = document.getElementById("change-user-name-dialog");
     if (!change_user_name_btn || !change_username_dialog) return;
     
-    change_username_dialog.querySelector("input[type=reset]").addEventListener("click", (e) => {
+    change_username_dialog.querySelector(".dialog-cancel-btn, input[type=reset]")?.addEventListener("click", (e) => {
         change_username_dialog.close();
-    })
+    });
 
     change_username_dialog.querySelector("form").addEventListener("submit", async (e) => {
         e.preventDefault();
+        const isEn = document.documentElement.lang === "en";
         const form = change_username_dialog.querySelector("form");
         const newUsername = form.querySelector("input[name=new_username]").value.trim();
-        const currentUsername = document.querySelector(".username").innerText.trim();
+        const currentUsername = document.querySelector(".username")?.innerText.trim();
         if (newUsername === currentUsername) {
             form.submit();
             return;
@@ -70,18 +71,21 @@ window.addEventListener("DOMContentLoaded", (e) => {
             if (!res.exists) {
                 form.submit();
             } else {
-                alert("Benutzername existiert bereits");
+                alert(isEn ? "Username already exists" : "Benutzername existiert bereits");
             }
         } catch (error) {
-            alert("Benutzername konnte nicht geprüft werden");
+            alert(isEn ? "Could not verify username" : "Benutzername konnte nicht geprüft werden");
         }
-    })
+    });
 
     change_user_name_btn.addEventListener("click", (e) => {
-        change_username_dialog.querySelector("input[name=new_username]").value = document.querySelector(".username").innerText.trim();
+        const currentName = document.querySelector(".username")?.innerText.trim() || "";
+        const input = change_username_dialog.querySelector("input[name=new_username]");
+        if (input) input.value = currentName;
         change_username_dialog.showModal();
-    })
-})
+        if (input) input.focus();
+    });
+});
 
 window.addEventListener("DOMContentLoaded", () => {
     const manageProfilesBtn = document.getElementById("manageProfilesBtn");
@@ -245,6 +249,213 @@ window.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    // 4. Drag & Drop reordering
+    const list = manageProfilesDialog.querySelector(".manage-profiles-list");
+    if (list) {
+        let draggedRow = null;
+        let initialOrderIds = [];
+
+        const getOrderIds = () => {
+            return Array.from(list.querySelectorAll(".profile-management-row"))
+                .map(r => r.getAttribute("data-profile-id"))
+                .filter(Boolean);
+        };
+
+        initialOrderIds = getOrderIds();
+
+        const saveOrder = async () => {
+            const currentOrder = getOrderIds();
+            if (currentOrder.length === 0) return;
+            if (JSON.stringify(currentOrder) === JSON.stringify(initialOrderIds)) {
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append("csrf_token", csrfToken || "");
+                formData.append("profile_action", "reorder");
+                formData.append("order", JSON.stringify(currentOrder));
+
+                const response = await fetch("/profiles/manage", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "fetch"
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || "Fehler beim Speichern der Reihenfolge");
+                }
+
+                initialOrderIds = currentOrder;
+
+                // Reorder dropdown options in header/home if present in DOM
+                const selector = document.getElementById("profile-selector");
+                if (selector) {
+                    const newProfileOption = selector.querySelector('option[value="__new__"]');
+                    currentOrder.forEach(id => {
+                        const opt = selector.querySelector(`option[value="${id}"]`);
+                        if (opt) {
+                            if (newProfileOption) {
+                                selector.insertBefore(opt, newProfileOption);
+                            } else {
+                                selector.appendChild(opt);
+                            }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                alert(err.message || "Reihenfolge konnte nicht gespeichert werden");
+            }
+        };
+
+        const clearDragStyles = () => {
+            list.querySelectorAll(".profile-management-row").forEach(r => {
+                r.classList.remove("is-dragging", "drag-over-top", "drag-over-bottom");
+            });
+        };
+
+        list.querySelectorAll(".profile-management-row").forEach(row => {
+            const handle = row.querySelector(".drag-handle");
+            if (!handle) return;
+
+            // Make draggable on handle interaction
+            handle.addEventListener("mouseenter", () => {
+                row.setAttribute("draggable", "true");
+            });
+            handle.addEventListener("mouseleave", () => {
+                if (!draggedRow) {
+                    row.removeAttribute("draggable");
+                }
+            });
+
+            row.addEventListener("dragstart", (e) => {
+                draggedRow = row;
+                initialOrderIds = getOrderIds();
+                row.classList.add("is-dragging");
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", row.getAttribute("data-profile-id"));
+            });
+
+            row.addEventListener("dragend", () => {
+                row.removeAttribute("draggable");
+                draggedRow = null;
+                clearDragStyles();
+            });
+        });
+
+        list.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            if (!draggedRow) return;
+            e.dataTransfer.dropEffect = "move";
+
+            const targetRow = e.target.closest(".profile-management-row");
+            if (!targetRow || targetRow === draggedRow) return;
+
+            const rect = targetRow.getBoundingClientRect();
+            const isTopHalf = (e.clientY - rect.top) < (rect.height / 2);
+
+            list.querySelectorAll(".profile-management-row").forEach(r => {
+                if (r !== targetRow) {
+                    r.classList.remove("drag-over-top", "drag-over-bottom");
+                }
+            });
+
+            if (isTopHalf) {
+                targetRow.classList.add("drag-over-top");
+                targetRow.classList.remove("drag-over-bottom");
+            } else {
+                targetRow.classList.add("drag-over-bottom");
+                targetRow.classList.remove("drag-over-top");
+            }
+        });
+
+        list.addEventListener("dragleave", (e) => {
+            if (!list.contains(e.relatedTarget)) {
+                clearDragStyles();
+            }
+        });
+
+        list.addEventListener("drop", async (e) => {
+            e.preventDefault();
+            if (!draggedRow) return;
+
+            const targetRow = e.target.closest(".profile-management-row");
+            if (targetRow && targetRow !== draggedRow) {
+                const rect = targetRow.getBoundingClientRect();
+                const isTopHalf = (e.clientY - rect.top) < (rect.height / 2);
+
+                if (isTopHalf) {
+                    list.insertBefore(draggedRow, targetRow);
+                } else {
+                    list.insertBefore(draggedRow, targetRow.nextSibling);
+                }
+            }
+
+            clearDragStyles();
+            draggedRow = null;
+            await saveOrder();
+        });
+
+        // Touch support for touch devices
+        let touchDraggedRow = null;
+
+        list.querySelectorAll(".drag-handle").forEach(handle => {
+            handle.addEventListener("touchstart", (e) => {
+                const row = handle.closest(".profile-management-row");
+                if (!row) return;
+                touchDraggedRow = row;
+                initialOrderIds = getOrderIds();
+                row.classList.add("is-dragging");
+            }, { passive: true });
+
+            handle.addEventListener("touchmove", (e) => {
+                if (!touchDraggedRow) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                const elementUnderPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+                const targetRow = elementUnderPoint?.closest(".profile-management-row");
+
+                list.querySelectorAll(".profile-management-row").forEach(r => {
+                    r.classList.remove("drag-over-top", "drag-over-bottom");
+                });
+
+                if (targetRow && targetRow !== touchDraggedRow) {
+                    const rect = targetRow.getBoundingClientRect();
+                    const isTopHalf = (touch.clientY - rect.top) < (rect.height / 2);
+                    if (isTopHalf) {
+                        targetRow.classList.add("drag-over-top");
+                    } else {
+                        targetRow.classList.add("drag-over-bottom");
+                    }
+                }
+            }, { passive: false });
+
+            handle.addEventListener("touchend", async () => {
+                if (!touchDraggedRow) return;
+                const rowWithOver = list.querySelector(".drag-over-top, .drag-over-bottom");
+                if (rowWithOver) {
+                    if (rowWithOver.classList.contains("drag-over-top")) {
+                        list.insertBefore(touchDraggedRow, rowWithOver);
+                    } else {
+                        list.insertBefore(touchDraggedRow, rowWithOver.nextSibling);
+                    }
+                }
+                clearDragStyles();
+                touchDraggedRow = null;
+                await saveOrder();
+            });
+
+            handle.addEventListener("touchcancel", () => {
+                clearDragStyles();
+                touchDraggedRow = null;
+            });
+        });
+    }
 });
 
 window.addEventListener("DOMContentLoaded", (e) => {
@@ -252,13 +463,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
     let delete_acc_dialog = document.getElementById("delete-account-dialog");
     if (!delete_account_btn || !delete_acc_dialog) return;
 
-    delete_acc_dialog.querySelector("input[type=reset]").addEventListener("click", (e) => {
+    delete_acc_dialog.querySelector(".dialog-cancel-btn, input[type=reset]")?.addEventListener("click", (e) => {
         delete_acc_dialog.close();
-    })
+    });
 
     delete_account_btn.addEventListener("click", (e) => {
         delete_acc_dialog.showModal();
-        delete_acc_dialog.querySelector("input#password").focus();
+        delete_acc_dialog.querySelector("input#password")?.focus();
     });
 });
 
@@ -268,15 +479,91 @@ window.addEventListener("DOMContentLoaded", (e) => {
     let change_password_dialog = document.getElementById("change-password-dialog");
     if (!change_password_btn || !change_password_dialog) return;
 
-    change_password_dialog.querySelector("input[type=reset]").addEventListener("click", (e) => {
+    change_password_dialog.querySelector(".dialog-cancel-btn, input[type=reset]")?.addEventListener("click", (e) => {
         change_password_dialog.close();
-    })
+    });
 
     change_password_btn.addEventListener("click", (e) => {
         change_password_dialog.showModal();
-        change_password_dialog.querySelector("input").focus();
+        change_password_dialog.querySelector("input")?.focus();
     });
-})
+});
+
+window.addEventListener("DOMContentLoaded", (e) => {
+    const changeLanguageBtn = document.getElementById("changeLanguage");
+    const changeLanguageDialog = document.getElementById("change-language-dialog");
+    if (!changeLanguageBtn || !changeLanguageDialog) return;
+
+    changeLanguageBtn.addEventListener("click", () => {
+        changeLanguageDialog.showModal();
+    });
+
+    changeLanguageDialog.querySelector(".dialog-cancel-btn, input[type=reset]")?.addEventListener("click", () => {
+        changeLanguageDialog.close();
+    });
+
+    changeLanguageDialog.querySelectorAll(".language-card").forEach(card => {
+        card.addEventListener("click", () => {
+            changeLanguageDialog.querySelectorAll(".language-card").forEach(c => c.classList.remove("is-selected"));
+            card.classList.add("is-selected");
+            const radio = card.querySelector("input[type=radio]");
+            if (radio) radio.checked = true;
+        });
+    });
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    const themeControl = document.querySelector(".theme-segmented-control");
+    if (!themeControl) return;
+
+    // Sync button state with current active theme
+    const activeTheme = localStorage.getItem("app-theme") || document.documentElement.getAttribute("data-theme") || "auto";
+    themeControl.querySelectorAll(".theme-btn").forEach(btn => {
+        if (btn.getAttribute("data-theme-value") === activeTheme) {
+            btn.classList.add("is-active");
+        } else {
+            btn.classList.remove("is-active");
+        }
+    });
+
+    themeControl.querySelectorAll(".theme-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const theme = btn.getAttribute("data-theme-value");
+            if (!theme) return;
+
+            themeControl.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("is-active"));
+            btn.classList.add("is-active");
+
+            // Apply theme classes immediately to documentElement
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark-mode");
+                document.documentElement.classList.remove("light-mode");
+            } else if (theme === "light") {
+                document.documentElement.classList.add("light-mode");
+                document.documentElement.classList.remove("dark-mode");
+            } else {
+                document.documentElement.classList.remove("dark-mode", "light-mode");
+            }
+            document.documentElement.setAttribute("data-theme", theme);
+
+            // Persist locally
+            try {
+                localStorage.setItem("app-theme", theme);
+            } catch (e) {
+                console.error(e);
+            }
+
+            // Persist to server
+            const formData = new FormData();
+            formData.append("theme", theme);
+            fetch("/set-theme", {
+                method: "POST",
+                headers: { "X-Requested-With": "fetch" },
+                body: formData
+            }).catch(console.error);
+        });
+    });
+});
 
 window.addEventListener("DOMContentLoaded", (e) => {
     const changeProfilePicBtn = document.getElementById("changeProfilePic");
@@ -298,7 +585,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     let dragStart = null;
     const defaultPreviewSrc = document.querySelector(".profile-pic")?.src;
 
-    changeProfilePicDialog.querySelector("input[type=reset]").addEventListener("click", () => {
+    changeProfilePicDialog.querySelector(".dialog-cancel-btn, input[type=reset]")?.addEventListener("click", () => {
         changeProfilePicDialog.close();
         fileInput.value = "";
         cropper.hidden = true;

@@ -20,6 +20,7 @@ def _serialize(profile):
         "name": profile.name,
         "maxhours": float(profile.maxhours or 0),
         "visible": bool(profile.visible),
+        "position": int(profile.position or 0),
     }
 
 
@@ -35,7 +36,11 @@ class Profiles(Resource):
         if user_id is None:
             return {"message": "Nicht autorisiert"}, 401
 
-        profile_rows = profiles.query.filter_by(userid=user_id).order_by(profiles.id).all()
+        profile_rows = (
+            profiles.query.filter_by(userid=user_id)
+            .order_by(profiles.position.asc(), profiles.id.asc())
+            .all()
+        )
 
         active_profile_id = session.get(PROFILEID)
         if not any(profile.id == active_profile_id for profile in profile_rows):
@@ -70,11 +75,15 @@ class Profiles(Resource):
         if profiles.query.filter_by(userid=user_id, name=name).first():
             return {"message": "Dieses Profil existiert bereits"}, 409
 
+        max_pos = db.session.query(db.func.max(profiles.position)).filter_by(userid=user_id).scalar()
+        next_pos = (max_pos + 1) if max_pos is not None else 0
+
         profile = profiles(
             userid=user_id,
             name=name,
             maxhours=maxhours,
             visible=True,
+            position=next_pos,
         )
         db.session.add(profile)
         db.session.commit()
