@@ -18,7 +18,7 @@ class users(db.Model):
     id = db.Column(db.BIGINT, primary_key=True, autoincrement=True, nullable=False)
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)  # Erweitert auf 255 für sichere Hashes
-    profile_image = db.Column(db.String(255), nullable=True)
+    profile_image = db.Column(db.Text, nullable=True)
     language = db.Column(db.String(10), nullable=False, default='de')
     theme = db.Column(db.String(10), nullable=False, default='auto')
 

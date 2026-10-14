@@ -2,6 +2,8 @@ from flask import Flask, render_template, url_for, redirect, request, jsonify, s
 from datetime import datetime, date
 from models import db, users, profiles, token, data, category
 import os
+import io
+import base64
 from api import app as api_app
 from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw
 import secrets
@@ -204,18 +206,8 @@ def serialize_overview_data(overview_data):
 
 
 def ensure_profile_image_column():
-    column_exists = db.session.execute(text("""
-        SELECT 1
-        FROM information_schema.columns
-        WHERE table_schema = 'arbeitszeiten'
-          AND table_name = 'users'
-          AND column_name = 'profile_image'
-    """)).first()
-
-    if column_exists:
-        return
-
-    db.session.execute(text("ALTER TABLE arbeitszeiten.users ADD COLUMN profile_image VARCHAR(255)"))
+    db.session.execute(text("ALTER TABLE arbeitszeiten.users ADD COLUMN IF NOT EXISTS profile_image TEXT"))
+    db.session.execute(text("ALTER TABLE arbeitszeiten.users ALTER COLUMN profile_image TYPE TEXT"))
     db.session.commit()
 
 
@@ -414,6 +406,10 @@ def get_current_user():
 def get_profile_image_url() -> str:
     user = get_current_user()
     if user and user.profile_image:
+        if user.profile_image.startswith("data:image/"):
+            return user.profile_image
+
+        # Fallback für eventuell noch vorhandene lokale Dateien aus früheren Uploads
         absolute_path = os.path.join(app.static_folder, user.profile_image)
         if os.path.exists(absolute_path):
             return url_for("static", filename=user.profile_image)
@@ -422,12 +418,15 @@ def get_profile_image_url() -> str:
 
 
 def remove_profile_image_file(profile_image_path):
-    if not profile_image_path:
+    if not profile_image_path or profile_image_path.startswith("data:image/"):
         return
 
     absolute_path = os.path.join(app.static_folder, profile_image_path)
     if os.path.exists(absolute_path):
-        os.remove(absolute_path)
+        try:
+            os.remove(absolute_path)
+        except OSError:
+            pass
 
 
 def save_profile_image(uploaded_file, user):
@@ -446,29 +445,28 @@ def save_profile_image(uploaded_file, user):
     except Exception:
         return "Ungültige oder beschädigte Bilddatei"
 
-    # Bild auf max. 512x512 begrenzen und als sauberes WEBP/PNG speichern
+    # Bild auf max. 384x384 begrenzen (optimale Schärfe für Retina-Displays bei minimaler Dateigröße)
     if img.mode not in ("RGB", "RGBA"):
         img = img.convert("RGBA")
 
-    img.thumbnail((512, 512))
-    os.makedirs(PROFILE_IMAGE_ABS_FOLDER, exist_ok=True)
+    img.thumbnail((384, 384))
 
-    previous_profile_image = user.profile_image
-    filename = secure_filename(f"profile_{user.id}.webp")
-    relative_path = os.path.join(PROFILE_IMAGE_FOLDER, filename).replace("\\", "/")
-    absolute_path = os.path.join(app.static_folder, relative_path)
-
+    # Als WebP komprimieren und als persistente Data-URL direkt in der PostgreSQL-DB ablegen
     try:
-        img.save(absolute_path, format="WEBP", quality=85)
-        user.profile_image = relative_path
+        buffer = io.BytesIO()
+        img.save(buffer, format="WEBP", quality=82, method=6)
+        encoded_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        data_url = f"data:image/webp;base64,{encoded_data}"
+
+        previous_profile_image = user.profile_image
+        user.profile_image = data_url
         db.session.commit()
     except Exception:
         db.session.rollback()
-        if os.path.exists(absolute_path):
-            os.remove(absolute_path)
-        return "Profilbild konnte nicht gespeichert werden"
+        return "Profilbild konnte nicht in der Datenbank gespeichert werden"
 
-    if previous_profile_image and previous_profile_image != relative_path:
+    # Wenn zuvor eine lokale Datei auf der Festplatte lag, diese säubern
+    if previous_profile_image and not previous_profile_image.startswith("data:image/"):
         remove_profile_image_file(previous_profile_image)
 
     return None
@@ -484,7 +482,8 @@ def reset_profile_image(user):
         db.session.rollback()
         return "Profilbild konnte nicht zurückgesetzt werden"
 
-    remove_profile_image_file(previous_profile_image)
+    if previous_profile_image and not previous_profile_image.startswith("data:image/"):
+        remove_profile_image_file(previous_profile_image)
     return None
 
 
