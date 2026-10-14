@@ -21,14 +21,16 @@
     }
 
     body {
-                background-image: conic-gradient(from var(--angle),#27002c, #000000, #27002c );
-                animation: animation 15s ease-in-out infinite;
-                height: 100vh;
-                background-size: 200% 200%;
-                backdrop-filter: blur(150px);
-                background-position: bottom;
-                margin: 0;
-            }
+        background-image: conic-gradient(from var(--angle), #27002c, #000000, #27002c);
+        animation: animation 15s ease-in-out infinite;
+        min-height: 100vh;
+        height: auto;
+        overflow-y: auto;
+        background-size: 200% 200%;
+        backdrop-filter: blur(150px);
+        background-position: bottom;
+        margin: 0;
+    }
 
     @property --angle {
         syntax: "<angle>";
@@ -52,9 +54,6 @@
 </style>
 {% endblock head_tags %}
 {% block content %}
-<img class="logo-pic-centered" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="Arbeitszeiten">
-
-
 <a class="backbutton impressum-backbutton" href="{{ url_for('home') }}" aria-label="{{ t('common.back') }}">
     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="backbutton-icon">
         <polyline points="15 18 9 12 15 6"></polyline>
@@ -62,23 +61,29 @@
     <span class="backbutton-text">{{ t('common.back') }}</span>
 </a>
 
-<div class="impressum-content">
-    Angaben gemäß §5 Digitale-Dienste-Gesetz (DDG) und §18 Medienstaatsvertrag (MStV)<br><br>
-    
-    Vincent Klug<br>
-    Ernst-Ludwig-Straße 19<br>
-    64283 Darmstadt, Deutschland<br><br>
-    
-    Kontakt:<br>
-    E-Mail: electrodia2005@gmail.com<br><br>
+<div class="impressum-wrapper">
+    <div class="impressum-header">
+        <img class="impressum-logo" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="Arbeitszeiten">
+    </div>
 
-    Datenschutz:<br>
-    Die Datenschutzerklärung finden Sie <a href="{{ url_for('dpa') }}" download>hier</a>.<br><br>
-    
-    Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:<br>
-    Vincent Klug<br>
-    Ernst-Ludwig-Straße 19<br>
-    64283 Darmstadt, Deutschland<br><br>
+    <div class="impressum-content">
+        Angaben gemäß §5 Digitale-Dienste-Gesetz (DDG) und §18 Medienstaatsvertrag (MStV)<br><br>
+        
+        Vincent Klug<br>
+        Ernst-Ludwig-Straße 19<br>
+        64283 Darmstadt, Deutschland<br><br>
+        
+        Kontakt:<br>
+        E-Mail: electrodia2005@gmail.com<br><br>
 
+        Datenschutz:<br>
+        Die Datenschutzerklärung finden Sie <a href="{{ url_for('dpa') }}" download>hier</a>.<br><br>
+        
+        Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:<br>
+        Vincent Klug<br>
+        Ernst-Ludwig-Straße 19<br>
+        64283 Darmstadt, Deutschland<br><br>
+
+    </div>
 </div>
 {% endblock content %}

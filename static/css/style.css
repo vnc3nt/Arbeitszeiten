@@ -85,6 +85,14 @@ body {
     padding: 0;
     min-height: 100vh;
     background-color: var(--website-background-color);
+    display: flow-root;
+}
+
+#content,
+#home-content {
+    display: flow-root;
+    min-height: 100%;
+    position: relative;
 }
 
 .addButton {
@@ -814,10 +822,16 @@ span.icon {
 
 .profile-content {
   width: min(92vw, 760px);
-  margin: 8.5rem auto 3rem;
+  margin: 2rem auto 3rem;
   display: grid;
   gap: 1rem;
   color: var(--text-color);
+}
+
+@media (max-width: 1099px) {
+  .profile-content {
+    margin-top: 7.5rem;
+  }
 }
 
 .settings-header {
@@ -1482,10 +1496,42 @@ input.dialog-input:focus {
   padding: 0;
 }
 
-.impressum-content {
+.impressum-wrapper {
   width: min(92vw, 760px);
-  margin: 8.5rem auto 3rem;
-  padding: 1.5rem 1.8rem;
+  margin: 2rem auto 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.impressum-header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.impressum-logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+  filter: invert(1);
+  display: block;
+  margin: 0 auto;
+}
+
+html.light-mode .impressum-logo {
+  filter: brightness(0.1) opacity(0.35);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not(.dark-mode) .impressum-logo {
+    filter: brightness(0.1) opacity(0.35);
+  }
+}
+
+.impressum-content {
+  width: 100%;
+  margin: 0;
+  padding: 1.8rem 2rem;
   border: 1px solid rgba(120, 120, 120, .55);
   border-radius: 16px;
   background: var(--button-color);
@@ -1496,6 +1542,12 @@ input.dialog-input:focus {
   line-height: 1.6;
   font-size: 0.95rem;
   box-sizing: border-box;
+}
+
+@media (max-width: 765px) {
+  .impressum-wrapper {
+    margin-top: 4.8rem;
+  }
 }
 
 h2 {

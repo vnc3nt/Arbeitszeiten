@@ -376,7 +376,7 @@
 
     .profile-content {
         width: min(90vw, 32rem);
-        margin-top: 8rem;
+        margin: 7.5rem auto 3rem;
     }
 
     .settings-section {

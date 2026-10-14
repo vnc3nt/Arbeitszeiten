@@ -5,6 +5,9 @@
 body {
     overflow-y: auto;
     position: relative;
+    display: flow-root;
+    min-height: 100vh;
+    height: auto;
 }
 
 /* Container mit zentriertem Layout für Desktop */
