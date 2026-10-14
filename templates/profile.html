@@ -50,7 +50,7 @@
 
         <div class="theme-selector-container">
             <span class="theme-selector-label">{{ t('settings.appearance.theme') }}</span>
-            <div class="theme-segmented-control" role="radiogroup" aria-label="{{ t('settings.appearance.theme') }}">
+            <div class="theme-segmented-control" role="radiogroup" aria-label="{{ t('settings.appearance.theme') }}" id="theme-segmented-control">
                 <button type="button"
                     class="theme-btn {% if current_theme == 'auto' or not current_theme %}is-active{% endif %}"
                     data-theme-value="auto">
@@ -88,9 +88,21 @@
             </div>
         </div>
 
-        <div class="settings-actions">
-            <button id="changeLanguage">{{ t('settings.appearance.change_language') }} ({{ 'Deutsch' if current_lang ==
-                'de' else 'English' }})</button>
+        <!-- Sektion Sprache im Hauptmenü (ersetzt den Button) -->
+        <div class="theme-selector-container">
+            <span class="theme-selector-label">{{ t('dialog.language.title') }}</span>
+            <div class="theme-segmented-control" role="radiogroup" aria-label="{{ t('dialog.language.title') }}" id="language-segmented-control">
+                <button type="button"
+                    class="theme-btn {% if current_lang == 'de' %}is-active{% endif %}"
+                    data-lang-value="de">
+                    <span>🇩🇪 Deutsch</span>
+                </button>
+                <button type="button"
+                    class="theme-btn {% if current_lang == 'en' %}is-active{% endif %}"
+                    data-lang-value="en">
+                    <span>🇬🇧 English</span>
+                </button>
+            </div>
         </div>
     </section>
 
@@ -214,48 +226,6 @@
         <form id="avatar-reset-form" action="" method="post" class="profile-reset-form" style="display: none;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="reset-profile-picture">
-        </form>
-    </dialog>
-
-    <!-- Dialog: Sprache ändern -->
-    <dialog id="change-language-dialog" class="modern-dialog">
-        <div class="dialog-header">
-            <h2>{{ t('dialog.language.title') }}</h2>
-            <p class="dialog-subtitle">{{ t('dialog.language.desc') }}</p>
-        </div>
-        <form action="{{ url_for('set_language') }}" method="post" id="change-language-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <div class="language-options-grid">
-                <label class="language-card {% if current_lang == 'de' %}is-selected{% endif %}">
-                    <input type="radio" name="language" value="de" {% if current_lang=='de' %}checked{% endif %}>
-                    <span class="language-flag">🇩🇪</span>
-                    <div class="language-info">
-                        <span class="language-name">Deutsch</span>
-                        <span class="language-sub">German</span>
-                    </div>
-                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
-                        stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </label>
-                <label class="language-card {% if current_lang == 'en' %}is-selected{% endif %}">
-                    <input type="radio" name="language" value="en" {% if current_lang=='en' %}checked{% endif %}>
-                    <span class="language-flag">🇬🇧</span>
-                    <div class="language-info">
-                        <span class="language-name">English</span>
-                        <span class="language-sub">Englisch</span>
-                    </div>
-                    <svg class="language-check" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
-                        stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </label>
-            </div>
-            <div class="dialog-actions">
-                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
-                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
-                <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.language.submit') }}</button>
-            </div>
         </form>
     </dialog>
 

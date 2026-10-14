@@ -489,31 +489,39 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 });
 
-window.addEventListener("DOMContentLoaded", (e) => {
-    const changeLanguageBtn = document.getElementById("changeLanguage");
-    const changeLanguageDialog = document.getElementById("change-language-dialog");
-    if (!changeLanguageBtn || !changeLanguageDialog) return;
+window.addEventListener("DOMContentLoaded", () => {
+    const langControl = document.getElementById("language-segmented-control");
+    if (!langControl) return;
 
-    changeLanguageBtn.addEventListener("click", () => {
-        changeLanguageDialog.showModal();
-    });
+    langControl.querySelectorAll(".theme-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const lang = btn.getAttribute("data-lang-value");
+            if (!lang) return;
 
-    changeLanguageDialog.querySelector(".dialog-cancel-btn, input[type=reset]")?.addEventListener("click", () => {
-        changeLanguageDialog.close();
-    });
+            langControl.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("is-active"));
+            btn.classList.add("is-active");
 
-    changeLanguageDialog.querySelectorAll(".language-card").forEach(card => {
-        card.addEventListener("click", () => {
-            changeLanguageDialog.querySelectorAll(".language-card").forEach(c => c.classList.remove("is-selected"));
-            card.classList.add("is-selected");
-            const radio = card.querySelector("input[type=radio]");
-            if (radio) radio.checked = true;
+            const formData = new FormData();
+            formData.append("language", lang);
+            try {
+                const response = await fetch("/set-language", {
+                    method: "POST",
+                    headers: { "X-Requested-With": "fetch" },
+                    body: formData
+                });
+                if (response.ok) {
+                    // Seite neu laden, damit alle Übersetzungen sofort greifen
+                    window.location.reload();
+                }
+            } catch (e) {
+                console.error("Sprache konnte nicht gespeichert werden", e);
+            }
         });
     });
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-    const themeControl = document.querySelector(".theme-segmented-control");
+    const themeControl = document.getElementById("theme-segmented-control") || document.querySelector(".theme-segmented-control");
     if (!themeControl) return;
 
     // Sync button state with current active theme
