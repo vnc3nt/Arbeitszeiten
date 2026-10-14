@@ -14,7 +14,8 @@
     </details>
 </div>
 <a class="backbutton" href="{{ url_for('home') }}" aria-label="{{ t('common.back') }}">
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="backbutton-icon">
+    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"
+        stroke-linecap="round" stroke-linejoin="round" class="backbutton-icon">
         <polyline points="15 18 9 12 15 6"></polyline>
     </svg>
     <span class="backbutton-text">{{ t('common.back') }}</span>
@@ -164,12 +165,6 @@
 
     <!-- Dialog: Profilbild ändern -->
     <dialog id="change-profile-picture-dialog" class="modern-dialog">
-        <form action="" method="post" class="profile-reset-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <input type="hidden" name="action" value="reset-profile-picture">
-            <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
-        </form>
-
         <div class="dialog-header">
             <h2>{{ t('dialog.avatar.title') }}</h2>
             <p class="dialog-subtitle">{{ t('dialog.avatar.desc') }}</p>
@@ -212,6 +207,12 @@
                     onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-primary">{{ t('dialog.avatar.submit') }}</button>
             </div>
+        </form>
+
+        <form action="" method="post" class="profile-reset-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="action" value="reset-profile-picture">
+            <button type="submit" class="btn-reset-avatar">{{ t('dialog.avatar.reset') }}</button>
         </form>
     </dialog>
 

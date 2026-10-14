@@ -20,8 +20,12 @@ body {
 
 /* Header-Bereich optimiert für Desktop */
 .logo-pic {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
     width: 3rem;
-    margin: 1rem 1rem;
+    margin: 0;
+    z-index: 1001;
 }
 
 /* Profil-Menü für Desktop */
