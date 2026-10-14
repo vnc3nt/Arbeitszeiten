@@ -263,13 +263,19 @@ def ensure_profiles():
     """))
 
     db.session.execute(text("""
-        CREATE SEQUENCE IF NOT EXISTS arbeitszeiten.category_id_seq;
-        ALTER TABLE arbeitszeiten.category ALTER COLUMN id SET DEFAULT nextval('arbeitszeiten.category_id_seq');
-        SELECT setval(
-            'arbeitszeiten.category_id_seq',
-            COALESCE((SELECT MAX(id) FROM arbeitszeiten.category), 1),
-            (SELECT MAX(id) FROM arbeitszeiten.category) IS NOT NULL
-        );
+        DO $$
+        DECLARE
+            seq text;
+        BEGIN
+            seq := pg_get_serial_sequence('arbeitszeiten.category', 'id');
+            IF seq IS NOT NULL THEN
+                PERFORM setval(
+                    seq,
+                    COALESCE((SELECT MAX(id) FROM arbeitszeiten.category), 1),
+                    (SELECT MAX(id) FROM arbeitszeiten.category) IS NOT NULL
+                );
+            END IF;
+        END $$;
     """))
 
     for user in db.session.query(users).all():
