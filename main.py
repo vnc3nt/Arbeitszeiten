@@ -277,41 +277,41 @@ def ensure_profiles():
     """))
 
     for user in db.session.query(users).all():
-        default_profile = db.session.query(profiles).filter_by(
-            userid=user.id, name="Standardprofil"
-        ).first()
-        if default_profile is None:
-            default_profile = db.session.query(profiles).filter_by(
-                userid=user.id
-            ).order_by(profiles.id).first()
-            if default_profile is not None:
-                default_profile.name = "Standardprofil"
-        if default_profile is None:
-            # Keine manuelle ID mehr übergeben -> Datenbank vergibt sie sauber!
+        has_profile = db.session.query(profiles).filter_by(userid=user.id).first()
+        if has_profile is None:
+            # Nur wenn der User noch überhaupt kein Profil hat, ein Initial-Profil anlegen
             default_profile = profiles(
                 userid=user.id,
                 name="Standardprofil",
                 maxhours=0,
+                visible=True,
+                position=0,
             )
             db.session.add(default_profile)
             db.session.flush()
 
-    # Bulk-Update einmalig außerhalb der User-Schleife (deutlich schneller beim Start!)
+    # Bulk-Update einmalig außerhalb der User-Schleife für alte Einträge ohne profileid
     db.session.execute(text("""
         UPDATE arbeitszeiten.data d
-        SET profileid = p.id
-        FROM arbeitszeiten.profiles p
-        WHERE d.userid = p.userid
+        SET profileid = sub.id
+        FROM (
+            SELECT DISTINCT ON (userid) userid, id
+            FROM arbeitszeiten.profiles
+            ORDER BY userid, position ASC, id ASC
+        ) sub
+        WHERE d.userid = sub.userid
           AND d.profileid IS NULL
-          AND p.name = 'Standardprofil'
     """))
     db.session.execute(text("""
         UPDATE arbeitszeiten.category c
-        SET profileid = p.id
-        FROM arbeitszeiten.profiles p
-        WHERE c.userid = p.userid
+        SET profileid = sub.id
+        FROM (
+            SELECT DISTINCT ON (userid) userid, id
+            FROM arbeitszeiten.profiles
+            ORDER BY userid, position ASC, id ASC
+        ) sub
+        WHERE c.userid = sub.userid
           AND c.profileid IS NULL
-          AND p.name = 'Standardprofil'
     """))
     db.session.execute(text("""
         ALTER TABLE arbeitszeiten.data
