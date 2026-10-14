@@ -56,6 +56,11 @@
     background-color: rgba(0, 0, 0, 0.2);
 }
 
+#profile-menu ul li.profile-menu-username:hover,
+#profile-menu ul li:has(.username):hover {
+    background-color: transparent;
+}
+
 .more-menu-btn {
     display: none;
 }

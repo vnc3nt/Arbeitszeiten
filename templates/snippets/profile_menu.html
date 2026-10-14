@@ -1,6 +1,6 @@
 <menu id="profile-menu">
     <ul>
-        <li>
+        <li class="profile-menu-username">
             <div class="username">{{ get_username() }}</div>
         </li>
         <a href="https://www.paypal.com/donate/?hosted_button_id=LDQM4GTCXJJR4" rel="noopener noreferrer">
@@ -17,7 +17,7 @@
         <a href="{{ url_for('profile') }}">
             <li>
                 <ul>
-                    <span class="icon" aria-hidden="true">⚙</span>
+                    <img class="icon" src="{{url_for('static', filename='img/icons/96x96-settings.png')}}" alt="settings">
                 </ul>
                 <ul>
                     <div>Einstellungen</div>
