@@ -640,8 +640,10 @@ details> summary {
   color: red;
 }
 
-#profile-menu a {
-  text-decoration: none;
+#profile-menu a,
+#profile-menu a:hover,
+#profile-menu a * {
+  text-decoration: none !important;
   color: var(--text-color);
 }
 
@@ -711,11 +713,6 @@ details> summary {
 #profile-menu ul li.profile-menu-username:hover,
 #profile-menu ul li:has(.username):hover {
   background-color: transparent;
-}
-
-a :hover :last-child{
-  cursor: pointer;
-  text-decoration: underline;
 }
 
 .modal {
@@ -1677,12 +1674,16 @@ h2 {
 }
 
 .btn-save {
-  background-color: var(--link-color);
-  color: white;
+  background-color: #a600ff !important;
+  border: 1px solid #a600ff !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
 .btn-save:hover {
-  opacity: 0.9;
+  background-color: #9200e0 !important;
+  border-color: #9200e0 !important;
+  box-shadow: 0 4px 14px rgba(166, 0, 255, 0.35);
 }
 
 .maxHours-modal {
@@ -1707,14 +1708,15 @@ h2 {
 }
 
 #maxHoursInput {
-  width: 5em;
+  width: 6em;
   text-align: center;
-  padding: 0.5rem;
-  border: 1px solid var(--selected-color);
+  padding: 0.6rem;
+  border: 1px solid rgba(120, 120, 120, 0.45);
   border-radius: 10px;
-  background-color: var(--background-color);
+  background-color: var(--selected-color);
   color: var(--text-color);
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 /* Time input styles */
@@ -1890,35 +1892,55 @@ h2 {
 }
 
 .prim_button_style {
-    background-color: var(--button-color);
-    color: var(--text-color);
-    border: solid;
-    border-width: 1px;
+    background-color: #a600ff;
+    color: #ffffff;
+    border: 1px solid #a600ff;
     border-radius: 10px;
-    border-color: rgba(120, 120, 120, .9);
-    padding: 10px;
+    padding: 0 1.2rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.18s ease-in-out;
     width: 10rem;
-    height: 2.5rem;
-    line-height: 1rem;
-    font-size: 0.8rem;
+    height: 2.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.prim_button_style:hover {
+    background-color: #9200e0;
+    border-color: #9200e0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(166, 0, 255, 0.35);
 }
 
 .sec_button_style {
     background-color: var(--button-color);
     color: var(--text-color);
-    border: solid;
-    border-width: 1px;
+    border: 1px solid rgba(120, 120, 120, 0.5);
     border-radius: 10px;
-    border-color: rgba(120, 120, 120, .9);
-    padding: 10px;
+    padding: 0 1.2rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.18s ease-in-out;
     width: 10rem;
-    height: 2.5rem;
-    line-height: 1rem;
-    font-size: 0.8rem;
+    height: 2.6rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 10px;
+    vertical-align: middle;
+}
+
+.sec_button_style:hover {
+    background-color: var(--selected-color);
+    transform: translateY(-1px);
 }
 
 /* Fix für abgeschnittenes Datum und "Heute"-Überlappung */
@@ -1954,4 +1976,75 @@ h2 {
     color: var(--text-color);
     font-weight: 600;
     white-space: nowrap;
+}
+
+/* Alle Text-Links im Impressum, Login und Register in Lila statt Standard-Blau */
+.login a:not(.sec_button_style),
+.impressum-content a,
+.terms-container a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+}
+
+.login a:not(.sec_button_style):hover,
+.impressum-content a:hover,
+.terms-container a:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+/* Einheitlicher lila Fokus-Rand für ALLE Text-, Passwort-, Zeit- und Zahlen-Inputs */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="time"]:focus,
+input[type="date"]:focus,
+#maxHoursInput:focus,
+.modal-body input[type="text"]:focus,
+.profile-selector-form select:focus {
+    outline: none;
+    border-color: #a600ff !important;
+    box-shadow: 0 0 0 2px rgba(166, 0, 255, 0.25) !important;
+}
+
+/* Konsistentes Aussehen der Startseiten-Elemente im Lightmode */
+html.light-mode .day-selection,
+html.light-mode .edit-time-value,
+html.light-mode .styled-time-picker {
+    background-color: #ffffff !important;
+    color: var(--text-color) !important;
+    border: 1px solid rgba(120, 120, 120, 0.35) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+html.light-mode .edit-btn {
+    background-color: #e4e4e7 !important;
+    color: var(--text-color) !important;
+    border: 1px solid rgba(120, 120, 120, 0.3) !important;
+}
+
+html.light-mode .edit-btn:hover {
+    background-color: #d4d4d8 !important;
+}
+
+@media (prefers-color-scheme: light) {
+    html:not(.dark-mode) .day-selection,
+    html:not(.dark-mode) .edit-time-value,
+    html:not(.dark-mode) .styled-time-picker {
+        background-color: #ffffff !important;
+        color: var(--text-color) !important;
+        border: 1px solid rgba(120, 120, 120, 0.35) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    html:not(.dark-mode) .edit-btn {
+        background-color: #e4e4e7 !important;
+        color: var(--text-color) !important;
+        border: 1px solid rgba(120, 120, 120, 0.3) !important;
+    }
+
+    html:not(.dark-mode) .edit-btn:hover {
+        background-color: #d4d4d8 !important;
+    }
 }
