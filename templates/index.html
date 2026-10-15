@@ -20,7 +20,7 @@
             })();
         </script>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
         <meta name="color-scheme" content="light dark" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script type="text/javascript" src="{{ url_for('static', filename='script/regex.js') }}"></script>
@@ -53,10 +53,10 @@
             }
         </script>
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock %}">
         <input type="hidden" id="user_id" value="{{ user_id }}" />
         <div id="content">
-            <main id="home-content">
+            <main id="home-content" class="{% block main_class %}{% endblock %}">
                 {% block content required %}
                 {# put content html code into a content-block in html files extending index.html #}
                 {% endblock content %}

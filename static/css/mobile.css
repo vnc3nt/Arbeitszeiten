@@ -8,12 +8,14 @@
 }
 
 #profile-menu {
-    position: absolute;
-    top: 3rem;
-    right: -1rem;
-    width: 100vw;
-    height: calc(110vh - 6.875rem);
-    border-radius: 10px 10px 0 0;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 85vh;
+    border-radius: 16px 16px 0 0;
     overflow: hidden;
     z-index: 1000;
     backdrop-filter: blur(0px);
@@ -105,7 +107,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
 }
 
 /* Karten oben */
@@ -319,9 +325,6 @@
 
 /* Responsive Design für kleinere Mobile-Geräte */
 @media (max-width: 500px) {
-    .container {
-        min-height: 100vh;
-    }
     .top-cards {
         gap: 1rem;
         margin-top: 2rem;
@@ -435,5 +438,24 @@
             opacity: 1;
             transform: scale(1) translateY(0);
         }
+    }
+
+    /* Erlaube normales Scrollen auf mobilen Unterseiten, sperre Scrollen auf der Startseite */
+    body {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        touch-action: pan-y !important;
+        position: relative !important;
+        height: auto !important;
+        min-height: 100% !important;
+    }
+
+    body.page-home {
+        overflow: hidden !important;
+        touch-action: none !important;
+        position: fixed !important;
+        width: 100% !important;
+        height: 100% !important;
+        height: 100dvh !important;
     }
 }
