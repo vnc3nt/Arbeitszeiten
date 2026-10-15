@@ -554,6 +554,10 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             document.documentElement.setAttribute("data-theme", theme);
 
+            if (typeof setDynamicCardBackground === "function") {
+                setDynamicCardBackground();
+            }
+
             // Persist locally
             try {
                 localStorage.setItem("app-theme", theme);

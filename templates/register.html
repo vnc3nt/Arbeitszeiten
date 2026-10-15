@@ -21,14 +21,20 @@
     }
 
     body {
-                background-image: conic-gradient(from var(--angle),#27002c, #000000, #27002c );
-                animation: animation 15s ease-in-out infinite;
-                height: 100vh;
-                background-size: 200% 200%;
-                backdrop-filter: blur(150px);
-                background-position: bottom;
-                margin: 0;
-            }
+        background-image: conic-gradient(from var(--angle), #27002c, #000000, #27002c);
+        animation: animation 15s ease-in-out infinite;
+        min-height: 100vh;
+        height: auto;
+        overflow-y: auto;
+        background-size: 200% 200%;
+        backdrop-filter: blur(150px);
+        background-position: bottom;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 
     @property --angle {
         syntax: "<angle>";
@@ -47,37 +53,83 @@
             --angle: -45deg;
         }
     }
-
-    
 </style>
 {% endblock head_tags %}
 {% block content %}
-<img class="logo-pic-centered" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="Arbeitszeiten">
-<br><br>
-<div class="login">
-    {% if error %}
-        <div class="error-message">{{ error }}</div>
-    {% endif %}
-    <form action="" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <input type="text" id="username_input" name="username_input" placeholder="{{ t('auth.username') }}"><br>
-        <img class="regex" id="usernameCheck"><div class="regexFeedback" id="usernameAvailable">Benutzername ist verfügbar</div>
-        <img class="regex" id="usernameX"><div class="regexFeedback" id="usernameNotAvailable">Benutzername ist bereits vergeben</div><br>
-        <!--TODO add email-->
-        <input type="password" id="password_input_1" name="password_input_1" placeholder="{{ t('auth.password') }}"><br>
-        <input type="password" id="password_input_2" name="password_input_2" placeholder="{{ t('auth.password_repeat') }}"><br>
-        <img class="regex" id="firstPWCheck"><img class="regex" id="firstPWX"><div class="regexFeedback" id="passwordMin8">Passwort muss mindestens 8 Zeichen lang sein</div><br>
-        <img class="regex" id="secondPWCheck"><img class="regex" id="secondPWX"><div class="regexFeedback" id="passwordNotTheSame">Passwort muss identisch sein</div><br><br>
-        <div class="terms-container">
-            <input type="checkbox" id="terms_checkbox" name="terms_checkbox" required>
-            <label for="terms_checkbox">{{ t('auth.terms_prefix') }} <a href="{{ url_for('dpa') }}" download>{{ t('auth.terms_dpa') }}</a> {{ t('auth.terms_and') }}</label>
-        </div>
-        <br><a class="sec_button_style" href="/login">{{ t('common.cancel') }}</a><button class="prim_button_style" name="register_btn" type="submit">{{ t('auth.register') }}</button>
-    </form>
-</div>
 
-<div class="legal">
-    <a href="{{ url_for('impressum') }}">{{ t('menu.impressum') }}</a>
-    <a href="{{ url_for('dpa') }}" download>{{ t('menu.dpa') }}</a>
+<div class="auth-page-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img class="auth-logo" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="Arbeitszeiten">
+            <h1 class="auth-title">{{ t('auth.register') }}</h1>
+            <p class="auth-subtitle">Erstelle dein Konto, um deine Arbeitszeiten zu verwalten.</p>
+        </div>
+
+        {% if error %}
+        <div class="auth-error-banner" role="alert">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form action="" method="post" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <div class="auth-input-group">
+                <label for="username_input" class="auth-label">{{ t('auth.username') }}</label>
+                <div class="auth-input-wrapper">
+                    <input type="text" id="username_input" name="username_input" class="auth-input" placeholder="{{ t('auth.username') }}" required autofocus autocomplete="username">
+                    <span class="regex" id="usernameCheck"></span>
+                    <span class="regex" id="usernameX"></span>
+                </div>
+                <div class="regexFeedback" id="usernameAvailable">Benutzername ist verfügbar</div>
+                <div class="regexFeedback" id="usernameNotAvailable">Benutzername ist bereits vergeben</div>
+            </div>
+
+            <div class="auth-input-group">
+                <label for="password_input_1" class="auth-label">{{ t('auth.password') }}</label>
+                <div class="auth-input-wrapper">
+                    <input type="password" id="password_input_1" name="password_input_1" class="auth-input" placeholder="{{ t('auth.password') }}" required autocomplete="new-password">
+                    <span class="regex" id="firstPWCheck"></span>
+                    <span class="regex" id="firstPWX"></span>
+                </div>
+                <div class="regexFeedback" id="passwordMin8">Passwort muss mindestens 8 Zeichen lang sein</div>
+            </div>
+
+            <div class="auth-input-group">
+                <label for="password_input_2" class="auth-label">{{ t('auth.password_repeat') }}</label>
+                <div class="auth-input-wrapper">
+                    <input type="password" id="password_input_2" name="password_input_2" class="auth-input" placeholder="{{ t('auth.password_repeat') }}" required autocomplete="new-password">
+                    <span class="regex" id="secondPWCheck"></span>
+                    <span class="regex" id="secondPWX"></span>
+                </div>
+                <div class="regexFeedback" id="passwordNotTheSame">Passwörter müssen identisch sein</div>
+            </div>
+
+            <div class="terms-container">
+                <input type="checkbox" id="terms_checkbox" name="terms_checkbox" required>
+                <label for="terms_checkbox">{{ t('auth.terms_prefix') }} <a href="{{ url_for('dpa') }}" download>{{ t('auth.terms_dpa') }}</a> {{ t('auth.terms_and') }}</label>
+            </div>
+
+            <div class="auth-button-group">
+                <a class="sec_button_style" href="{{ url_for('login') }}">{{ t('common.cancel') }}</a>
+                <button class="prim_button_style" name="register_btn" type="submit">{{ t('auth.register') }}</button>
+            </div>
+        </form>
+
+        <div class="auth-footer-text">
+            <span>Bereits registriert?</span>
+            <a href="{{ url_for('login') }}" class="auth-link">{{ t('auth.login') }}</a>
+        </div>
+    </div>
+
+    <div class="legal auth-legal">
+        <a href="{{ url_for('impressum') }}">{{ t('menu.impressum') }}</a>
+        <a href="{{ url_for('dpa') }}" download>{{ t('menu.dpa') }}</a>
+    </div>
 </div>
 {% endblock content %}

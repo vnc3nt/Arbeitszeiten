@@ -36,14 +36,10 @@ html.light-mode .category-button img {
   filter: none;
 }
 
-html.light-mode .logo-pic {
-  filter: brightness(0.1) opacity(0.35);
-  filter: invert(1);
-}
-
-html.light-mode .logo-pic-centered {
-  filter: brightness(1);
-  filter: invert(1);
+html.light-mode .logo-pic,
+html.light-mode .logo-pic-centered,
+html.light-mode .auth-logo {
+  filter: none !important;
 }
 
 @media (prefers-color-scheme: light) {
@@ -69,14 +65,10 @@ html.light-mode .logo-pic-centered {
     filter: none;
   }
 
-  html:not(.dark-mode) .logo-pic {
-    filter: brightness(0.1) opacity(0.35);
-    filter: invert(1);
-  }
-
-  html:not(.dark-mode) .logo-pic-centered {
-    filter: brightness(1);
-    filter: invert(1);
+  html:not(.dark-mode) .logo-pic,
+  html:not(.dark-mode) .logo-pic-centered,
+  html:not(.dark-mode) .auth-logo {
+    filter: none !important;
   }
 }
 
@@ -1522,12 +1514,12 @@ input.dialog-input:focus {
 }
 
 html.light-mode .impressum-logo {
-  filter: brightness(0.1) opacity(0.35);
+  filter: none !important;
 }
 
 @media (prefers-color-scheme: light) {
   html:not(.dark-mode) .impressum-logo {
-    filter: brightness(0.1) opacity(0.35);
+    filter: none !important;
   }
 }
 
@@ -2046,5 +2038,364 @@ html.light-mode .edit-btn:hover {
 
     html:not(.dark-mode) .edit-btn:hover {
         background-color: #d4d4d8 !important;
+    }
+}
+
+/* =========================================================
+   Modernes Card-Design für Login & Registrierung
+   ========================================================= */
+.auth-page-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem 4rem;
+    box-sizing: border-box;
+}
+
+.auth-card {
+    width: min(92vw, 440px);
+    background: var(--button-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(120, 120, 120, 0.45);
+    border-radius: 20px;
+    padding: 2.4rem 2rem 2.2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    animation: auth-card-appear 0.25s ease-out;
+}
+
+@keyframes auth-card-appear {
+    0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+html.light-mode .auth-card,
+@media (prefers-color-scheme: light) {
+    html:not(.dark-mode) .auth-card {
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(120, 120, 120, 0.25);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.auth-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.8rem;
+}
+
+.auth-logo {
+    width: 4rem;
+    height: 4rem;
+    object-fit: contain;
+    margin-bottom: 0.8rem;
+    filter: invert(1);
+    transition: transform 0.2s ease;
+}
+
+.auth-logo:hover {
+    transform: scale(1.05);
+}
+
+.auth-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-color);
+    letter-spacing: -0.01em;
+}
+
+.auth-subtitle {
+    margin: 0.4rem 0 0;
+    font-size: 0.9rem;
+    opacity: 0.72;
+    line-height: 1.4;
+    color: var(--text-color);
+}
+
+.auth-error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 1.4rem;
+    text-align: left;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    text-align: left;
+}
+
+.auth-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 100%;
+}
+
+.auth-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 0.85;
+}
+
+.auth-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+input.auth-input {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 2.85rem !important;
+    height: 2.85rem !important;
+    margin: 0 !important;
+    padding: 0 1rem !important;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 500;
+    border-radius: 10px !important;
+    border: 1px solid rgba(120, 120, 120, 0.45) !important;
+    background-color: var(--selected-color) !important;
+    color: var(--text-color) !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease;
+}
+
+html.light-mode input.auth-input {
+    background-color: #ffffff !important;
+    border-color: rgba(120, 120, 120, 0.35) !important;
+}
+
+.auth-input-wrapper .regex {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+}
+
+.auth-submit-btn {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 2.85rem !important;
+    height: 2.85rem !important;
+    margin: 0.5rem 0 0 !important;
+    font-size: 0.95rem !important;
+    border-radius: 10px !important;
+}
+
+.auth-button-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.auth-button-group .sec_button_style,
+.auth-button-group .prim_button_style {
+    flex: 1;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    min-height: 2.85rem !important;
+    height: 2.85rem !important;
+}
+
+.auth-footer-text {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.auth-link {
+    color: var(--link-color) !important;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+.auth-legal {
+    position: static !important;
+    margin-top: 2rem !important;
+    bottom: auto !important;
+    flex-direction: row !important;
+    gap: 1.5rem;
+    filter: none !important;
+    opacity: 0.7;
+}
+
+.auth-legal a {
+    color: var(--text-color) !important;
+    font-size: 0.82rem;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+}
+
+.auth-legal a:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+
+/* =========================================================
+   Lightmode-Verbesserungen für die gesamte Webapp
+   ========================================================= */
+
+/* Profil-Menü im Lightmode */
+html.light-mode #profile-menu {
+    background-color: #ffffff !important;
+    border-color: rgba(120, 120, 120, 0.25) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14) !important;
+}
+
+html.light-mode #profile-menu .icon {
+    filter: brightness(0.2) !important;
+}
+
+html.light-mode #profile-menu img[src*="logout"] {
+    filter: invert(1) brightness(0.2) !important;
+}
+
+/* Profil-Auswahl-Dropdown im Header */
+html.light-mode .profile-selector-form select {
+    background-color: #ffffff !important;
+    border-color: rgba(120, 120, 120, 0.35) !important;
+    color: var(--text-color) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Modale & Dialoge im Lightmode */
+html.light-mode dialog,
+html.light-mode dialog.modern-dialog,
+html.light-mode .modal-content,
+html.light-mode .maxHours-modal,
+html.light-mode .overview-modal {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(120, 120, 120, 0.3) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16) !important;
+    color: var(--text-color) !important;
+}
+
+html.light-mode input.dialog-input,
+html.light-mode #maxHoursInput {
+    background-color: #f7f7f8 !important;
+    border-color: rgba(120, 120, 120, 0.35) !important;
+}
+
+html.light-mode .btn-secondary {
+    background-color: #f0f0f2 !important;
+    border-color: rgba(120, 120, 120, 0.35) !important;
+    color: var(--text-color) !important;
+}
+
+html.light-mode .btn-secondary:hover {
+    background-color: #e4e4e7 !important;
+}
+
+/* Monats-Karte im Lightmode */
+html.light-mode .card.month,
+html.light-mode .card-month {
+    background: #3b3b42 !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-mode .card.month .progress-background,
+html.light-mode .card-month .progress-background {
+    background: #5a5a64 !important;
+}
+
+/* System-Präferenz Lightmode-Unterstützung */
+@media (prefers-color-scheme: light) {
+    html:not(.dark-mode) #profile-menu {
+        background-color: #ffffff !important;
+        border-color: rgba(120, 120, 120, 0.25) !important;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14) !important;
+    }
+
+    html:not(.dark-mode) #profile-menu .icon {
+        filter: brightness(0.2) !important;
+    }
+
+    html:not(.dark-mode) #profile-menu img[src*="logout"] {
+        filter: invert(1) brightness(0.2) !important;
+    }
+
+    html:not(.dark-mode) .profile-selector-form select {
+        background-color: #ffffff !important;
+        border-color: rgba(120, 120, 120, 0.35) !important;
+        color: var(--text-color) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    html:not(.dark-mode) dialog,
+    html:not(.dark-mode) dialog.modern-dialog,
+    html:not(.dark-mode) .modal-content,
+    html:not(.dark-mode) .maxHours-modal,
+    html:not(.dark-mode) .overview-modal {
+        background-color: #ffffff !important;
+        border: 1px solid rgba(120, 120, 120, 0.3) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16) !important;
+        color: var(--text-color) !important;
+    }
+
+    html:not(.dark-mode) input.dialog-input,
+    html:not(.dark-mode) #maxHoursInput {
+        background-color: #f7f7f8 !important;
+        border-color: rgba(120, 120, 120, 0.35) !important;
+    }
+
+    html:not(.dark-mode) .btn-secondary {
+        background-color: #f0f0f2 !important;
+        border-color: rgba(120, 120, 120, 0.35) !important;
+        color: var(--text-color) !important;
+    }
+
+    html:not(.dark-mode) .btn-secondary:hover {
+        background-color: #e4e4e7 !important;
+    }
+
+    html:not(.dark-mode) .card.month,
+    html:not(.dark-mode) .card-month {
+        background: #3b3b42 !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    html:not(.dark-mode) .card.month .progress-background,
+    html:not(.dark-mode) .card-month .progress-background {
+        background: #5a5a64 !important;
     }
 }

@@ -1,15 +1,20 @@
 function setDynamicCardBackground() {
   const card = document.getElementById('total-hours-card');
+  if (!card) return;
   const totalHours = parseFloat(card.getAttribute('data-hours'));
+  if (isNaN(totalHours)) return;
 
-  // Basisgrau für 0 (dunkles Grau)
-  const gray = { r: 68, g: 68, b: 68 };
+  const isLight = document.documentElement.classList.contains('light-mode') || 
+    (!document.documentElement.classList.contains('dark-mode') && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+  // Basisgrau für 0 (dunkles Grau im Darkmode, sanfteres Grau im Lightmode)
+  const gray = isLight ? { r: 100, g: 100, b: 105 } : { r: 68, g: 68, b: 68 };
 
   // Maximalroter Farbton (für -50 Stunden)
-  const maxRed = { r: 220, g: 30, b: 30 };
+  const maxRed = isLight ? { r: 200, g: 45, b: 45 } : { r: 220, g: 30, b: 30 };
 
   // Maximalgrüner Farbton (für +30 Stunden)
-  const maxGreen = { r: 30, g: 180, b: 60 };
+  const maxGreen = isLight ? { r: 25, g: 155, b: 55 } : { r: 30, g: 180, b: 60 };
 
   let r, g, b;
 
