@@ -2286,6 +2286,10 @@ html.light-mode #profile-menu .icon {
     filter: brightness(0.2) !important;
 }
 
+html.light-mode #profile-menu .username {
+    color: #000000 !important;
+}
+
 html.light-mode #profile-menu img[src*="logout"] {
     filter: invert(1) brightness(0.2) !important;
 }
@@ -2348,6 +2352,10 @@ html.light-mode .card-month .progress-background {
 
     html:not(.dark-mode) #profile-menu .icon {
         filter: brightness(0.2) !important;
+    }
+
+    html:not(.dark-mode) #profile-menu .username {
+        color: #000000 !important;
     }
 
     html:not(.dark-mode) #profile-menu img[src*="logout"] {

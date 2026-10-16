@@ -10,7 +10,7 @@
 #profile-menu {
     position: fixed;
     top: auto;
-    bottom: 0;
+    bottom: -5px;
     left: 0;
     right: 0;
     width: 100%;
@@ -412,8 +412,11 @@
     }
 
     .profile-content {
-        width: min(90vw, 32rem);
+        width: min(calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 1.5rem), 32rem);
+        max-width: 100%;
         margin: 7.5rem auto 3rem;
+        padding-inline: 0.75rem;
+        box-sizing: border-box;
     }
 
     .settings-section {
@@ -459,5 +462,15 @@
         height: 100dvh !important;
         padding-top: env(safe-area-inset-top, 0px) !important;
         box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 765px) and ((display-mode: standalone) or (display-mode: fullscreen)) {
+    .backbutton {
+        top: calc(4.8rem + env(safe-area-inset-top, 0px));
+    }
+
+    .profile-content {
+        margin-top: calc(7.5rem + env(safe-area-inset-top, 0px));
     }
 }
