@@ -390,7 +390,7 @@
     /* Erhöhte Randabstände für Logo und Profil-Bild auf Mobile */
     .logo-pic {
         position: absolute;
-        top: 1rem;
+        top: calc(1rem + env(safe-area-inset-top, 0px));
         left: 1rem;
         margin: 0;
         z-index: 1001;
@@ -398,7 +398,7 @@
     
     .profile {
         position: absolute;
-        top: 1rem;
+        top: calc(1rem + env(safe-area-inset-top, 0px));
         right: 1rem;
         margin: 0;
         z-index: 1001;
@@ -457,5 +457,7 @@
         width: 100% !important;
         height: 100% !important;
         height: 100dvh !important;
+        padding-top: env(safe-area-inset-top, 0px) !important;
+        box-sizing: border-box !important;
     }
 }
