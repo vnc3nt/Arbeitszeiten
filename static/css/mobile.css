@@ -10,7 +10,7 @@
 #profile-menu {
     position: fixed;
     top: auto;
-    bottom: 0;
+    bottom: -5px;
     left: 0;
     right: 0;
     width: 100%;
@@ -412,16 +412,24 @@
     }
 
     .profile-content {
-        width: min(90vw, 32rem);
-        margin: 7.5rem auto 3rem;
+        width: min(32rem, calc(100vw - 1.25rem));
+        max-width: calc(100vw - 1.25rem);
+        margin: calc(7.5rem + env(safe-area-inset-top, 0px)) auto 3rem;
+        box-sizing: border-box;
     }
 
     .settings-section {
         padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .settings-actions {
         grid-template-columns: 1fr;
+    }
+
+    .backbutton {
+        top: calc(5.6rem + env(safe-area-inset-top, 0px));
     }
     
     /* Modal-Animationen für Mobile */
