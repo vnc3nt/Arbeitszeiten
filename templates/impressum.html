@@ -20,7 +20,6 @@
         }
     }
     body {
-        background-image: conic-gradient(from var(--angle), #27002c, #000000, #27002c);
         animation: animation 15s ease-in-out infinite;
         min-height: 100vh;
         height: auto;
@@ -44,6 +43,21 @@
 {% endblock head_tags %}
 
 {% block content %}
+<div class="auth-lang-switch language-segmented-control" role="radiogroup" aria-label="{{ t('dialog.language.title') }}">
+    <button type="button"
+        class="auth-lang-btn lang-switch-btn {% if current_lang == 'de' or not current_lang %}is-active{% endif %}"
+        data-lang-value="de"
+        aria-label="Deutsch">
+        <span>🇩🇪 DE</span>
+    </button>
+    <button type="button"
+        class="auth-lang-btn lang-switch-btn {% if current_lang == 'en' %}is-active{% endif %}"
+        data-lang-value="en"
+        aria-label="English">
+        <span>🇬🇧 EN</span>
+    </button>
+</div>
+
 <a class="backbutton impressum-backbutton" href="{{ request.referrer or url_for('home') }}" aria-label="{{ t('common.back') }}">
     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="backbutton-icon">
         <polyline points="15 18 9 12 15 6"></polyline>
@@ -56,32 +70,34 @@
         <img class="impressum-logo" src="{{ url_for('static', filename='img/logo/logo.png') }}" alt="Arbeitszeiten">
     </div>
     <div class="impressum-content">
-        <h1 style="margin-top: 0; font-size: 1.5rem;">Impressum</h1>
-        <p><strong>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG):</strong></p>
+        <h1 style="margin-top: 0; font-size: 1.5rem;">{{ t('impressum.title') }}</h1>
+        <p><strong>{{ t('impressum.ddg_title') }}</strong></p>
         <p>
             Vincent Klug<br>
             Ernst-Ludwig-Straße 19<br>
             64283 Darmstadt<br>
-            Deutschland
+            {{ t('impressum.country') }}
         </p>
 
         <p>
-            <strong>Kontakt:</strong><br>
+            <strong>{{ t('impressum.contact_title') }}</strong><br>
             E-Mail: <a href="mailto:electrodia2005@gmail.com">electrodia2005@gmail.com</a><br>
-            Telefon: 015679 833159
+            {{ t('impressum.phone_label') }} 015679 833159
         </p>
 
         <p>
-            <strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:</strong><br>
+            <strong>{{ t('impressum.mstv_title') }}</strong><br>
             Vincent Klug<br>
             Ernst-Ludwig-Straße 19<br>
-            64283 Darmstadt, Deutschland
+            64283 Darmstadt, {{ t('impressum.country') }}
         </p>
 
         <p>
-            <strong>Datenschutz &amp; AGB:</strong><br>
-            Unsere Datenschutzerklärung finden Sie <a href="{{ url_for('dpa', lang=current_lang) }}" download>hier</a>.<br>
-            Unsere Allgemeinen Geschäftsbedingungen (AGB) finden Sie <a href="{{ url_for('agb', lang=current_lang) }}" download>hier</a>.
+            <strong>{{ t('impressum.legal_docs_title') }}</strong><br>
+            {% set dpa_link %}<a href="{{ url_for('dpa', lang=current_lang) }}" download>{{ t('impressum.here') }}</a>{% endset %}
+            {{ t('impressum.dpa_text', link=dpa_link) | safe }}<br>
+            {% set agb_link %}<a href="{{ url_for('agb', lang=current_lang) }}" download>{{ t('impressum.here') }}</a>{% endset %}
+            {{ t('impressum.agb_text', link=agb_link) | safe }}
         </p>
     </div>
 </div>

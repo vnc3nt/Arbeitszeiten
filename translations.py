@@ -42,6 +42,18 @@ TRANSLATIONS = {
         'menu.impressum': 'Impressum',
         'menu.dpa': 'Datenschutzerklärung',
         'menu.agb': 'AGB',
+
+        # Impressum
+        'impressum.title': 'Impressum',
+        'impressum.ddg_title': 'Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG):',
+        'impressum.contact_title': 'Kontakt:',
+        'impressum.phone_label': 'Telefon:',
+        'impressum.mstv_title': 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:',
+        'impressum.legal_docs_title': 'Datenschutz & AGB:',
+        'impressum.dpa_text': 'Unsere Datenschutzerklärung finden Sie {link}.',
+        'impressum.agb_text': 'Unsere Allgemeinen Geschäftsbedingungen (AGB) finden Sie {link}.',
+        'impressum.here': 'hier',
+        'impressum.country': 'Deutschland',
         
         # Home
         'home.new_profile': '+ Neues Profil erstellen',
@@ -146,6 +158,18 @@ TRANSLATIONS = {
         'menu.impressum': 'Legal Notice',
         'menu.dpa': 'Privacy Policy',
         'menu.agb': 'Terms of Service',
+
+        # Impressum
+        'impressum.title': 'Legal Notice',
+        'impressum.ddg_title': 'Information pursuant to § 5 Digital Services Act (DDG):',
+        'impressum.contact_title': 'Contact:',
+        'impressum.phone_label': 'Phone:',
+        'impressum.mstv_title': 'Responsible for content pursuant to § 18 (2) MStV:',
+        'impressum.legal_docs_title': 'Privacy Policy & Terms of Service:',
+        'impressum.dpa_text': 'You can find our Privacy Policy {link}.',
+        'impressum.agb_text': 'You can find our Terms of Service (AGB) {link}.',
+        'impressum.here': 'here',
+        'impressum.country': 'Germany',
         
         # Home
         'home.new_profile': '+ Create new profile',
