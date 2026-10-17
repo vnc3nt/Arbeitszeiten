@@ -2417,3 +2417,39 @@ html.light-mode .card-month .progress-background {
         background: #5a5a64 !important;
     }
 }
+
+/* =========================================================
+   Fix: Username im Lightmode immer schwarz & sichtbar
+   ========================================================= */
+.username,
+#profile-menu .username,
+#profile-menu li.profile-menu-username,
+#profile-menu li.profile-menu-username .username {
+    color: var(--text-color);
+}
+
+html.light-mode #profile-menu .username,
+html.light-mode #profile-menu .profile-menu-username,
+html.light-mode #profile-menu .profile-menu-username * {
+    color: #000000 !important;
+}
+
+@media (prefers-color-scheme: light) {
+    html:not(.dark-mode) #profile-menu .username,
+    html:not(.dark-mode) #profile-menu .profile-menu-username,
+    html:not(.dark-mode) #profile-menu .profile-menu-username * {
+        color: #000000 !important;
+    }
+}
+
+/* =========================================================
+   Fix: Legal-Links im mobilen Profilmenü sauber unten anordnen
+   ========================================================= */
+@media (max-width: 765px) {
+    #profile-menu .legal {
+        position: static !important;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--selected-color);
+    }
+}

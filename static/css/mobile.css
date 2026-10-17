@@ -10,12 +10,12 @@
 #profile-menu {
     position: fixed;
     top: auto;
-    bottom: 0;
+    bottom: -5px; /* Endet 5px unterhalb des unteren Bildschirmrands, damit der untere Rahmen verschwindet */
     left: 0;
     right: 0;
     width: 100%;
-    height: 80vh;
-    height: 80dvh;
+    max-height: calc(85dvh - env(safe-area-inset-top, 0px));
+    height: auto;
     border-radius: 20px 20px 0 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -23,10 +23,9 @@
     z-index: 1000;
     backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
-    padding: 1.5rem 1rem env(safe-area-inset-bottom, 1.5rem) 1rem;
+    padding: 1.5rem 1rem calc(1.5rem + env(safe-area-inset-bottom, 0px) + 5px) 1rem;
     box-sizing: border-box;
-    border: solid 1px;
-    border-color: var(--selected-color);
+    border: solid 1px var(--selected-color);
     touch-action: pan-y;
     opacity: 0;
     transform: translateY(100%);
@@ -392,20 +391,24 @@
     #profile-menu .first-ul-width {
         display: none !important;
     }
-    
-    /* Erhöhte Randabstände für Logo und Profil-Bild auf Mobile mit Safe-Area Support */
+
+    /* Einheitlicher Header-Abstand (wie auf der Einstellungsseite / halber Offset) */
+    :root {
+        --mobile-header-top: max(1.2rem, calc(0.5rem + env(safe-area-inset-top, 0px)));
+    }
+
     .logo-pic {
         position: absolute;
-        top: max(1.2rem, env(safe-area-inset-top, 1.2rem));
-        left: max(1.2rem, env(safe-area-inset-left, 1.2rem));
+        top: var(--mobile-header-top) !important;
+        left: max(1.2rem, env(safe-area-inset-left, 1.2rem)) !important;
         margin: 0;
         z-index: 1001;
     }
-    
+
     .profile {
         position: absolute;
-        top: max(1.2rem, env(safe-area-inset-top, 1.2rem));
-        right: max(1.2rem, env(safe-area-inset-right, 1.2rem));
+        top: var(--mobile-header-top) !important;
+        right: max(1.2rem, env(safe-area-inset-right, 1.2rem)) !important;
         margin: 0;
         z-index: 1001;
         display: flex;
@@ -413,34 +416,57 @@
         align-items: flex-end;
     }
 
+    /* Backbutton exakt unter dem 3rem hohen Logo platzieren */
     .backbutton {
-        top: calc(max(1.2rem, env(safe-area-inset-top, 1.2rem)) + 4rem) !important;
+        position: absolute;
+        top: calc(var(--mobile-header-top) + 3.8rem) !important;
         left: max(1.2rem, env(safe-area-inset-left, 1.2rem)) !important;
+        z-index: 1000;
+    }
+
+    .impressum-backbutton {
+        top: var(--mobile-header-top) !important;
     }
 
     .profile-selector-form {
         width: min(13rem, 52vw);
     }
 
+    /* Einstellungsseite: Kein Margin-Collapse, sauberer Abstand nach oben & strikte Breitenbegrenzung */
     .profile-content {
-        width: min(92vw, 32rem);
-        margin: calc(max(1.2rem, env(safe-area-inset-top, 1.2rem)) + 7.5rem) auto 3rem;
-        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin: 0 auto 3rem !important;
+        padding: calc(var(--mobile-header-top) + 7.2rem) max(1rem, env(safe-area-inset-right, 1rem)) 3rem max(1rem, env(safe-area-inset-left, 1rem)) !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
     }
 
     .settings-section {
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 1.1rem 1rem;
-        box-sizing: border-box;
+        box-sizing: border-box !important;
+        overflow: hidden;
     }
 
     .settings-actions {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        width: 100%;
     }
 
-    /* Einstellungen: Segmented Control auf kleinen Bildschirmen umbrechen lassen oder kompakt gestalten */
+    .settings-actions button {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Einstellungen: Segmented Control kompakt auf Mobile */
     .theme-segmented-control {
         flex-wrap: wrap;
         gap: 6px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .theme-btn {
@@ -456,12 +482,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     /* Modal-Animationen für Mobile */
     .modal-content {
         animation: mobile-modal-appear 0.2s ease-out;
     }
-    
+
     @keyframes mobile-modal-appear {
         0% {
             opacity: 0;
@@ -473,14 +499,23 @@
         }
     }
 
-    /* Erlaube normales Scrollen auf mobilen Unterseiten, sperre Scrollen auf der Startseite */
+    /* Erlaube normales Scrollen auf mobilen Unterseiten, verhindere Überbreite */
     body {
         overflow-y: auto !important;
         overflow-x: hidden !important;
         touch-action: pan-y !important;
         position: relative !important;
+        width: 100% !important;
+        max-width: 100vw !important;
         height: auto !important;
-        min-height: 100% !important;
+        min-height: 100dvh !important;
+    }
+
+    #content, #home-content {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     body.page-home {
@@ -488,9 +523,13 @@
         touch-action: none !important;
         position: fixed !important;
         width: 100% !important;
-        height: 100% !important;
         height: 100dvh !important;
-        padding-top: env(safe-area-inset-top, 0px) !important;
+        padding-top: 0 !important; /* Verhindert doppelte Verschiebung mit .logo-pic/.profile */
         box-sizing: border-box !important;
+    }
+
+    /* Startseiten-Inhalt leicht nach unten rücken, damit nichts unter dem Header klebt */
+    body.page-home .container {
+        padding-top: calc(var(--mobile-header-top) + 2.5rem) !important;
     }
 }
