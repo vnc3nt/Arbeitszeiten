@@ -12,11 +12,11 @@
 #profile-menu {
     position: fixed;
     top: auto;
-    bottom: 2rem;
-    /* Endet 2rem über dem unteren Bildschirmrand, damit der untere Rahmen sichtbar bleibt */
-    left: 0;
-    right: 0;
-    width: 100%;
+    bottom: 1rem;
+    /* Endet 1rem über dem unteren Bildschirmrand, damit der untere Rahmen sichtbar bleibt */
+    left: 5%;
+    right: 5%;
+    width: 90%;
     max-height: calc(90dvh - env(safe-area-inset-top, 0px));
     height: auto;
     border-radius: 20px 20px 20px 20px;
