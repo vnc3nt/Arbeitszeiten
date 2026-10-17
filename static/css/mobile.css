@@ -399,7 +399,7 @@
 
     /* Einheitlicher Header-Abstand (wie auf der Einstellungsseite / halber Offset) */
     :root {
-        --mobile-header-top: max(1.2rem, calc(1rem + env(safe-area-inset-top, 0px)));
+        --mobile-header-top: max(1.2rem, calc(1.5rem + env(safe-area-inset-top, 0px)));
     }
 
     .logo-pic {
