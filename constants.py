@@ -4,5 +4,5 @@ USERID = "currentUserId"
 TOKEN = "currentToken"
 PROFILEID = "currentProfileId"
 
-USERNAME_PATTERN = "[^ ]{8,}"
+USERNAME_PATTERN = "[^ ]{3,}"
 USERNAME_REGEX = re.compile(USERNAME_PATTERN)

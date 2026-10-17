@@ -78,7 +78,7 @@ def change_username(new_username: Optional[str]):
 
     new_username = new_username.strip()
     if not check_username(new_username):
-        return "Benutzername darf keine Leerzeichen enthalten und muss mind. 8 Zeichen lang sein"
+        return "Benutzername darf keine Leerzeichen enthalten und muss mind. 3 Zeichen lang sein"
 
     # Explizite Prüfung, ob der Benutzername schon vergeben ist
     existing = db.session.query(users).filter(

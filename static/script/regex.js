@@ -19,13 +19,13 @@ function validateUsername() {
     return;
   }
 
-  // Muss zu constants.py passen: Mindestens 8 Zeichen und keine Leerzeichen!
-  if (usernameInput.length < 8 || /\s/.test(usernameInput)) {
+  // Muss zu constants.py passen: Mindestens 3 Zeichen und keine Leerzeichen!
+  if (usernameInput.length < 3 || /\s/.test(usernameInput)) {
     inputField.style.borderColor = 'red';
     usernameCheck.style.display = 'none';
     usernameX.style.display = 'inline';
     usernameAvailable.style.display = 'none';
-    usernameNotAvailable.textContent = 'Mindestens 8 Zeichen ohne Leerzeichen erforderlich';
+    usernameNotAvailable.textContent = 'Mindestens 3 Zeichen ohne Leerzeichen erforderlich';
     usernameNotAvailable.style.display = 'inline';
     return;
   }

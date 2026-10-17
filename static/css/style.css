@@ -113,6 +113,7 @@ body {
     padding: 0;
     min-height: 100vh;
     background-color: var(--website-background-color);
+    color: var(--text-color);
     display: flow-root;
 }
 
@@ -2257,11 +2258,16 @@ html.light-mode input.auth-input {
 .auth-footer-text {
     margin-top: 1.5rem;
     font-size: 0.9rem;
-    opacity: 0.8;
+    color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
+}
+
+.auth-footer-text span {
+    color: var(--text-color);
+    opacity: 0.8;
 }
 
 .auth-link {
