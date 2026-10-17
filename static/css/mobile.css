@@ -435,6 +435,7 @@
 
     .profile-selector-form {
         width: min(13rem, 52vw);
+        z-index: -1;
     }
 
     /* Einstellungsseite: Kein Margin-Collapse, sauberer Abstand nach oben & strikte Breitenbegrenzung */
