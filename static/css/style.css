@@ -260,7 +260,6 @@ button, input[type=submit], input[type=reset] {
     background: var(--selected-color);
     border-color: rgba(160, 160, 160, 0.65);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
-    transform: translateY(-1px);
     color: var(--text-color);
 }
 
@@ -979,7 +978,6 @@ html.light-mode .theme-segmented-control {
   background: var(--primary) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 10px var(--primary-glow) !important;
 }
 
 dialog {
@@ -1115,7 +1113,6 @@ input.dialog-input:focus {
 .btn-primary:hover {
   background-color: var(--primary-hover) !important;
   border-color: var(--primary-hover) !important;
-  transform: translateY(-1px);
   box-shadow: 0 4px 14px var(--primary-glow);
 }
 
@@ -1129,7 +1126,6 @@ input.dialog-input:focus {
 .btn-danger:hover {
   background-color: #991b1b !important;
   border-color: #b91c1c !important;
-  transform: translateY(-1px);
 }
 
 /* Avatar picker styling */
@@ -1427,7 +1423,6 @@ input.dialog-input:focus {
 
 .profile-actions-wrapper .icon-btn:hover {
   background-color: var(--selected-color) !important;
-  transform: translateY(-1px);
 }
 
 .profile-actions-wrapper .icon-btn:active {
@@ -1935,7 +1930,6 @@ h2 {
 .prim_button_style:hover {
     background-color: var(--primary-hover);
     border-color: var(--primary-hover);
-    transform: translateY(-1px);
     box-shadow: 0 4px 14px var(--primary-glow);
 }
 
@@ -1962,7 +1956,6 @@ h2 {
 
 .sec_button_style:hover {
     background-color: var(--selected-color);
-    transform: translateY(-1px);
 }
 
 /* Fix für abgeschnittenes Datum und "Heute"-Überlappung */

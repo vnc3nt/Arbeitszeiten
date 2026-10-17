@@ -127,7 +127,6 @@ body {
 }
 
 .card-overall:hover {
-    transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
 
@@ -140,7 +139,6 @@ body {
 
 .card.month:hover, .card-month:hover {
     background: #555;
-    transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
 
@@ -253,7 +251,6 @@ body {
 
 .edit-btn:hover {
     background: #555;
-    transform: translateY(-2px);
 }
 
 .edit-btn:active {
@@ -452,7 +449,6 @@ body {
 
 .btn-cancel:hover {
     background-color: rgba(255, 255, 255, 0.14);
-    transform: translateY(-1px);
 }
 
 .btn-save {
@@ -465,7 +461,6 @@ body {
 .btn-save:hover {
     background-color: var(--primary-hover);
     border-color: var(--primary-hover);
-    transform: translateY(-1px);
     box-shadow: 0 4px 14px var(--primary-glow);
 }
 
@@ -572,7 +567,6 @@ body {
 /* Hover-Effekte für Desktop */
 @media (hover: hover) {
     button:hover, input[type=submit]:hover, input[type=reset]:hover {
-        transform: translateY(-2px);
         box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
     
