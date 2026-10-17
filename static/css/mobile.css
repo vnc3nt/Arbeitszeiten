@@ -1,6 +1,8 @@
 .scrollwindow {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .scrollwindow::-webkit-scrollbar {
@@ -10,13 +12,14 @@
 #profile-menu {
     position: fixed;
     top: auto;
-    bottom: -5px; /* Endet 5px unterhalb des unteren Bildschirmrands, damit der untere Rahmen verschwindet */
+    bottom: 2rem;
+    /* Endet 2rem über dem unteren Bildschirmrand, damit der untere Rahmen sichtbar bleibt */
     left: 0;
     right: 0;
     width: 100%;
-    max-height: calc(85dvh - env(safe-area-inset-top, 0px));
+    max-height: calc(90dvh - env(safe-area-inset-top, 0px));
     height: auto;
-    border-radius: 20px 20px 0 0;
+    border-radius: 20px 20px 20px 20px;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -94,10 +97,6 @@
     z-index: 2;
 }
 
-
-
-
-
 .legal {
     bottom: 10rem;
 }
@@ -133,7 +132,7 @@
     background: #442223;
     color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
     padding: 1rem 1.5rem;
     text-align: center;
     min-width: 140px;
@@ -154,7 +153,8 @@
 }
 
 /* Monats Karte */
-.card.month, .card-month {
+.card.month,
+.card-month {
     background: #444;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
@@ -162,7 +162,8 @@
     overflow: hidden;
 }
 
-.card.month:hover, .card-month:hover {
+.card.month:hover,
+.card-month:hover {
     background: #555;
     transform: translateY(-2px);
 }
@@ -335,11 +336,13 @@
         margin-top: 2rem;
         margin-bottom: 3rem;
     }
+
     .card {
         min-width: 110px;
         padding: 0.8rem 1rem;
         font-size: 1rem;
     }
+
     .day-selection {
         color: #fff;
         border: none;
@@ -350,11 +353,11 @@
         cursor: pointer;
         position: relative;
     }
-    
-    
-    
-   
-    
+
+
+
+
+
     .styled-date-picker::-webkit-calendar-picker-indicator {
         opacity: 0;
         position: absolute;
@@ -364,22 +367,24 @@
         left: 0;
         cursor: pointer;
     }
+
     .edit-time-value {
         font-size: 1.5rem;
         padding: 0.5rem 1.2rem;
         min-width: 80px;
     }
+
     .edit-btn {
         font-size: 0.95rem;
         padding: 0.4rem 0.85rem;
         transition: background-color 0.2s ease, transform 0.2s ease;
     }
-    
+
     .edit-btn:hover {
         background: #555;
         transform: translateY(-2px);
     }
-    
+
     /* Hide bullet points in mobile profile menu */
     .first-ul-width {
         display: none !important;
@@ -493,6 +498,7 @@
             opacity: 0;
             transform: scale(0.9) translateY(30px);
         }
+
         100% {
             opacity: 1;
             transform: scale(1) translateY(0);
@@ -511,7 +517,8 @@
         min-height: 100dvh !important;
     }
 
-    #content, #home-content {
+    #content,
+    #home-content {
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden;
@@ -524,7 +531,8 @@
         position: fixed !important;
         width: 100% !important;
         height: 100dvh !important;
-        padding-top: 0 !important; /* Verhindert doppelte Verschiebung mit .logo-pic/.profile */
+        padding-top: 0 !important;
+        /* Verhindert doppelte Verschiebung mit .logo-pic/.profile */
         box-sizing: border-box !important;
     }
 
