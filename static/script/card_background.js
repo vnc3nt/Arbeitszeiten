@@ -59,4 +59,10 @@ function setMonthProgress() {
 document.addEventListener('DOMContentLoaded', function() {
   setDynamicCardBackground();
   setMonthProgress();
+
+  // Reagiere live auf System-Theme-Wechsel (Light <-> Dark)
+  const colorSchemeMedia = window.matchMedia('(prefers-color-scheme: light)');
+  if (typeof colorSchemeMedia.addEventListener === 'function') {
+    colorSchemeMedia.addEventListener('change', setDynamicCardBackground);
+  }
 });

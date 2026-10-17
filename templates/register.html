@@ -56,6 +56,21 @@
 {% endblock head_tags %}
 {% block content %}
 
+<div class="auth-lang-switch language-segmented-control" role="radiogroup" aria-label="{{ t('dialog.language.title') }}">
+    <button type="button"
+        class="auth-lang-btn lang-switch-btn {% if current_lang == 'de' or not current_lang %}is-active{% endif %}"
+        data-lang-value="de"
+        aria-label="Deutsch">
+        <span>🇩🇪 DE</span>
+    </button>
+    <button type="button"
+        class="auth-lang-btn lang-switch-btn {% if current_lang == 'en' %}is-active{% endif %}"
+        data-lang-value="en"
+        aria-label="English">
+        <span>🇬🇧 EN</span>
+    </button>
+</div>
+
 <div class="auth-page-container">
     <div class="auth-card">
         <div class="auth-header">
@@ -111,7 +126,7 @@
 
             <div class="terms-container">
                 <input type="checkbox" id="terms_checkbox" name="terms_checkbox" required>
-                <label for="terms_checkbox">{{ t('auth.terms_prefix') }} <a href="{{ url_for('dpa') }}" download>{{ t('auth.terms_dpa') }}</a> {{ t('auth.terms_and') }}</label>
+                <label for="terms_checkbox">{{ t('auth.terms_prefix') }} <a href="{{ url_for('dpa', lang=current_lang) }}" download>{{ t('auth.terms_dpa') }}</a> {{ t('auth.terms_and') }} <a href="{{ url_for('agb', lang=current_lang) }}" download>{{ t('auth.terms_agb') }}</a>{{ t('auth.terms_suffix') }}</label>
             </div>
 
             <div class="auth-button-group">
@@ -128,7 +143,8 @@
 
     <div class="legal auth-legal">
         <a href="{{ url_for('impressum') }}">{{ t('menu.impressum') }}</a>
-        <a href="{{ url_for('dpa') }}" download>{{ t('menu.dpa') }}</a>
+        <a href="{{ url_for('dpa', lang=current_lang) }}" download>{{ t('menu.dpa') }}</a>
+        <a href="{{ url_for('agb', lang=current_lang) }}" download>{{ t('menu.agb') }}</a>
     </div>
 </div>
 {% endblock content %}

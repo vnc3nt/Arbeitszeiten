@@ -490,32 +490,34 @@ window.addEventListener("DOMContentLoaded", (e) => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-    const langControl = document.getElementById("language-segmented-control");
-    if (!langControl) return;
+    const langControls = document.querySelectorAll("#language-segmented-control, .language-segmented-control");
+    if (!langControls.length) return;
 
-    langControl.querySelectorAll(".theme-btn").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const lang = btn.getAttribute("data-lang-value");
-            if (!lang) return;
+    langControls.forEach(langControl => {
+        langControl.querySelectorAll(".theme-btn, .lang-switch-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const lang = btn.getAttribute("data-lang-value");
+                if (!lang) return;
 
-            langControl.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("is-active"));
-            btn.classList.add("is-active");
+                langControl.querySelectorAll(".theme-btn, .lang-switch-btn").forEach(b => b.classList.remove("is-active"));
+                btn.classList.add("is-active");
 
-            const formData = new FormData();
-            formData.append("language", lang);
-            try {
-                const response = await fetch("/set-language", {
-                    method: "POST",
-                    headers: { "X-Requested-With": "fetch" },
-                    body: formData
-                });
-                if (response.ok) {
-                    // Seite neu laden, damit alle Übersetzungen sofort greifen
-                    window.location.reload();
+                const formData = new FormData();
+                formData.append("language", lang);
+                try {
+                    const response = await fetch("/set-language", {
+                        method: "POST",
+                        headers: { "X-Requested-With": "fetch" },
+                        body: formData
+                    });
+                    if (response.ok) {
+                        // Seite neu laden, damit alle Übersetzungen sofort greifen
+                        window.location.reload();
+                    }
+                } catch (e) {
+                    console.error("Sprache konnte nicht gespeichert werden", e);
                 }
-            } catch (e) {
-                console.error("Sprache konnte nicht gespeichert werden", e);
-            }
+            });
         });
     });
 });

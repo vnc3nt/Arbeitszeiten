@@ -45,9 +45,14 @@
                     <ul>{{ t('menu.impressum') }}</ul>
                 </li>
             </a>
-            <a href="{{ url_for('dpa') }}" download>
+            <a href="{{ url_for('dpa', lang=current_lang) }}" download>
                 <li>
                     <ul>{{ t('menu.dpa') }}</ul>
+                </li>
+            </a>
+            <a href="{{ url_for('agb', lang=current_lang) }}" download>
+                <li>
+                    <ul>{{ t('menu.agb') }}</ul>
                 </li>
             </a>
         </div>

@@ -1188,8 +1188,32 @@ def impressum():
 
 @app.route('/dpa')
 def dpa():
+    lang = request.args.get('lang') or get_current_language()
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'de'
+    filename = f'dpa_{lang}.pdf'
+    filepath = os.path.join('static', 'docs', filename)
     try:
-        return send_file('static/docs/dpa.pdf', as_attachment=True)
+        return send_file(filepath, as_attachment=True, download_name=filename)
+    except FileNotFoundError:
+        # Fallback auf generische dpa.pdf oder de
+        try:
+            return send_file('static/docs/dpa.pdf', as_attachment=True, download_name='dpa.pdf')
+        except FileNotFoundError:
+            return "Dokument nicht gefunden", 404
+    except Exception:
+        return "Interner Serverfehler", 500
+
+
+@app.route('/agb')
+def agb():
+    lang = request.args.get('lang') or get_current_language()
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'de'
+    filename = f'agb_{lang}.pdf'
+    filepath = os.path.join('static', 'docs', filename)
+    try:
+        return send_file(filepath, as_attachment=True, download_name=filename)
     except FileNotFoundError:
         return "Dokument nicht gefunden", 404
     except Exception:

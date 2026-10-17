@@ -318,17 +318,17 @@ body {
 }
 
 .scrollwindow::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--surface-subtle);
     border-radius: 4px;
 }
 
 .scrollwindow::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(120, 120, 120, 0.4);
     border-radius: 4px;
 }
 
 .scrollwindow::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(120, 120, 120, 0.65);
 }
 
 /* Hide mobile-specific elements */
@@ -442,13 +442,13 @@ body {
 }
 
 .btn-cancel {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: var(--surface-subtle);
     border: 1px solid rgba(120, 120, 120, 0.4);
     color: var(--text-color);
 }
 
 .btn-cancel:hover {
-    background-color: rgba(255, 255, 255, 0.14);
+    background-color: var(--surface-hover);
 }
 
 .btn-save {
@@ -476,7 +476,7 @@ body {
 .overview-month {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background-color: rgba(255,255,255,0.05);
+    background-color: var(--surface-subtle);
     border-radius: 10px;
 }
 
@@ -504,7 +504,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 0.3rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .overview-entry:last-child {

@@ -41,6 +41,7 @@ TRANSLATIONS = {
         'menu.logout': 'Abmelden',
         'menu.impressum': 'Impressum',
         'menu.dpa': 'Datenschutzerklärung',
+        'menu.agb': 'AGB',
         
         # Home
         'home.new_profile': '+ Neues Profil erstellen',
@@ -121,7 +122,9 @@ TRANSLATIONS = {
         'auth.password_repeat': 'Passwort wiederholen',
         'auth.terms_prefix': 'Ich habe die',
         'auth.terms_dpa': 'Datenschutzerklärung',
-        'auth.terms_and': 'und AGB gelesen und stimme Ihnen zu.',
+        'auth.terms_and': 'und',
+        'auth.terms_agb': 'AGB',
+        'auth.terms_suffix': 'gelesen und stimme ihnen zu.',
     },
     'en': {
         # Common
@@ -142,6 +145,7 @@ TRANSLATIONS = {
         'menu.logout': 'Log Out',
         'menu.impressum': 'Legal Notice',
         'menu.dpa': 'Privacy Policy',
+        'menu.agb': 'Terms of Service',
         
         # Home
         'home.new_profile': '+ Create new profile',
@@ -222,7 +226,9 @@ TRANSLATIONS = {
         'auth.password_repeat': 'Repeat password',
         'auth.terms_prefix': 'I have read and agree to the',
         'auth.terms_dpa': 'Privacy Policy',
-        'auth.terms_and': 'and Terms of Service.',
+        'auth.terms_and': 'and',
+        'auth.terms_agb': 'Terms of Service',
+        'auth.terms_suffix': '.',
     }
 }
 

@@ -5,3 +5,5 @@ venv
 .venv-local
 .DS_Store
 alteLogins.rtf
+*.docx
+~*.docx
