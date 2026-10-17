@@ -8,7 +8,17 @@ html.dark-mode {
   --button-color: #5050504a;
   --selected-color: #6969694a;
   --button-text-color: #ffffff;
-  --link-color: #a600ff;
+  
+  /* Primary Theme Farben (anpassbar an einer Stelle) */
+  --primary: #7300ff;
+  --primary-hover: #6000d6;
+  --primary-active: #5000b3;
+  --primary-inactive: rgba(115, 0, 255, 0.45);
+  --primary-subtle: rgba(115, 0, 255, 0.08);
+  --primary-focus-ring: rgba(115, 0, 255, 0.25);
+  --primary-glow: rgba(115, 0, 255, 0.35);
+
+  --link-color: var(--primary);
   --skeleton-base: rgba(255, 255, 255, 0.08);
   --skeleton-highlight: rgba(255, 255, 255, 0.18);
   height: 100%;
@@ -21,7 +31,17 @@ html.light-mode {
   --button-color: #ffffffe3;
   --selected-color: #e9e9e9;
   --button-text-color: #ffffff;
-  --link-color: #a600ff;
+
+  /* Primary Theme Farben (anpassbar an einer Stelle) */
+  --primary: #7300ff;
+  --primary-hover: #6000d6;
+  --primary-active: #5000b3;
+  --primary-inactive: rgba(115, 0, 255, 0.45);
+  --primary-subtle: rgba(115, 0, 255, 0.08);
+  --primary-focus-ring: rgba(115, 0, 255, 0.25);
+  --primary-glow: rgba(115, 0, 255, 0.35);
+
+  --link-color: var(--primary);
   --skeleton-base: rgba(0, 0, 0, 0.08);
   --skeleton-highlight: rgba(0, 0, 0, 0.16);
   width: 100%;
@@ -50,7 +70,17 @@ html.light-mode .auth-logo {
     --button-color: #ffffffe3;
     --selected-color: #e9e9e9;
     --button-text-color: #ffffff;
-    --link-color: #a600ff;
+
+    /* Primary Theme Farben (anpassbar an einer Stelle) */
+    --primary: #7300ff;
+    --primary-hover: #6000d6;
+    --primary-active: #5000b3;
+    --primary-inactive: rgba(115, 0, 255, 0.45);
+    --primary-subtle: rgba(115, 0, 255, 0.08);
+    --primary-focus-ring: rgba(115, 0, 255, 0.25);
+    --primary-glow: rgba(115, 0, 255, 0.35);
+
+    --link-color: var(--primary);
     --skeleton-base: rgba(0, 0, 0, 0.08);
     --skeleton-highlight: rgba(0, 0, 0, 0.16);
     width: 100%;
@@ -946,10 +976,10 @@ html.light-mode .theme-segmented-control {
 
 .theme-btn.is-active {
   opacity: 1 !important;
-  background: #a600ff !important;
+  background: var(--primary) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 10px rgba(166, 0, 255, 0.35) !important;
+  box-shadow: 0 2px 10px var(--primary-glow) !important;
 }
 
 dialog {
@@ -1035,8 +1065,8 @@ input.dialog-input {
 
 input.dialog-input:focus {
   outline: none;
-  border-color: #a600ff !important;
-  box-shadow: 0 0 0 2px rgba(166, 0, 255, 0.25) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary-focus-ring) !important;
 }
 
 .dialog-actions {
@@ -1076,17 +1106,17 @@ input.dialog-input:focus {
 }
 
 .btn-primary {
-  background-color: #a600ff !important;
-  border: 1px solid #a600ff !important;
+  background-color: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
 }
 
 .btn-primary:hover {
-  background-color: #9200e0 !important;
-  border-color: #9200e0 !important;
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(166, 0, 255, 0.35);
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .btn-danger {
@@ -1117,8 +1147,8 @@ input.dialog-input:focus {
   height: 7.5rem;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(166, 0, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(166, 0, 255, 0.2);
+  border: 2px solid var(--primary-inactive);
+  box-shadow: 0 0 0 3px var(--primary-focus-ring);
 }
 
 .file-upload-btn {
@@ -1138,7 +1168,7 @@ input.dialog-input:focus {
 
 .file-upload-btn:hover {
   background-color: rgba(255, 255, 255, 0.14);
-  border-color: #a600ff;
+  border-color: var(--primary);
 }
 
 .zoom-slider-wrap {
@@ -1207,9 +1237,9 @@ input.dialog-input:focus {
 
 .language-card.is-selected,
 .language-card:has(input[type="radio"]:checked) {
-  border-color: #a600ff;
-  background: rgba(166, 0, 255, 0.08);
-  box-shadow: 0 0 0 1px #a600ff;
+  border-color: var(--primary);
+  background: var(--primary-subtle);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 .language-flag {
@@ -1236,7 +1266,7 @@ input.dialog-input:focus {
 }
 
 .language-check {
-  color: #a600ff;
+  color: var(--primary);
   opacity: 0;
   transition: opacity 0.15s ease-in-out;
 }
@@ -1282,16 +1312,16 @@ input.dialog-input:focus {
 .profile-management-row.is-dragging {
   opacity: 0.35;
   border-style: dashed;
-  border-color: #a600ff;
-  background-color: rgba(166, 0, 255, 0.08);
+  border-color: var(--primary);
+  background-color: var(--primary-subtle);
 }
 
 .profile-management-row.drag-over-top {
-  border-top: 2px solid #a600ff !important;
+  border-top: 2px solid var(--primary) !important;
 }
 
 .profile-management-row.drag-over-bottom {
-  border-bottom: 2px solid #a600ff !important;
+  border-bottom: 2px solid var(--primary) !important;
 }
 
 .drag-handle {
@@ -1321,7 +1351,7 @@ input.dialog-input:focus {
 .profile-management-row.is-dragging .drag-handle {
   cursor: grabbing;
   opacity: 1;
-  color: #a600ff;
+  color: var(--primary);
 }
 
 .profile-input-wrapper {
@@ -1350,8 +1380,8 @@ input.dialog-input:focus {
 
 .profile-management-row input.profile-name-input:focus {
   outline: none;
-  border-color: #a600ff !important;
-  box-shadow: 0 0 0 2px rgba(166, 0, 255, 0.25) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary-focus-ring) !important;
 }
 
 .profile-management-row input.profile-name-input.save-success {
@@ -1630,8 +1660,8 @@ h2 {
 
 .modal-body input[type="text"]:focus {
   outline: none;
-  border-color: var(--link-color);
-  box-shadow: 0 0 0 2px rgba(105, 0, 90, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-focus-ring);
 }
 
 .modal-body input[type="text"]::placeholder {
@@ -1666,16 +1696,16 @@ h2 {
 }
 
 .btn-save {
-  background-color: #a600ff !important;
-  border: 1px solid #a600ff !important;
+  background-color: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
 }
 
 .btn-save:hover {
-  background-color: #9200e0 !important;
-  border-color: #9200e0 !important;
-  box-shadow: 0 4px 14px rgba(166, 0, 255, 0.35);
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .maxHours-modal {
@@ -1884,9 +1914,9 @@ h2 {
 }
 
 .prim_button_style {
-    background-color: #a600ff;
+    background-color: var(--primary);
     color: #ffffff;
-    border: 1px solid #a600ff;
+    border: 1px solid var(--primary);
     border-radius: 10px;
     padding: 0 1.2rem;
     cursor: pointer;
@@ -1903,10 +1933,10 @@ h2 {
 }
 
 .prim_button_style:hover {
-    background-color: #9200e0;
-    border-color: #9200e0;
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(166, 0, 255, 0.35);
+    box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .sec_button_style {
@@ -1996,8 +2026,8 @@ input[type="date"]:focus,
 .modal-body input[type="text"]:focus,
 .profile-selector-form select:focus {
     outline: none;
-    border-color: #a600ff !important;
-    box-shadow: 0 0 0 2px rgba(166, 0, 255, 0.25) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--primary-focus-ring) !important;
 }
 
 /* Konsistentes Aussehen der Startseiten-Elemente im Lightmode */

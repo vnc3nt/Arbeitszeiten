@@ -456,17 +456,17 @@ body {
 }
 
 .btn-save {
-    background-color: #a600ff;
-    border: 1px solid #a600ff;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
     color: #ffffff;
     font-weight: 600;
 }
 
 .btn-save:hover {
-    background-color: #9200e0;
-    border-color: #9200e0;
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(166, 0, 255, 0.35);
+    box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 /* Overview Modal spezifische Styles */
