@@ -2280,6 +2280,15 @@ html.light-mode #profile-menu {
     background-color: #ffffff !important;
     border-color: rgba(120, 120, 120, 0.25) !important;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14) !important;
+    color: #000000 !important;
+}
+
+html.light-mode #profile-menu a,
+html.light-mode #profile-menu button,
+html.light-mode #profile-menu .username,
+html.light-mode #profile-menu ul li,
+html.light-mode #profile-menu .profile-menu-username {
+    color: #000000 !important;
 }
 
 html.light-mode #profile-menu .icon {
@@ -2344,6 +2353,15 @@ html.light-mode .card-month .progress-background {
         background-color: #ffffff !important;
         border-color: rgba(120, 120, 120, 0.25) !important;
         box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14) !important;
+        color: #000000 !important;
+    }
+
+    html:not(.dark-mode) #profile-menu a,
+    html:not(.dark-mode) #profile-menu button,
+    html:not(.dark-mode) #profile-menu .username,
+    html:not(.dark-mode) #profile-menu ul li,
+    html:not(.dark-mode) #profile-menu .profile-menu-username {
+        color: #000000 !important;
     }
 
     html:not(.dark-mode) #profile-menu .icon {

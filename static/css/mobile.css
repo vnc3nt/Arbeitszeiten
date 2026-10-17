@@ -14,13 +14,17 @@
     left: 0;
     right: 0;
     width: 100%;
-    height: 85vh;
-    border-radius: 16px 16px 0 0;
-    overflow: hidden;
+    height: 80vh;
+    height: 80dvh;
+    border-radius: 20px 20px 0 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     z-index: 1000;
     backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
-    padding: 0px;
+    padding: 1.5rem 1rem env(safe-area-inset-bottom, 1.5rem) 1rem;
+    box-sizing: border-box;
     border: solid 1px;
     border-color: var(--selected-color);
     touch-action: pan-y;
@@ -111,6 +115,8 @@
     height: 100dvh;
     min-height: 100vh;
     min-height: 100dvh;
+    padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
     box-sizing: border-box;
 }
 
@@ -387,19 +393,19 @@
         display: none !important;
     }
     
-    /* Erhöhte Randabstände für Logo und Profil-Bild auf Mobile */
+    /* Erhöhte Randabstände für Logo und Profil-Bild auf Mobile mit Safe-Area Support */
     .logo-pic {
         position: absolute;
-        top: calc(1rem + env(safe-area-inset-top, 0px));
-        left: 1rem;
+        top: max(1.2rem, env(safe-area-inset-top, 1.2rem));
+        left: max(1.2rem, env(safe-area-inset-left, 1.2rem));
         margin: 0;
         z-index: 1001;
     }
     
     .profile {
         position: absolute;
-        top: calc(1rem + env(safe-area-inset-top, 0px));
-        right: 1rem;
+        top: max(1.2rem, env(safe-area-inset-top, 1.2rem));
+        right: max(1.2rem, env(safe-area-inset-right, 1.2rem));
         margin: 0;
         z-index: 1001;
         display: flex;
@@ -407,21 +413,48 @@
         align-items: flex-end;
     }
 
+    .backbutton {
+        top: calc(max(1.2rem, env(safe-area-inset-top, 1.2rem)) + 4rem) !important;
+        left: max(1.2rem, env(safe-area-inset-left, 1.2rem)) !important;
+    }
+
     .profile-selector-form {
         width: min(13rem, 52vw);
     }
 
     .profile-content {
-        width: min(90vw, 32rem);
-        margin: 7.5rem auto 3rem;
+        width: min(92vw, 32rem);
+        margin: calc(max(1.2rem, env(safe-area-inset-top, 1.2rem)) + 7.5rem) auto 3rem;
+        box-sizing: border-box;
     }
 
     .settings-section {
-        padding: 1rem;
+        padding: 1.1rem 1rem;
+        box-sizing: border-box;
     }
 
     .settings-actions {
         grid-template-columns: 1fr;
+    }
+
+    /* Einstellungen: Segmented Control auf kleinen Bildschirmen umbrechen lassen oder kompakt gestalten */
+    .theme-segmented-control {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .theme-btn {
+        min-width: 0 !important;
+        flex: 1 1 calc(33.33% - 6px) !important;
+        padding: 0.5rem 0.3rem !important;
+        font-size: 0.8rem !important;
+        white-space: nowrap;
+    }
+
+    .theme-btn span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     /* Modal-Animationen für Mobile */
