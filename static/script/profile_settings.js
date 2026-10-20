@@ -93,7 +93,13 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!manageProfilesDialog) return;
 
     if (manageProfilesBtn) {
-        manageProfilesBtn.addEventListener("click", () => manageProfilesDialog.showModal());
+        manageProfilesBtn.addEventListener("click", () => {
+            manageProfilesDialog.showModal();
+            const firstTextInput = manageProfilesDialog.querySelector(".profile-name-input");
+            if (firstTextInput) {
+                firstTextInput.focus();
+            }
+        });
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
