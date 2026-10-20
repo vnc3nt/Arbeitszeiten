@@ -255,6 +255,16 @@
                     </svg>
                 </div>
 
+                <div class="profile-color-picker-wrapper" title="{{ t('dialog.profiles.color_hint') }}">
+                    <div class="profile-color-preview-circle {% if not work_profile.color %}is-empty{% endif %}"
+                         style="{% if work_profile.color %}--row-profile-color: {{ work_profile.color }}; background-color: {{ work_profile.color }};{% endif %}"></div>
+                    <input type="color" name="color"
+                           value="{{ work_profile.color or '#7300ff' }}"
+                           class="profile-color-input"
+                           data-original-color="{{ work_profile.color or '' }}"
+                           aria-label="{{ t('dialog.profiles.color_hint') }}">
+                </div>
+
                 <div class="profile-input-wrapper">
                     <input type="text" name="name" value="{{ work_profile.name }}" maxlength="30"
                         class="profile-name-input" aria-label="{{ work_profile.name }}"

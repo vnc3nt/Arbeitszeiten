@@ -21,6 +21,7 @@ class users(db.Model):
     profile_image = db.Column(db.Text, nullable=True)
     language = db.Column(db.String(10), nullable=False, default='de')
     theme = db.Column(db.String(10), nullable=False, default='auto')
+    last_profile_id = db.Column(db.BIGINT, nullable=True)
 
 class profiles(db.Model):
     __table_args__ = (
@@ -33,6 +34,7 @@ class profiles(db.Model):
     maxhours = db.Column(db.Numeric(5, 2), nullable=False, default=0)
     visible = db.Column(db.Boolean, nullable=False, default=True)
     position = db.Column(db.Integer, nullable=False, default=0)
+    color = db.Column(db.String(7), nullable=True)
 
 
 class data(db.Model):

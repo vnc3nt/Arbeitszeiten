@@ -162,6 +162,59 @@ window.addEventListener("DOMContentLoaded", () => {
             }
         });
 
+        // 1b. Auto-save profile color on change
+        const colorInput = row.querySelector(".profile-color-input");
+        const colorPreview = row.querySelector(".profile-color-preview-circle");
+        if (colorInput) {
+            colorInput.addEventListener("change", async () => {
+                const newColor = colorInput.value;
+                const originalColor = colorInput.getAttribute("data-original-color");
+                if (newColor === originalColor) return;
+
+                if (colorPreview) {
+                    colorPreview.style.backgroundColor = newColor;
+                    colorPreview.style.setProperty("--row-profile-color", newColor);
+                    colorPreview.classList.remove("is-empty");
+                }
+
+                try {
+                    const formData = new FormData();
+                    formData.append("csrf_token", csrfToken || "");
+                    formData.append("profile_id", profileId);
+                    formData.append("profile_action", "set_color");
+                    formData.append("color", newColor);
+
+                    const response = await fetch("/profiles/manage", {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "fetch"
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || "Fehler beim Speichern der Farbe");
+                    }
+
+                    colorInput.setAttribute("data-original-color", newColor);
+                } catch (err) {
+                    alert(err.message || "Farbe konnte nicht gespeichert werden");
+                    colorInput.value = originalColor || "#7300ff";
+                    if (colorPreview) {
+                        if (originalColor) {
+                            colorPreview.style.backgroundColor = originalColor;
+                            colorPreview.style.setProperty("--row-profile-color", originalColor);
+                            colorPreview.classList.remove("is-empty");
+                        } else {
+                            colorPreview.style.backgroundColor = "";
+                            colorPreview.classList.add("is-empty");
+                        }
+                    }
+                }
+            });
+        }
+
         // 2. AJAX for visibility toggle
         const visBtn = row.querySelector(".visibility-btn");
         if (visBtn) {

@@ -1,17 +1,20 @@
 from decimal import Decimal, InvalidOperation
+import re
 from flask import jsonify, session
 from flask_restful import Resource, reqparse
 from constants import PROFILEID
-from models import db, profiles, category, data
+from models import db, profiles, category, data, users
 from login import get_authenticated_api_user_id
 
 create_parser = reqparse.RequestParser()
 create_parser.add_argument("name", type=str, required=True)
 create_parser.add_argument("maxhours", type=float, required=True)
+create_parser.add_argument("color", type=str, required=False)
 
 update_parser = reqparse.RequestParser()
 update_parser.add_argument("name", type=str, required=False)
 update_parser.add_argument("visible", type=bool, required=False)
+update_parser.add_argument("color", type=str, required=False)
 
 
 def _serialize(profile):
@@ -21,6 +24,7 @@ def _serialize(profile):
         "maxhours": float(profile.maxhours or 0),
         "visible": bool(profile.visible),
         "position": int(profile.position or 0),
+        "color": profile.color,
     }
 
 
@@ -72,6 +76,11 @@ class Profiles(Resource):
         if maxhours <= 0 or maxhours > Decimal("999.99"):
             return {"message": "Ungültige Monatsstunden"}, 400
 
+        clean_color = None
+        color_val = (values.get("color") or "").strip()
+        if color_val and re.match(r'^#[0-9a-fA-F]{6}$', color_val):
+            clean_color = color_val
+
         if profiles.query.filter_by(userid=user_id, name=name).first():
             return {"message": "Dieses Profil existiert bereits"}, 409
 
@@ -84,10 +93,15 @@ class Profiles(Resource):
             maxhours=maxhours,
             visible=True,
             position=next_pos,
+            color=clean_color,
         )
         db.session.add(profile)
         db.session.commit()
         session[PROFILEID] = profile.id
+        user = users.query.filter_by(id=user_id).first()
+        if user:
+            user.last_profile_id = profile.id
+            db.session.commit()
         return _serialize(profile), 201
 
     def patch(self, profile_id):
@@ -113,6 +127,15 @@ class Profiles(Resource):
                 return {"message": "Dieses Profil existiert bereits"}, 409
             profile.name = name
 
+        if values.get("color") is not None:
+            c_val = values["color"].strip()
+            if not c_val:
+                profile.color = None
+            elif re.match(r'^#[0-9a-fA-F]{6}$', c_val):
+                profile.color = c_val
+            else:
+                return {"message": "Ungültiger Farbcode"}, 400
+
         if values.get("visible") is not None:
             visible = bool(values["visible"])
             if not visible and profile.visible and profiles.query.filter_by(
@@ -125,6 +148,10 @@ class Profiles(Resource):
                     userid=user_id, visible=True
                 ).filter(profiles.id != profile.id).order_by(profiles.id).first()
                 session[PROFILEID] = replacement.id if replacement else None
+                if replacement:
+                    user = users.query.filter_by(id=user_id).first()
+                    if user:
+                        user.last_profile_id = replacement.id
 
         db.session.commit()
         return _serialize(profile), 200
@@ -151,6 +178,11 @@ class Profiles(Resource):
                 userid=user_id, visible=True
             ).order_by(profiles.id).first()
             session[PROFILEID] = replacement.id if replacement else None
+            if replacement:
+                user = users.query.filter_by(id=user_id).first()
+                if user:
+                    user.last_profile_id = replacement.id
+                db.session.commit()
 
         return {"message": "Arbeitsprofil gelöscht"}, 200
 
@@ -166,4 +198,8 @@ class ProfileSwitch(Resource):
             return {"message": "Profil nicht gefunden"}, 404
 
         session[PROFILEID] = profile.id
+        user = users.query.filter_by(id=user_id).first()
+        if user:
+            user.last_profile_id = profile.id
+            db.session.commit()
         return {"message": "Profil gewechselt"}, 200

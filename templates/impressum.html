@@ -58,11 +58,12 @@
     </button>
 </div>
 
-<a class="backbutton impressum-backbutton" href="{{ request.referrer or url_for('home') }}" aria-label="{{ t('common.back') }}">
+{% set back_label = t('common.back_home') if is_authenticated else t('common.back_simple') %}
+<a class="backbutton impressum-backbutton" href="{{ back_url }}" aria-label="{{ back_label }}">
     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="backbutton-icon">
         <polyline points="15 18 9 12 15 6"></polyline>
     </svg>
-    <span class="backbutton-text">{{ t('common.back') }}</span>
+    <span class="backbutton-text">{{ back_label }}</span>
 </a>
 
 <div class="impressum-wrapper">

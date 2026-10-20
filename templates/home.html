@@ -13,6 +13,9 @@
 {% block body_class %}page-home{% endblock %}
 
 {% block content %}
+<div id="profile-vignette-overlay" class="profile-vignette-overlay" aria-hidden="true"
+     {% if active_profile and active_profile.color %}style="--profile-overlay-color: {{ active_profile.color }};"{% endif %}></div>
+
 <a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
 <div class="profile">
     <details id="profile-menu-btn">
@@ -28,7 +31,9 @@
                 data-active-profile="{{ active_profile_id }}"
                 onchange="selectProfile(this)">
             {% for profile in profiles %}
-            <option value="{{ profile.id }}" {% if profile.id == active_profile_id %}selected{% endif %}>
+            <option value="{{ profile.id }}"
+                    data-color="{{ profile.color or '' }}"
+                    {% if profile.id == active_profile_id %}selected{% endif %}>
                 {{ profile.name }}
             </option>
             {% endfor %}
@@ -155,7 +160,37 @@
       {% else %}
         <div class="overview-loading">{{ t('home.overview_loading') }}</div>
       {% endif %}
+  </div>
+</div>
+
+<!-- Modal für Neues Arbeitsprofil -->
+<div id="newProfileModal" class="modal" style="display: none;">
+  <div class="modal-content new-profile-modal-content">
+    <span class="modal-close" onclick="closeNewProfileModal()">&times;</span>
+    <div class="modal-header">
+      <h3>{{ t('dialog.profiles.new_title') }}</h3>
     </div>
+    <form id="new-profile-form" class="new-profile-form" onsubmit="submitNewProfile(event)">
+      <div class="new-profile-form-group">
+        <label for="new-profile-name-input">{{ t('dialog.profiles.name') }}</label>
+        <input type="text" id="new-profile-name-input" name="name" maxlength="30" required placeholder="{{ t('dialog.profiles.placeholder') }}">
+      </div>
+      <div class="new-profile-form-group">
+        <label for="new-profile-maxhours-input">{{ t('dialog.profiles.maxhours') }}</label>
+        <input type="text" id="new-profile-maxhours-input" name="maxhours" pattern="[0-9]+([,.][0-9]+)?" placeholder="160" required>
+      </div>
+      <div class="new-profile-form-group">
+        <label for="new-profile-color-input">{{ t('dialog.profiles.color') }}</label>
+        <div class="new-profile-color-row">
+          <input type="color" id="new-profile-color-input" name="color" value="#7300ff" onchange="document.getElementById('new-profile-color-hex').textContent = this.value">
+          <span id="new-profile-color-hex" class="new-profile-color-hex">#7300ff</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="closeNewProfileModal()" class="btn-cancel">{{ t('common.cancel') }}</button>
+        <button type="submit" class="btn-save">{{ t('common.save') }}</button>
+      </div>
+    </form>
   </div>
 </div>
 

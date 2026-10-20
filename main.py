@@ -5,7 +5,7 @@ import os
 import io
 import base64
 from api import app as api_app
-from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw
+from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw, _get_valid_token
 import secrets
 from constants import USERID, TOKEN, PROFILEID
 from time import time
@@ -238,10 +238,16 @@ def ensure_profiles():
         text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS position INT NOT NULL DEFAULT 0")
     )
     db.session.execute(
+        text("ALTER TABLE arbeitszeiten.profiles ADD COLUMN IF NOT EXISTS color VARCHAR(7)")
+    )
+    db.session.execute(
         text("ALTER TABLE arbeitszeiten.users ADD COLUMN IF NOT EXISTS language VARCHAR(10) NOT NULL DEFAULT 'de'")
     )
     db.session.execute(
         text("ALTER TABLE arbeitszeiten.users ADD COLUMN IF NOT EXISTS theme VARCHAR(10) NOT NULL DEFAULT 'auto'")
+    )
+    db.session.execute(
+        text("ALTER TABLE arbeitszeiten.users ADD COLUMN IF NOT EXISTS last_profile_id BIGINT")
     )
     db.session.execute(
         text("ALTER TABLE arbeitszeiten.profiles DROP COLUMN IF EXISTS profile_image")
@@ -363,15 +369,34 @@ def inject_translations():
 def get_active_profile():
     profile_id = session.get(PROFILEID)
     account_id = session.get(USERID)
+    if account_id is None:
+        return None
+
+    user = db.session.query(users).filter_by(id=account_id).first()
+
+    # Wenn kein Profil in Session, versuche das in der DB gespeicherte zuletzt genutzte Profil
+    if profile_id is None and user and user.last_profile_id:
+        profile_id = user.last_profile_id
+
     profile = db.session.query(profiles).filter(
         profiles.id == profile_id,
         profiles.userid == account_id,
         profiles.visible.is_(True),
     ).first()
-    if profile is None and account_id is not None:
-        profile = db.session.query(profiles).filter_by(userid=account_id).order_by(profiles.id).first()
-        if profile:
-            session[PROFILEID] = profile.id
+
+    if profile is None:
+        profile = db.session.query(profiles).filter_by(
+            userid=account_id, visible=True
+        ).order_by(profiles.position.asc(), profiles.id.asc()).first()
+        if profile is None:
+            profile = db.session.query(profiles).filter_by(userid=account_id).order_by(profiles.id).first()
+
+    if profile:
+        session[PROFILEID] = profile.id
+        if user and user.last_profile_id != profile.id:
+            user.last_profile_id = profile.id
+            db.session.commit()
+
     return profile
 
 
@@ -678,9 +703,22 @@ def login():
             db.session.query(token).filter(token.expiretime < int(time())).delete()
             user_obj = db.session.query(users).filter(users.username == username).first()
             session[USERID] = user_obj.id
-            default_profile = db.session.query(profiles).filter_by(userid=session[USERID]).order_by(profiles.id).first()
-            if default_profile:
-                session[PROFILEID] = default_profile.id
+            chosen_profile = None
+            if user_obj.last_profile_id:
+                chosen_profile = db.session.query(profiles).filter_by(
+                    id=user_obj.last_profile_id, userid=user_obj.id, visible=True
+                ).first()
+            if not chosen_profile:
+                chosen_profile = db.session.query(profiles).filter_by(
+                    userid=user_obj.id, visible=True
+                ).order_by(profiles.position.asc(), profiles.id.asc()).first()
+            if not chosen_profile:
+                chosen_profile = db.session.query(profiles).filter_by(userid=user_obj.id).order_by(profiles.id).first()
+
+            if chosen_profile:
+                session[PROFILEID] = chosen_profile.id
+                user_obj.last_profile_id = chosen_profile.id
+
             newToken = token(userid=session[USERID], token=secrets.token_urlsafe(96))
             session[TOKEN] = newToken.token
             db.session.add(newToken)
@@ -910,7 +948,8 @@ def home():
         overview_data=home_context['overview_data'],
         edit_time=home_context['edit_time'],
         edit_time_24h=home_context['edit_time_24h'],
-        profiles=get_profile_list(), active_profile_id=user_id
+        profiles=get_profile_list(), active_profile_id=user_id,
+        active_profile=active_profile
     )
 
 @app.route('/profiles/switch', methods=['POST'])
@@ -923,6 +962,10 @@ def switch_profile():
     if profile is None:
         return jsonify(error="Profil nicht gefunden"), 404
     session[PROFILEID] = profile.id
+    user = db.session.query(users).filter_by(id=session.get(USERID)).first()
+    if user:
+        user.last_profile_id = profile.id
+        db.session.commit()
     return redirect(url_for('home'))
 
 @app.route('/profiles/create', methods=['POST'])
@@ -930,6 +973,7 @@ def switch_profile():
 def create_profile():
     name = (request.form.get('name') or '').strip()
     maxhours_value = (request.form.get('maxhours') or '').strip().replace(',', '.')
+    color_val = (request.form.get('color') or '').strip()
     if not name or len(name) > 30:
         return jsonify(error="Der Profilname muss zwischen 1 und 30 Zeichen lang sein"), 400
     try:
@@ -938,6 +982,13 @@ def create_profile():
         return jsonify(error="Bitte gültige Monatsstunden angeben"), 400
     if maxhours <= 0 or maxhours > Decimal("999.99"):
         return jsonify(error="Die Monatsstunden müssen zwischen 0,01 und 999,99 liegen"), 400
+
+    clean_color = None
+    if color_val:
+        import re
+        if re.match(r'^#[0-9a-fA-F]{6}$', color_val):
+            clean_color = color_val
+
     if db.session.query(profiles).filter_by(userid=session.get(USERID), name=name).first():
         return jsonify(error="Dieses Profil existiert bereits"), 409
     next_pos = (db.session.query(func.max(profiles.position)).filter_by(userid=session.get(USERID)).scalar() or 0) + 1
@@ -947,10 +998,15 @@ def create_profile():
         maxhours=maxhours,
         visible=True,
         position=next_pos,
+        color=clean_color,
     )
     db.session.add(profile)
     db.session.commit()
     session[PROFILEID] = profile.id
+    user = db.session.query(users).filter_by(id=session.get(USERID)).first()
+    if user:
+        user.last_profile_id = profile.id
+        db.session.commit()
     return redirect(url_for('home'))
 
 @app.route('/profiles/manage', methods=['POST'])
@@ -1016,6 +1072,22 @@ def manage_profile():
             message = "Arbeitsprofil umbenannt"
             if wants_json:
                 return jsonify(success=True, message=message, name=profile.name)
+    elif action == 'set_color':
+        new_color = (request.form.get('color') or '').strip()
+        import re
+        if new_color and re.match(r'^#[0-9a-fA-F]{6}$', new_color):
+            profile.color = new_color
+        elif not new_color:
+            profile.color = None
+        else:
+            message = "Ungültiger Farbcode"
+            if wants_json:
+                return jsonify(error=message), 400
+            return redirect(url_for('profile', profile_message=message))
+        db.session.commit()
+        message = "Profilfarbe gespeichert"
+        if wants_json:
+            return jsonify(success=True, message=message, color=profile.color)
     elif action == 'toggle-visibility':
         if profile.visible and db.session.query(profiles).filter_by(
             userid=session.get(USERID), visible=True
@@ -1033,6 +1105,9 @@ def manage_profile():
                 ).order_by(profiles.id).first()
                 if replacement:
                     session[PROFILEID] = replacement.id
+                    user = db.session.query(users).filter_by(id=session.get(USERID)).first()
+                    if user:
+                        user.last_profile_id = replacement.id
             db.session.commit()
             message = "Arbeitsprofil ausgeblendet" if not profile.visible else "Arbeitsprofil eingeblendet"
             if wants_json:
@@ -1055,6 +1130,9 @@ def manage_profile():
                 ).order_by(profiles.id).first()
                 if replacement:
                     session[PROFILEID] = replacement.id
+                    user = db.session.query(users).filter_by(id=session.get(USERID)).first()
+                    if user:
+                        user.last_profile_id = replacement.id
             db.session.commit()
             message = "Arbeitsprofil gelöscht"
             if wants_json:
@@ -1184,7 +1262,18 @@ def count_entries():  # sourcery skip: use-named-expression
 
 @app.route('/impressum')
 def impressum():
-    return render_template('impressum.html')
+    is_authenticated = _get_valid_token() is not None
+    fallback_url = url_for('home') if is_authenticated else url_for('login')
+    
+    referrer = request.referrer
+    # Referrer nur speichern/aktualisieren, wenn er von der eigenen Domain kommt und NICHT impressum selbst ist
+    if referrer and request.host in referrer and '/impressum' not in referrer:
+        session['impressum_back_url'] = referrer
+    elif 'impressum_back_url' not in session or not session.get('impressum_back_url'):
+        session['impressum_back_url'] = fallback_url
+
+    back_url = session.get('impressum_back_url') or fallback_url
+    return render_template('impressum.html', back_url=back_url, is_authenticated=is_authenticated)
 
 @app.route('/dpa')
 def dpa():
