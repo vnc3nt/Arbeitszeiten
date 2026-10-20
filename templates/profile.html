@@ -230,7 +230,7 @@
     </dialog>
 
     <!-- Dialog: Arbeitsprofile bearbeiten -->
-    <dialog id="manage-profiles-dialog" class="modern-dialog">
+    <dialog id="manage-profiles-dialog" class="modern-dialog" tabindex="-1">
         <div class="dialog-header">
             <h2>{{ t('dialog.profiles.title') }}</h2>
             <p class="manage-profiles-subtitle">{{ t('dialog.profiles.desc') }}</p>
@@ -319,7 +319,7 @@
             </svg>
             <span>{{ t('dialog.profiles.new_title') }}</span>
         </button>
-        <button type="button" class="dialog-close-btn" onclick="this.closest('dialog').close()">{{ t('common.close')
+        <button type="button" class="dialog-close-btn" autofocus onclick="this.closest('dialog').close()">{{ t('common.close')
             }}</button>
     </dialog>
 

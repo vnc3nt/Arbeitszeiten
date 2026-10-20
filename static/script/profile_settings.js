@@ -95,10 +95,6 @@ window.addEventListener("DOMContentLoaded", () => {
     if (manageProfilesBtn) {
         manageProfilesBtn.addEventListener("click", () => {
             manageProfilesDialog.showModal();
-            const firstTextInput = manageProfilesDialog.querySelector(".profile-name-input");
-            if (firstTextInput) {
-                firstTextInput.focus();
-            }
         });
     }
 
