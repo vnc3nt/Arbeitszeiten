@@ -13,8 +13,7 @@
 {% block body_class %}page-home{% endblock %}
 
 {% block content %}
-<div id="profile-vignette-overlay" class="profile-vignette-overlay" aria-hidden="true"
-     {% if active_profile and active_profile.color %}style="--profile-overlay-color: {{ active_profile.color }};"{% endif %}></div>
+<div id="profile-vignette-overlay" class="profile-vignette-overlay" aria-hidden="true"></div>
 
 <a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
 

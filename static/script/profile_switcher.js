@@ -16,11 +16,9 @@ function updateVignetteOverlay(color) {
     if (!overlay) return;
     if (!color) {
         overlay.style.removeProperty('--profile-overlay-color');
-        overlay.style.background = 'radial-gradient(ellipse at center, transparent 35%, transparent 100%)';
     } else {
         const edgeColor = hexToRgba(color, 0.5);
         overlay.style.setProperty('--profile-overlay-color', edgeColor);
-        overlay.style.background = `radial-gradient(ellipse at center, transparent 35%, ${edgeColor} 100%)`;
     }
 }
 
