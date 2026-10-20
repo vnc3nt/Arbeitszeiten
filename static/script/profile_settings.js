@@ -103,8 +103,71 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const list = manageProfilesDialog.querySelector(".manage-profiles-list");
 
-    manageProfilesDialog.querySelectorAll(".profile-management-row").forEach(row => {
+    let draggedRow = null;
+    let initialOrderIds = [];
+
+    const getOrderIds = () => {
+        if (!list) return [];
+        return Array.from(list.querySelectorAll(".profile-management-row"))
+            .map(r => r.getAttribute("data-profile-id"))
+            .filter(Boolean);
+    };
+
+    const saveOrder = async () => {
+        if (!list) return;
+        const currentOrder = getOrderIds();
+        if (currentOrder.length === 0) return;
+        if (JSON.stringify(currentOrder) === JSON.stringify(initialOrderIds)) {
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append("csrf_token", csrfToken || "");
+            formData.append("profile_action", "reorder");
+            formData.append("order", JSON.stringify(currentOrder));
+
+            const response = await fetch("/profiles/manage", {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "fetch"
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Fehler beim Speichern der Reihenfolge");
+            }
+
+            initialOrderIds = currentOrder;
+
+            // Reorder dropdown options in header/home if present in DOM
+            const selector = document.getElementById("profile-selector");
+            if (selector) {
+                currentOrder.forEach(id => {
+                    const opt = selector.querySelector(`option[value="${id}"]`);
+                    if (opt) {
+                        selector.appendChild(opt);
+                    }
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            alert(err.message || "Reihenfolge konnte nicht gespeichert werden");
+        }
+    };
+
+    const clearDragStyles = () => {
+        if (!list) return;
+        list.querySelectorAll(".profile-management-row").forEach(r => {
+            r.classList.remove("is-dragging", "drag-over-top", "drag-over-bottom");
+        });
+    };
+
+    const bindProfileRowEvents = (row) => {
         const input = row.querySelector(".profile-name-input");
         const profileId = row.querySelector("input[name=profile_id]")?.value;
         if (!input || !profileId) return;
@@ -149,6 +212,11 @@ window.addEventListener("DOMContentLoaded", () => {
                 input.setAttribute("data-original-name", newName);
                 input.classList.add("save-success");
                 setTimeout(() => input.classList.remove("save-success"), 1200);
+
+                // Update select dropdown option if present
+                const selector = document.getElementById("profile-selector");
+                const opt = selector?.querySelector(`option[value="${profileId}"]`);
+                if (opt) opt.textContent = newName;
             } catch (err) {
                 input.classList.add("save-error");
                 setTimeout(() => input.classList.remove("save-error"), 1500);
@@ -204,6 +272,11 @@ window.addEventListener("DOMContentLoaded", () => {
                     }
 
                     colorInput.setAttribute("data-original-color", newColor);
+
+                    // Update option in selector if present
+                    const selector = document.getElementById("profile-selector");
+                    const opt = selector?.querySelector(`option[value="${profileId}"]`);
+                    if (opt) opt.setAttribute("data-color", newColor);
                 } catch (err) {
                     alert(err.message || "Farbe konnte nicht gespeichert werden");
                     colorInput.value = originalColor || "#7300ff";
@@ -301,88 +374,23 @@ window.addEventListener("DOMContentLoaded", () => {
                     row.style.transition = "all 0.25s ease-out";
                     row.style.opacity = "0";
                     row.style.transform = "scale(0.95)";
-                    setTimeout(() => row.remove(), 250);
+                    setTimeout(() => {
+                        row.remove();
+                        initialOrderIds = getOrderIds();
+                    }, 250);
+
+                    const selector = document.getElementById("profile-selector");
+                    const opt = selector?.querySelector(`option[value="${profileId}"]`);
+                    if (opt) opt.remove();
                 } catch (err) {
                     alert(err.message || "Profil konnte nicht gelöscht werden");
                 }
             });
         }
-    });
 
-    // 4. Drag & Drop reordering
-    const list = manageProfilesDialog.querySelector(".manage-profiles-list");
-    if (list) {
-        let draggedRow = null;
-        let initialOrderIds = [];
-
-        const getOrderIds = () => {
-            return Array.from(list.querySelectorAll(".profile-management-row"))
-                .map(r => r.getAttribute("data-profile-id"))
-                .filter(Boolean);
-        };
-
-        initialOrderIds = getOrderIds();
-
-        const saveOrder = async () => {
-            const currentOrder = getOrderIds();
-            if (currentOrder.length === 0) return;
-            if (JSON.stringify(currentOrder) === JSON.stringify(initialOrderIds)) {
-                return;
-            }
-
-            try {
-                const formData = new FormData();
-                formData.append("csrf_token", csrfToken || "");
-                formData.append("profile_action", "reorder");
-                formData.append("order", JSON.stringify(currentOrder));
-
-                const response = await fetch("/profiles/manage", {
-                    method: "POST",
-                    headers: {
-                        "X-Requested-With": "fetch"
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || "Fehler beim Speichern der Reihenfolge");
-                }
-
-                initialOrderIds = currentOrder;
-
-                // Reorder dropdown options in header/home if present in DOM
-                const selector = document.getElementById("profile-selector");
-                if (selector) {
-                    const newProfileOption = selector.querySelector('option[value="__new__"]');
-                    currentOrder.forEach(id => {
-                        const opt = selector.querySelector(`option[value="${id}"]`);
-                        if (opt) {
-                            if (newProfileOption) {
-                                selector.insertBefore(opt, newProfileOption);
-                            } else {
-                                selector.appendChild(opt);
-                            }
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-                alert(err.message || "Reihenfolge konnte nicht gespeichert werden");
-            }
-        };
-
-        const clearDragStyles = () => {
-            list.querySelectorAll(".profile-management-row").forEach(r => {
-                r.classList.remove("is-dragging", "drag-over-top", "drag-over-bottom");
-            });
-        };
-
-        list.querySelectorAll(".profile-management-row").forEach(row => {
-            const handle = row.querySelector(".drag-handle");
-            if (!handle) return;
-
-            // Make draggable on handle interaction
+        // 4. Drag & Drop handles
+        const handle = row.querySelector(".drag-handle");
+        if (handle) {
             handle.addEventListener("mouseenter", () => {
                 row.setAttribute("draggable", "true");
             });
@@ -405,7 +413,66 @@ window.addEventListener("DOMContentLoaded", () => {
                 draggedRow = null;
                 clearDragStyles();
             });
-        });
+
+            // Touch support
+            handle.addEventListener("touchstart", (e) => {
+                touchDraggedRow = row;
+                initialOrderIds = getOrderIds();
+                row.classList.add("is-dragging");
+            }, { passive: true });
+
+            handle.addEventListener("touchmove", (e) => {
+                if (!touchDraggedRow) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                const elementUnderPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+                const targetRow = elementUnderPoint?.closest(".profile-management-row");
+
+                list.querySelectorAll(".profile-management-row").forEach(r => {
+                    r.classList.remove("drag-over-top", "drag-over-bottom");
+                });
+
+                if (targetRow && targetRow !== touchDraggedRow) {
+                    const rect = targetRow.getBoundingClientRect();
+                    const isTopHalf = (touch.clientY - rect.top) < (rect.height / 2);
+                    if (isTopHalf) {
+                        targetRow.classList.add("drag-over-top");
+                    } else {
+                        targetRow.classList.add("drag-over-bottom");
+                    }
+                }
+            }, { passive: false });
+
+            handle.addEventListener("touchend", async () => {
+                if (!touchDraggedRow) return;
+                const rowWithOver = list.querySelector(".drag-over-top, .drag-over-bottom");
+                if (rowWithOver) {
+                    if (rowWithOver.classList.contains("drag-over-top")) {
+                        list.insertBefore(touchDraggedRow, rowWithOver);
+                    } else {
+                        list.insertBefore(touchDraggedRow, rowWithOver.nextSibling);
+                    }
+                }
+                clearDragStyles();
+                touchDraggedRow = null;
+                await saveOrder();
+            });
+
+            handle.addEventListener("touchcancel", () => {
+                clearDragStyles();
+                touchDraggedRow = null;
+            });
+        }
+    };
+
+    let touchDraggedRow = null;
+
+    manageProfilesDialog.querySelectorAll(".profile-management-row").forEach(row => {
+        bindProfileRowEvents(row);
+    });
+
+    if (list) {
+        initialOrderIds = getOrderIds();
 
         list.addEventListener("dragover", (e) => {
             e.preventDefault();
@@ -459,60 +526,121 @@ window.addEventListener("DOMContentLoaded", () => {
             draggedRow = null;
             await saveOrder();
         });
+    }
 
-        // Touch support for touch devices
-        let touchDraggedRow = null;
+    // 5. Add new profile row directly inline
+    const addProfileRowBtn = document.getElementById("addProfileRowBtn");
+    if (addProfileRowBtn && list) {
+        addProfileRowBtn.addEventListener("click", async () => {
+            try {
+                addProfileRowBtn.disabled = true;
+                const formData = new FormData();
+                formData.append("csrf_token", csrfToken || "");
+                formData.append("profile_action", "create");
 
-        list.querySelectorAll(".drag-handle").forEach(handle => {
-            handle.addEventListener("touchstart", (e) => {
-                const row = handle.closest(".profile-management-row");
-                if (!row) return;
-                touchDraggedRow = row;
-                initialOrderIds = getOrderIds();
-                row.classList.add("is-dragging");
-            }, { passive: true });
-
-            handle.addEventListener("touchmove", (e) => {
-                if (!touchDraggedRow) return;
-                e.preventDefault();
-                const touch = e.touches[0];
-                const elementUnderPoint = document.elementFromPoint(touch.clientX, touch.clientY);
-                const targetRow = elementUnderPoint?.closest(".profile-management-row");
-
-                list.querySelectorAll(".profile-management-row").forEach(r => {
-                    r.classList.remove("drag-over-top", "drag-over-bottom");
+                const response = await fetch("/profiles/manage", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "fetch"
+                    },
+                    body: formData
                 });
 
-                if (targetRow && targetRow !== touchDraggedRow) {
-                    const rect = targetRow.getBoundingClientRect();
-                    const isTopHalf = (touch.clientY - rect.top) < (rect.height / 2);
-                    if (isTopHalf) {
-                        targetRow.classList.add("drag-over-top");
-                    } else {
-                        targetRow.classList.add("drag-over-bottom");
-                    }
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || "Fehler beim Erstellen des Profils");
                 }
-            }, { passive: false });
 
-            handle.addEventListener("touchend", async () => {
-                if (!touchDraggedRow) return;
-                const rowWithOver = list.querySelector(".drag-over-top, .drag-over-bottom");
-                if (rowWithOver) {
-                    if (rowWithOver.classList.contains("drag-over-top")) {
-                        list.insertBefore(touchDraggedRow, rowWithOver);
-                    } else {
-                        list.insertBefore(touchDraggedRow, rowWithOver.nextSibling);
-                    }
+                const newProfile = data.profile;
+                const rowHtml = `
+                    <form method="post" action="/profiles/manage"
+                        class="profile-management-row"
+                        data-profile-id="${newProfile.id}">
+                        <input type="hidden" name="csrf_token" value="${csrfToken || ''}" />
+                        <input type="hidden" name="profile_id" value="${newProfile.id}">
+
+                        <div class="drag-handle" title="Ziehen zum Neuanordnen"
+                            aria-label="Ziehen zum Neuanordnen">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                <circle cx="8.5" cy="6" r="1.6"></circle>
+                                <circle cx="8.5" cy="12" r="1.6"></circle>
+                                <circle cx="8.5" cy="18" r="1.6"></circle>
+                                <circle cx="15.5" cy="6" r="1.6"></circle>
+                                <circle cx="15.5" cy="12" r="1.6"></circle>
+                                <circle cx="15.5" cy="18" r="1.6"></circle>
+                            </svg>
+                        </div>
+
+                        <div class="profile-color-picker-wrapper" title="Profilfarbe auswählen">
+                            <div class="profile-color-preview-circle is-empty"></div>
+                            <input type="color" name="color"
+                                   value="#7300ff"
+                                   class="profile-color-input"
+                                   tabindex="-1"
+                                   data-original-color=""
+                                   aria-label="Profilfarbe auswählen">
+                        </div>
+
+                        <div class="profile-input-wrapper">
+                            <input type="text" name="name" value="${newProfile.name}" maxlength="30"
+                                class="profile-name-input" aria-label="${newProfile.name}"
+                                data-original-name="${newProfile.name}"
+                                placeholder="Profilname">
+                        </div>
+
+                        <div class="profile-actions-wrapper">
+                            <button type="submit" name="profile_action" value="toggle-visibility"
+                                class="icon-btn visibility-btn"
+                                title="Profil ausblenden"
+                                aria-label="Profil ausblenden">
+                                <svg class="eye-open-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-closed-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+
+                            <button type="submit" name="profile_action" value="delete" class="icon-btn delete-btn"
+                                title="Profil löschen" aria-label="Profil löschen">
+                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                `;
+
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = rowHtml.trim();
+                const newRowElem = tempDiv.firstElementChild;
+
+                list.appendChild(newRowElem);
+                bindProfileRowEvents(newRowElem);
+                initialOrderIds = getOrderIds();
+
+                // Scroll list to the newly added row
+                list.scrollTop = list.scrollHeight;
+
+                // Focus name input so user can edit right away
+                const nameInput = newRowElem.querySelector(".profile-name-input");
+                if (nameInput) {
+                    nameInput.focus();
+                    nameInput.select();
                 }
-                clearDragStyles();
-                touchDraggedRow = null;
-                await saveOrder();
-            });
-
-            handle.addEventListener("touchcancel", () => {
-                clearDragStyles();
-                touchDraggedRow = null;
-            });
+            } catch (err) {
+                alert(err.message || "Neues Profil konnte nicht erstellt werden");
+            } finally {
+                addProfileRowBtn.disabled = false;
+            }
         });
     }
 });

@@ -1043,6 +1043,40 @@ def manage_profile():
             return jsonify(success=True, message="Reihenfolge gespeichert")
         return redirect(url_for('profile', profile_message="Reihenfolge gespeichert"))
 
+    if action == 'create':
+        # Default name generation: "Neues Profil", "Neues Profil 2", etc.
+        existing_names = {p.name for p in db.session.query(profiles.name).filter_by(userid=session.get(USERID)).all()}
+        base_name = "Neues Profil"
+        candidate_name = base_name
+        counter = 2
+        while candidate_name in existing_names:
+            candidate_name = f"{base_name} {counter}"
+            counter += 1
+
+        next_pos = (db.session.query(func.max(profiles.position)).filter_by(userid=session.get(USERID)).scalar() or 0) + 1
+        new_p = profiles(
+            userid=session.get(USERID),
+            name=candidate_name,
+            maxhours=Decimal("0.00"),
+            visible=True,
+            position=next_pos,
+            color=None,
+        )
+        db.session.add(new_p)
+        db.session.commit()
+
+        if wants_json:
+            return jsonify(
+                success=True,
+                profile={
+                    "id": new_p.id,
+                    "name": new_p.name,
+                    "color": new_p.color or "",
+                    "visible": new_p.visible
+                }
+            )
+        return redirect(url_for('profile'))
+
     profile_id = request.form.get('profile_id', type=int)
     profile = db.session.query(profiles).filter_by(
         id=profile_id, userid=session.get(USERID)

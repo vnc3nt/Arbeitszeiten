@@ -1407,7 +1407,38 @@ input.dialog-input:focus {
   max-height: 52vh;
   overflow-y: auto;
   padding: 2px;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.btn-add-profile-row {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 2.6rem;
+  padding: 0.5rem 1rem !important;
+  margin: 0 0 1.2rem 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--surface-subtle) !important;
+  border: 1px dashed rgba(120, 120, 120, 0.4) !important;
+  border-radius: 12px !important;
+  color: var(--text-color) !important;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.btn-add-profile-row:hover {
+  background-color: var(--surface-hover) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.btn-add-profile-row svg {
+  flex-shrink: 0;
 }
 
 .profile-management-row {
@@ -2756,7 +2787,7 @@ html.light-mode #profile-menu .profile-menu-username * {
     height: 100dvh;
     z-index: 0;
     pointer-events: none;
-    background: linear-gradient(to right, var(--profile-overlay-color, transparent) 0%, transparent 40%, transparent 60%, var(--profile-overlay-color, transparent) 100%);
+    background: linear-gradient(to right, var(--profile-overlay-color, transparent) 0%, transparent 5%, transparent 95%, var(--profile-overlay-color, transparent) 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
     opacity: 1;

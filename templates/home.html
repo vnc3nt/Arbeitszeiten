@@ -31,7 +31,6 @@
                 {{ profile.name }}
             </option>
             {% endfor %}
-            <option value="__new__">+ {{ t('home.new_profile') }}</option>
         </select>
         <svg class="profile-select-arrow" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -167,37 +166,6 @@
       {% else %}
         <div class="overview-loading">{{ t('home.overview_loading') }}</div>
       {% endif %}
-  </div>
-</div>
-
-<!-- Modal für Neues Arbeitsprofil -->
-<div id="newProfileModal" class="modal" style="display: none;">
-  <div class="modal-content new-profile-modal-content">
-    <span class="modal-close" onclick="closeNewProfileModal()">&times;</span>
-    <div class="modal-header">
-      <h3>{{ t('dialog.profiles.new_title') }}</h3>
-    </div>
-    <form id="new-profile-form" class="new-profile-form" onsubmit="submitNewProfile(event)">
-      <div class="new-profile-form-group">
-        <label for="new-profile-name-input">{{ t('dialog.profiles.name') }}</label>
-        <input type="text" id="new-profile-name-input" name="name" maxlength="30" required placeholder="{{ t('dialog.profiles.placeholder') }}">
-      </div>
-      <div class="new-profile-form-group">
-        <label for="new-profile-maxhours-input">{{ t('dialog.profiles.maxhours') }}</label>
-        <input type="text" id="new-profile-maxhours-input" name="maxhours" pattern="[0-9]+([,.][0-9]+)?" placeholder="160" required>
-      </div>
-      <div class="new-profile-form-group">
-        <label for="new-profile-color-input">{{ t('dialog.profiles.color') }}</label>
-        <div class="new-profile-color-row">
-          <input type="color" id="new-profile-color-input" name="color" value="#7300ff" onchange="document.getElementById('new-profile-color-hex').textContent = this.value">
-          <span id="new-profile-color-hex" class="new-profile-color-hex">#7300ff</span>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" onclick="closeNewProfileModal()" class="btn-cancel">{{ t('common.cancel') }}</button>
-        <button type="submit" class="btn-save">{{ t('common.save') }}</button>
-      </div>
-    </form>
   </div>
 </div>
 
