@@ -17,6 +17,29 @@
      {% if active_profile and active_profile.color %}style="--profile-overlay-color: {{ active_profile.color }};"{% endif %}></div>
 
 <a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
+
+<form class="profile-selector-form" method="post" action="{{ url_for('switch_profile') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="profile-select-wrapper">
+        <select id="profile-selector" name="profile_id"
+                data-active-profile="{{ active_profile_id }}"
+                onchange="selectProfile(this)"
+                aria-label="{{ t('settings.profiles.title') }}">
+            {% for profile in profiles %}
+            <option value="{{ profile.id }}"
+                    data-color="{{ profile.color or '' }}"
+                    {% if profile.id == active_profile_id %}selected{% endif %}>
+                {{ profile.name }}
+            </option>
+            {% endfor %}
+            <option value="__new__">+ {{ t('home.new_profile') }}</option>
+        </select>
+        <svg class="profile-select-arrow" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </div>
+</form>
+
 <div class="profile">
     <details id="profile-menu-btn">
         <summary>
@@ -25,21 +48,6 @@
         </summary>
             {% include "snippets/profile_menu.html" %}
     </details>
-    <form class="profile-selector-form" method="post" action="{{ url_for('switch_profile') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <select id="profile-selector" name="profile_id"
-                data-active-profile="{{ active_profile_id }}"
-                onchange="selectProfile(this)">
-            {% for profile in profiles %}
-            <option value="{{ profile.id }}"
-                    data-color="{{ profile.color or '' }}"
-                    {% if profile.id == active_profile_id %}selected{% endif %}>
-                {{ profile.name }}
-            </option>
-            {% endfor %}
-            <option value="__new__">{{ t('home.new_profile') }}</option>
-        </select>
-    </form>
 </div>
 
 
