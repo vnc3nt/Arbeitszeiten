@@ -181,7 +181,7 @@ def generate_excel_export(
         cell = ws.cell(row=header_row, column=col_idx, value=h_text)
         cell.font = Font(name=font_family, size=11, bold=True, color="FFFFFF")
         cell.fill = PatternFill(start_color=c_header_bg, end_color=c_header_bg, fill_type="solid")
-        cell.alignment = Alignment(horizontal="center" if col_idx == 1 else ("left" if col_idx == 3 else "right"), vertical="center")
+        cell.alignment = Alignment(horizontal="center", vertical="center")
         cell.border = border_cell
 
     current_row = 5
@@ -207,7 +207,7 @@ def generate_excel_export(
         ws.merge_cells(start_row=current_row, start_column=1, end_row=current_row, end_column=col_count)
         banner_cell = ws.cell(row=current_row, column=1, value=m_label)
         banner_cell.font = Font(name=font_family, size=11, bold=True, color=c_month_fg)
-        banner_cell.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+        banner_cell.alignment = Alignment(horizontal="center", vertical="center", indent=1)
         current_row += 1
 
         if not entries:
@@ -234,14 +234,14 @@ def generate_excel_export(
 
             c_hours = ws.cell(row=current_row, column=2, value=_format_duration_display(entry['hours']))
             c_hours.font = Font(name=font_family, size=10, bold=True)
-            c_hours.alignment = Alignment(horizontal="right", vertical="center")
+            c_hours.alignment = Alignment(horizontal="center", vertical="center")
             c_hours.border = border_cell
             if row_fill.fill_type: c_hours.fill = row_fill
 
             if is_multi_profile:
                 c_prof = ws.cell(row=current_row, column=3, value=entry.get('profile_name', ''))
                 c_prof.font = Font(name=font_family, size=10)
-                c_prof.alignment = Alignment(horizontal="left", vertical="center")
+                c_prof.alignment = Alignment(horizontal="center", vertical="center")
                 c_prof.border = border_cell
                 if row_fill.fill_type: c_prof.fill = row_fill
 
@@ -252,12 +252,12 @@ def generate_excel_export(
     ws.row_dimensions[current_row].height = 24
     lbl_cell = ws.cell(row=current_row, column=1, value="Gesamtsumme aller Monate")
     lbl_cell.font = Font(name=font_family, size=11, bold=True, color="111827")
-    lbl_cell.alignment = Alignment(horizontal="left", vertical="center")
+    lbl_cell.alignment = Alignment(horizontal="center", vertical="center")
     lbl_cell.border = border_top_thick
 
     total_cell = ws.cell(row=current_row, column=2, value=_format_duration_display(total_all_hours))
     total_cell.font = Font(name=font_family, size=12, bold=True, color=c_primary)
-    total_cell.alignment = Alignment(horizontal="right", vertical="center")
+    total_cell.alignment = Alignment(horizontal="center", vertical="center")
     total_cell.border = border_top_thick
 
     if is_multi_profile:
