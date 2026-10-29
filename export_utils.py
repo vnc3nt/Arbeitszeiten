@@ -349,7 +349,7 @@ def generate_pdf_export(
         fontName='Helvetica-Bold',
         fontSize=10,
         leading=14,
-        alignment=2,  # Right aligned
+        alignment=1,  # Right aligned
         textColor=c_primary
     )
 
@@ -371,7 +371,7 @@ def generate_pdf_export(
     cell_right = ParagraphStyle(
         'TableCellRight',
         parent=cell_style,
-        alignment=2
+        alignment=1
     )
 
     header_cell_style = ParagraphStyle(
@@ -383,7 +383,7 @@ def generate_pdf_export(
         textColor=colors.white
     )
     header_cell_center = ParagraphStyle('HeaderCellCenter', parent=header_cell_style, alignment=1)
-    header_cell_right = ParagraphStyle('HeaderCellRight', parent=header_cell_style, alignment=2)
+    header_cell_right = ParagraphStyle('HeaderCellRight', parent=header_cell_style, alignment=1)
 
     story = []
 
@@ -508,7 +508,7 @@ def generate_pdf_export(
     summary_data = [
         [
             Paragraph("<b>Gesamtsumme aller Monate</b>", ParagraphStyle('SumLbl', fontName='Helvetica-Bold', fontSize=11, textColor=c_text_dark)),
-            Paragraph(f"<b>{_format_duration_display(total_hours_all)}</b>", ParagraphStyle('SumVal', fontName='Helvetica-Bold', fontSize=13, alignment=2, textColor=c_primary))
+            Paragraph(f"<b>{_format_duration_display(total_hours_all)}</b>", ParagraphStyle('SumVal', fontName='Helvetica-Bold', fontSize=13, alignment=1, textColor=c_primary))
         ]
     ]
     summary_table = Table(summary_data, colWidths=[table_width * 0.60, table_width * 0.40])
