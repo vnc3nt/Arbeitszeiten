@@ -1015,4 +1015,63 @@ window.addEventListener("DOMContentLoaded", (e) => {
             }
         });
     }
-})
+
+    // Export Dialog Initialization
+    const openExportDialogBtn = document.getElementById("openExportDialogBtn");
+    const exportDialog = document.getElementById("export-dialog");
+
+    if (openExportDialogBtn && exportDialog) {
+        openExportDialogBtn.addEventListener("click", () => {
+            exportDialog.showModal();
+        });
+
+        // Format radio button card styling
+        const formatCards = exportDialog.querySelectorAll(".export-format-card");
+        formatCards.forEach(card => {
+            const radio = card.querySelector("input[type=radio]");
+            if (radio) {
+                radio.addEventListener("change", () => {
+                    formatCards.forEach(c => c.classList.remove("is-selected"));
+                    if (radio.checked) {
+                        card.classList.add("is-selected");
+                    }
+                });
+            }
+        });
+
+        // Select All / Deselect All
+        const selectAllBtn = document.getElementById("exportSelectAllBtn");
+        const deselectAllBtn = document.getElementById("exportDeselectAllBtn");
+        const profileCheckboxes = exportDialog.querySelectorAll(".export-profile-checkbox");
+
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener("click", () => {
+                profileCheckboxes.forEach(cb => cb.checked = true);
+            });
+        }
+
+        if (deselectAllBtn) {
+            deselectAllBtn.addEventListener("click", () => {
+                profileCheckboxes.forEach(cb => cb.checked = false);
+            });
+        }
+
+        // Form validation on submit
+        const exportForm = document.getElementById("exportForm");
+        if (exportForm) {
+            exportForm.addEventListener("submit", (e) => {
+                const anyChecked = Array.from(profileCheckboxes).some(cb => cb.checked);
+                if (!anyChecked) {
+                    e.preventDefault();
+                    const isEn = document.documentElement.lang === "en";
+                    alert(isEn ? "Please select at least one work profile." : "Bitte wähle mindestens ein Arbeitsprofil aus.");
+                } else {
+                    // Close dialog smoothly when starting download
+                    setTimeout(() => {
+                        exportDialog.close();
+                    }, 500);
+                }
+            });
+        }
+    }
+});

@@ -2912,3 +2912,216 @@ html.light-mode #profile-menu .profile-menu-username * {
     color: var(--text-color);
     opacity: 0.8;
 }
+
+/* =========================================================
+   Export Dialog Styles
+   ========================================================= */
+#export-dialog {
+    max-width: 460px;
+    width: min(92vw, 460px);
+}
+
+.export-dialog-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.export-section-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-color);
+    opacity: 0.75;
+}
+
+.export-format-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.export-format-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(120, 120, 120, 0.35);
+    background: var(--surface-subtle);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.export-format-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+}
+
+.export-format-card:hover {
+    background: var(--surface-hover);
+    border-color: rgba(120, 120, 120, 0.55);
+}
+
+.export-format-card.is-selected {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+    box-shadow: 0 0 0 1px var(--primary);
+}
+
+.export-format-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    color: var(--text-color);
+    transition: color 0.2s ease;
+}
+
+.export-format-card.is-selected .export-format-pdf {
+    color: #ef4444;
+}
+
+.export-format-card.is-selected .export-format-excel {
+    color: #10b981;
+}
+
+.export-format-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
+.export-profiles-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.export-profiles-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-color);
+    opacity: 0.65;
+}
+
+.export-quick-btn {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: var(--primary) !important;
+    font-size: 0.78rem !important;
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.export-quick-btn:hover {
+    opacity: 0.8;
+}
+
+.export-profiles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 2px;
+    margin-top: 0.25rem;
+}
+
+.export-profile-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    background: var(--surface-subtle);
+    border: 1px solid rgba(120, 120, 120, 0.25);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.export-profile-item:hover {
+    background: var(--surface-hover);
+    border-color: rgba(120, 120, 120, 0.45);
+}
+
+.export-profile-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+}
+
+.export-checkbox-custom {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 5px;
+    border: 1.5px solid rgba(120, 120, 120, 0.6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    background: transparent;
+}
+
+.export-profile-item input[type="checkbox"]:checked + .export-checkbox-custom {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.export-profile-item input[type="checkbox"]:checked + .export-checkbox-custom::after {
+    content: "";
+    display: block;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+.export-profile-color-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.export-profile-name {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text-color);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.export-empty-hint {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    padding: 0.5rem;
+    font-style: italic;
+    text-align: center;
+}

@@ -116,6 +116,16 @@
         </div>
     </section>
 
+    <section class="settings-section">
+        <div class="settings-section-heading">
+            <h2>{{ t('settings.export.title') }}</h2>
+            <p>{{ t('settings.export.desc') }}</p>
+        </div>
+        <div class="settings-actions">
+            <button id="openExportDialogBtn" type="button">{{ t('settings.export.btn') }}</button>
+        </div>
+    </section>
+
     <section class="settings-section settings-danger-section">
         <div class="settings-section-heading">
             <h2>{{ t('settings.danger.title') }}</h2>
@@ -340,6 +350,86 @@
                 <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
                     onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
                 <button type="submit" class="btn-dialog btn-danger">{{ t('dialog.delete_acc.submit') }}</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Dialog: Daten exportieren -->
+    <dialog id="export-dialog" class="modern-dialog">
+        <div class="dialog-header">
+            <h2>{{ t('dialog.export.title') }}</h2>
+            <p class="dialog-subtitle">{{ t('dialog.export.desc') }}</p>
+        </div>
+        <form action="{{ url_for('export_data') }}" method="post" id="exportForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            
+            <div class="export-dialog-section">
+                <label class="export-section-label">{{ t('dialog.export.format_label') }}</label>
+                <div class="export-format-options">
+                    <label class="export-format-card is-selected">
+                        <input type="radio" name="format" value="pdf" checked>
+                        <div class="export-format-icon export-format-pdf">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="export-format-info">
+                            <span class="export-format-name">{{ t('dialog.export.format_pdf') }}</span>
+                        </div>
+                    </label>
+
+                    <label class="export-format-card">
+                        <input type="radio" name="format" value="excel">
+                        <div class="export-format-icon export-format-excel">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <rect x="8" y="12" width="8" height="6"></rect>
+                                <line x1="12" y1="12" x2="12" y2="18"></line>
+                                <line x1="8" y1="15" x2="16" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="export-format-info">
+                            <span class="export-format-name">{{ t('dialog.export.format_excel') }}</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="export-dialog-section">
+                <div class="export-profiles-header">
+                    <label class="export-section-label">{{ t('dialog.export.profiles_label') }}</label>
+                    <div class="export-profiles-quick-actions">
+                        <button type="button" class="export-quick-btn" id="exportSelectAllBtn">{{ t('dialog.export.select_all') }}</button>
+                        <span>•</span>
+                        <button type="button" class="export-quick-btn" id="exportDeselectAllBtn">{{ t('dialog.export.deselect_all') }}</button>
+                    </div>
+                </div>
+
+                <div class="export-profiles-list" id="exportProfilesList">
+                    {% for p in all_profiles %}
+                    <label class="export-profile-item">
+                        <input type="checkbox" name="profile_ids" value="{{ p.id }}" checked class="export-profile-checkbox">
+                        <span class="export-checkbox-custom"></span>
+                        {% if p.color %}
+                        <span class="export-profile-color-indicator" style="background-color: {{ p.color }};"></span>
+                        {% endif %}
+                        <span class="export-profile-name">{{ p.name }}</span>
+                    </label>
+                    {% else %}
+                    <div class="export-empty-hint">{{ t('dialog.export.no_profiles') }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dialog-actions">
+                <button type="button" class="btn-dialog btn-secondary dialog-cancel-btn"
+                    onclick="this.closest('dialog').close()">{{ t('common.cancel') }}</button>
+                <button type="submit" class="btn-dialog btn-primary" id="exportSubmitBtn">{{ t('dialog.export.submit') }}</button>
             </div>
         </form>
     </dialog>

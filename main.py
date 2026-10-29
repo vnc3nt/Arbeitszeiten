@@ -20,6 +20,7 @@ from flask_limiter.util import get_remote_address
 from PIL import Image
 from werkzeug.middleware.proxy_fix import ProxyFix
 from translations import SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, get_translation, get_month_name
+from export_utils import generate_excel_export, generate_pdf_export
 
 # 1. Sauberes Laden der .env über python-dotenv
 load_dotenv()
@@ -1225,6 +1226,111 @@ def profile():
                            profile_image_url=get_profile_image_url(), profile_message=profile_message,
                            profiles=get_profile_list(), active_profile_id=session.get(PROFILEID),
                            all_profiles=get_all_profile_list())
+
+@app.route('/export', methods=['POST'])
+@validTokenChecker
+def export_data():
+    current_user_id = session.get(USERID)
+    export_format = (request.form.get('format') or 'pdf').strip().lower()
+    selected_profile_ids_raw = request.form.getlist('profile_ids')
+
+    # Convert to ints and filter valid profiles belonging to this user
+    selected_ids = []
+    for pid in selected_profile_ids_raw:
+        try:
+            selected_ids.append(int(pid))
+        except (ValueError, TypeError):
+            pass
+
+    user_profiles = db.session.query(profiles).filter(
+        profiles.userid == current_user_id,
+        profiles.id.in_(selected_ids)
+    ).order_by(profiles.position).all()
+
+    if not user_profiles:
+        return redirect(url_for('profile', profile_message="Bitte wähle mindestens ein Profil für den Export aus."))
+
+    profile_id_to_name = {p.id: p.name for p in user_profiles}
+    profile_names = [p.name for p in user_profiles]
+    current_lang = session.get('lang', DEFAULT_LANGUAGE)
+
+    # Query entries for these profiles
+    entries_query = db.session.query(data).filter(
+        data.profileid.in_([p.id for p in user_profiles]),
+        data.data.isnot(None),
+        data.data > 0
+    ).order_by(data.date.asc(), data.profileid.asc()).all()
+
+    # Group entries by year and month
+    grouped_months: Dict[Tuple[int, int], List[Dict[str, Any]]] = {}
+    month_totals: Dict[Tuple[int, int], Decimal] = {}
+
+    for entry in entries_query:
+        key = (entry.date.year, entry.date.month)
+        if key not in grouped_months:
+            grouped_months[key] = []
+            month_totals[key] = Decimal('0')
+        
+        grouped_months[key].append({
+            'date': entry.date,
+            'hours': entry.data,
+            'profile_name': profile_id_to_name.get(entry.profileid, '')
+        })
+        month_totals[key] += (entry.data or Decimal('0'))
+
+    # If no entries at all, create at least current month banner
+    if not grouped_months:
+        now_date = date.today()
+        grouped_months[(now_date.year, now_date.month)] = []
+        month_totals[(now_date.year, now_date.month)] = Decimal('0')
+
+    # Build sorted monthly_data list
+    sorted_keys = sorted(grouped_months.keys())
+    monthly_data = []
+    for (year, month) in sorted_keys:
+        monthly_data.append({
+            'year': year,
+            'month': month,
+            'month_name': get_month_name(month, current_lang),
+            'total_hours': month_totals.get((year, month), Decimal('0')),
+            'entries': grouped_months[(year, month)]
+        })
+
+    user_obj = get_current_user()
+    user_name = user_obj.username if user_obj else "Benutzer"
+    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M")
+
+    if export_format == 'excel':
+        excel_buffer = generate_excel_export(
+            profile_names=profile_names,
+            monthly_data=monthly_data,
+            user_name=user_name,
+            lang=current_lang
+        )
+        safe_name = "Arbeitszeiten" if len(profile_names) > 1 else secure_filename(profile_names[0])
+        filename = f"{safe_name}_{timestamp_str}.xlsx"
+        return send_file(
+            excel_buffer,
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    else:
+        # Default to PDF
+        pdf_buffer = generate_pdf_export(
+            profile_names=profile_names,
+            monthly_data=monthly_data,
+            user_name=user_name,
+            lang=current_lang
+        )
+        safe_name = "Arbeitszeiten" if len(profile_names) > 1 else secure_filename(profile_names[0])
+        filename = f"{safe_name}_{timestamp_str}.pdf"
+        return send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/pdf"
+        )
 
 @app.route('/set-language', methods=['POST'])
 @csrf.exempt
