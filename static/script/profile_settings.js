@@ -1025,18 +1025,17 @@ window.addEventListener("DOMContentLoaded", (e) => {
             exportDialog.showModal();
         });
 
-        // Format radio button card styling
-        const formatCards = exportDialog.querySelectorAll(".export-format-card");
-        formatCards.forEach(card => {
-            const radio = card.querySelector("input[type=radio]");
-            if (radio) {
-                radio.addEventListener("change", () => {
-                    formatCards.forEach(c => c.classList.remove("is-selected"));
-                    if (radio.checked) {
-                        card.classList.add("is-selected");
-                    }
-                });
-            }
+        // Format segmented control buttons
+        const formatBtns = exportDialog.querySelectorAll(".export-format-btn");
+        const formatInput = document.getElementById("exportFormatInput");
+        formatBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                formatBtns.forEach(b => b.classList.remove("is-active"));
+                btn.classList.add("is-active");
+                if (formatInput) {
+                    formatInput.value = btn.getAttribute("data-format");
+                }
+            });
         });
 
         // Select All / Deselect All

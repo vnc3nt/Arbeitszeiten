@@ -1300,12 +1300,21 @@ def export_data():
     user_name = user_obj.username if user_obj else "Benutzer"
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M")
 
+    # Determine accent color from selected profile(s)
+    # If 1 profile selected, use its color; if multiple, use first profile's color that has one set, or default
+    profile_accent_color = None
+    for p in user_profiles:
+        if p.color:
+            profile_accent_color = p.color
+            break
+
     if export_format == 'excel':
         excel_buffer = generate_excel_export(
             profile_names=profile_names,
             monthly_data=monthly_data,
             user_name=user_name,
-            lang=current_lang
+            lang=current_lang,
+            accent_color=profile_accent_color
         )
         safe_name = "Arbeitszeiten" if len(profile_names) > 1 else secure_filename(profile_names[0])
         filename = f"{safe_name}_{timestamp_str}.xlsx"
@@ -1321,7 +1330,8 @@ def export_data():
             profile_names=profile_names,
             monthly_data=monthly_data,
             user_name=user_name,
-            lang=current_lang
+            lang=current_lang,
+            accent_color=profile_accent_color
         )
         safe_name = "Arbeitszeiten" if len(profile_names) > 1 else secure_filename(profile_names[0])
         filename = f"{safe_name}_{timestamp_str}.pdf"

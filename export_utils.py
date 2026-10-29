@@ -2,9 +2,10 @@
 """Export utilities for Arbeitszeiten: Excel (.xlsx) and PDF (.pdf) generation."""
 
 import io
+import re
 from datetime import datetime, date
 from decimal import Decimal
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from translations import get_month_name
 
 # OpenPyXL
@@ -22,12 +23,50 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
 
+DEFAULT_ACCENT_HEX = "5B21B6"  # Fallback Deep Indigo/Purple
+
+
+def _clean_hex(hex_val: Optional[str]) -> str:
+    """Normalize hex color string to 6-char uppercase without #."""
+    if not hex_val:
+        return DEFAULT_ACCENT_HEX
+    c = hex_val.strip().lstrip('#')
+    if len(c) == 3:
+        c = ''.join(ch * 2 for ch in c)
+    if re.match(r'^[0-9a-fA-F]{6}$', c):
+        return c.upper()
+    return DEFAULT_ACCENT_HEX
+
+
+def _tint_hex(hex_val: str, factor: float = 0.88) -> str:
+    """Blend hex color towards pure white (factor = 0: color, factor = 1: white)."""
+    clean = _clean_hex(hex_val)
+    r = int(clean[0:2], 16)
+    g = int(clean[2:4], 16)
+    b = int(clean[4:6], 16)
+    r_tint = int(r + (255 - r) * factor)
+    g_tint = int(g + (255 - g) * factor)
+    b_tint = int(b + (255 - b) * factor)
+    return f"{r_tint:02X}{g_tint:02X}{b_tint:02X}"
+
+
+def _darken_hex(hex_val: str, factor: float = 0.25) -> str:
+    """Darken hex color by scaling towards black."""
+    clean = _clean_hex(hex_val)
+    r = int(clean[0:2], 16)
+    g = int(clean[2:4], 16)
+    b = int(clean[4:6], 16)
+    r_dark = int(r * (1.0 - factor))
+    g_dark = int(g * (1.0 - factor))
+    b_dark = int(b * (1.0 - factor))
+    return f"{r_dark:02X}{g_dark:02X}{b_dark:02X}"
+
+
 def _format_duration_display(duration_val) -> str:
     """Format decimal hours into German comma format, e.g. 2.5 -> '2,5h'."""
     if duration_val is None:
         return "-"
     if isinstance(duration_val, (int, float, Decimal)):
-        # Format decimal with comma
         s = f"{float(duration_val):.2f}".rstrip('0').rstrip('.')
         s = s.replace('.', ',')
         return f"{s}h"
@@ -68,8 +107,8 @@ class NumberedCanvas(canvas.Canvas):
         self.setLineWidth(0.5)
         self.line(40, 36, A4[0] - 40, 36)
 
-        # Footer text
-        left_text = f"Arbeitszeiten App • Export generiert am {datetime.now().strftime('%d.%m.%Y %H:%M')}"
+        # Footer text (without emojis)
+        left_text = f"Arbeitszeiten App - Export generiert am {datetime.now().strftime('%d.%m.%Y %H:%M')}"
         page_str = f"Seite {self._pageNumber} von {page_count}"
         self.drawString(40, 24, left_text)
         self.drawRightString(A4[0] - 40, 24, page_str)
@@ -80,23 +119,12 @@ def generate_excel_export(
     profile_names: List[str],
     monthly_data: List[Dict[str, Any]],
     user_name: str = "",
-    lang: str = "de"
+    lang: str = "de",
+    accent_color: Optional[str] = None
 ) -> io.BytesIO:
     """
     Generate an Excel workbook containing the export data.
-    
-    Parameters:
-    - profile_names: List of names of exported profiles.
-    - monthly_data: List of months sorted chronologically, each with:
-        {
-            'year': int,
-            'month': int,
-            'month_name': str,
-            'total_hours': Decimal,
-            'entries': [
-                {'date': date, 'hours': Decimal, 'profile_name': str}, ...
-            ]
-        }
+    Uses the profile's accent color for header accents and month separators.
     """
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -105,15 +133,15 @@ def generate_excel_export(
 
     is_multi_profile = len(profile_names) > 1
 
-    # Styling definitions
-    font_family = "Segoe UI"
-    c_primary = "5B21B6"     # Deep Purple / Indigo header accent
-    c_month_bg = "EDE9FE"    # Soft Lavender for Month Separator
-    c_month_fg = "3730A3"    # Deep Indigo for Month Separator Text
-    c_header_bg = "4C1D95"   # Dark header
-    c_zebra = "F9FAFB"       # Very light row zebra striping
-    c_border = "D1D5DB"      # Border color
+    # Color calculations based on accent_color
+    c_primary = _clean_hex(accent_color)
+    c_header_bg = _darken_hex(c_primary, 0.15)
+    c_month_bg = _tint_hex(c_primary, 0.88)
+    c_month_fg = _darken_hex(c_primary, 0.25)
+    c_zebra = "F9FAFB"
+    c_border = "D1D5DB"
 
+    font_family = "Segoe UI"
     thin_border_side = Side(border_style="thin", color=c_border)
     border_cell = Border(left=thin_border_side, right=thin_border_side, top=thin_border_side, bottom=thin_border_side)
     border_top_thick = Border(top=Side(border_style="medium", color=c_primary), bottom=thin_border_side)
@@ -124,11 +152,11 @@ def generate_excel_export(
     ws.row_dimensions[3].height = 10
 
     if is_multi_profile:
-        title_text = "Arbeitszeiten – Export mehrerer Profile"
+        title_text = "Arbeitszeiten - Export mehrerer Profile"
         subtitle_text = f"Profile: {', '.join(profile_names)} | Erstellt: {datetime.now().strftime('%d.%m.%Y')}"
     else:
         profile_name = profile_names[0] if profile_names else "Profil"
-        title_text = f"Arbeitszeiten – {profile_name}"
+        title_text = f"Arbeitszeiten - {profile_name}"
         subtitle_text = f"Benutzer: {user_name} | Erstellt: {datetime.now().strftime('%d.%m.%Y')}"
 
     ws["A1"] = title_text
@@ -167,16 +195,15 @@ def generate_excel_export(
         m_total = month_info.get('total_hours', Decimal('0'))
         total_all_hours += m_total
 
-        # Month Separator Row
+        # Month Separator Row (No emojis)
         ws.row_dimensions[current_row].height = 22
-        m_label = f"📅 {m_name} {year}  (Gesamt: {_format_duration_display(m_total)})"
-        
-        # Write merged month banner
+        m_label = f"{m_name} {year}  (Gesamt: {_format_duration_display(m_total)})"
+
         for col_idx in range(1, col_count + 1):
             cell = ws.cell(row=current_row, column=col_idx)
             cell.fill = PatternFill(start_color=c_month_bg, end_color=c_month_bg, fill_type="solid")
             cell.border = border_cell
-        
+
         ws.merge_cells(start_row=current_row, start_column=1, end_row=current_row, end_column=col_count)
         banner_cell = ws.cell(row=current_row, column=1, value=m_label)
         banner_cell.font = Font(name=font_family, size=11, bold=True, color=c_month_fg)
@@ -253,10 +280,12 @@ def generate_pdf_export(
     profile_names: List[str],
     monthly_data: List[Dict[str, Any]],
     user_name: str = "",
-    lang: str = "de"
+    lang: str = "de",
+    accent_color: Optional[str] = None
 ) -> io.BytesIO:
     """
     Generate a visually appealing PDF document containing the export data.
+    Uses the profile's accent color for titles, borders and headers.
     """
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -271,14 +300,17 @@ def generate_pdf_export(
     is_multi_profile = len(profile_names) > 1
 
     # Palette
-    c_primary = colors.HexColor("#5B21B6")       # Vibrant Purple
-    c_text_dark = colors.HexColor("#18181b")     # Zinc 900
-    c_text_muted = colors.HexColor("#71717a")    # Zinc 500
-    c_month_bg = colors.HexColor("#F5F3FF")      # Light Purple tint
-    c_month_border = colors.HexColor("#DDD6FE")
-    c_header_bg = colors.HexColor("#4C1D95")     # Deep header
-    c_row_alt = colors.HexColor("#FAFAFA")       # Alternating row
-    c_border = colors.HexColor("#E4E4E7")        # Subtle cell border
+    c_primary_hex = _clean_hex(accent_color)
+    c_primary = colors.HexColor(f"#{c_primary_hex}")
+    c_header_bg = colors.HexColor(f"#{_darken_hex(c_primary_hex, 0.15)}")
+    c_month_bg = colors.HexColor(f"#{_tint_hex(c_primary_hex, 0.90)}")
+    c_month_border = colors.HexColor(f"#{_tint_hex(c_primary_hex, 0.70)}")
+    c_grand_total_bg = colors.HexColor(f"#{_tint_hex(c_primary_hex, 0.94)}")
+
+    c_text_dark = colors.HexColor("#18181b")
+    c_text_muted = colors.HexColor("#71717a")
+    c_row_alt = colors.HexColor("#FAFAFA")
+    c_border = colors.HexColor("#E4E4E7")
 
     styles = getSampleStyleSheet()
 
@@ -355,7 +387,7 @@ def generate_pdf_export(
 
     story = []
 
-    # Title & Header
+    # Title & Header (No emojis)
     if is_multi_profile:
         main_title = "Arbeitszeiten-Übersicht"
         sub_info = f"<b>Profile:</b> {', '.join(profile_names)} &nbsp;&bull;&nbsp; <b>Erstellt am:</b> {datetime.now().strftime('%d.%m.%Y')}"
@@ -368,8 +400,6 @@ def generate_pdf_export(
     story.append(Paragraph(sub_info, subtitle_style))
     story.append(Spacer(1, 10))
 
-    # Calculate column widths to fit A4 (width is approx 515pt printable)
-    # Total printable width: A4[0] - 80 = 595.27 - 80 = ~515 pt
     table_width = A4[0] - 80
     if is_multi_profile:
         col_widths = [table_width * 0.28, table_width * 0.28, table_width * 0.44]
@@ -388,7 +418,7 @@ def generate_pdf_export(
 
         month_block = []
 
-        # Month header banner table
+        # Month header banner table (No emojis)
         month_banner_data = [
             [
                 Paragraph(f"<b>{m_name} {year}</b>", month_heading_style),
@@ -490,7 +520,7 @@ def generate_pdf_export(
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ('LEFTPADDING', (0, 0), (-1, -1), 8),
         ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#FAF5FF")),
+        ('BACKGROUND', (0, 0), (-1, -1), c_grand_total_bg),
     ]))
     story.append(summary_table)
 
