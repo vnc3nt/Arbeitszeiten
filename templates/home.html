@@ -15,7 +15,7 @@
 {% block content %}
 <div id="profile-vignette-overlay" class="profile-vignette-overlay" aria-hidden="true"></div>
 
-<a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Arbeitszeiten"></a>
+<a href="{{ url_for('home') }}"><img class="logo-pic" src="{{url_for('static', filename='img/logo/logo.webp')}}" alt="Arbeitszeiten"></a>
 
 <form class="profile-selector-form" method="post" action="{{ url_for('switch_profile') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>

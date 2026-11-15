@@ -1630,14 +1630,14 @@ input.dialog-input:focus {
 
 .regex#usernameCheck,#firstPWCheck,#secondPWCheck {
   background-color: green;
-  mask-image: url('../img/icons/check.png');
-  -webkit-mask-image: url('../img/icons/check.png');
+  mask-image: url('../img/icons/check.webp');
+  -webkit-mask-image: url('../img/icons/check.webp');
 }
 
 .regex#usernameX,#firstPWX,#secondPWX {
   background-color: red;
-  mask-image: url('../img/icons/x.png');
-  -webkit-mask-image: url('../img/icons/x.png');
+  mask-image: url('../img/icons/x.webp');
+  -webkit-mask-image: url('../img/icons/x.webp');
 }
 
 .regexFeedback {
