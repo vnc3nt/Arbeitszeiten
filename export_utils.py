@@ -3,6 +3,7 @@
 
 import io
 import re
+import html
 from datetime import datetime, date
 from decimal import Decimal
 from typing import List, Dict, Any, Tuple, Optional
@@ -21,6 +22,12 @@ from reportlab.platypus import (
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
+
+
+def sanitize_excel_cell(value: str) -> str:
+    if isinstance(value, str) and value.startswith(("=", "+", "-", "@")):
+        return f"'{value}"
+    return value
 
 
 DEFAULT_ACCENT_HEX = "5B21B6"  # Fallback Deep Indigo/Purple
@@ -156,12 +163,13 @@ def generate_excel_export(
     ws.row_dimensions[3].height = 10
 
     if is_multi_profile:
+        sanitized_profiles = [sanitize_excel_cell(p) for p in profile_names]
         title_text = "Arbeitszeiten - Export mehrerer Profile"
-        subtitle_text = f"Profile: {', '.join(profile_names)} | Erstellt: {datetime.now().strftime('%d.%m.%Y')}"
+        subtitle_text = f"Profile: {', '.join(sanitized_profiles)} | Erstellt: {datetime.now().strftime('%d.%m.%Y')}"
     else:
-        profile_name = profile_names[0] if profile_names else "Profil"
+        profile_name = sanitize_excel_cell(profile_names[0]) if profile_names else "Profil"
         title_text = f"Arbeitszeiten - {profile_name}"
-        subtitle_text = f"Benutzer: {user_name} | Erstellt: {datetime.now().strftime('%d.%m.%Y')}"
+        subtitle_text = f"Benutzer: {sanitize_excel_cell(user_name)} | Erstellt: {datetime.now().strftime('%d.%m.%Y')}"
 
     ws["A1"] = title_text
     ws["A1"].font = Font(name=font_family, size=16, bold=True, color=c_primary)
@@ -243,7 +251,8 @@ def generate_excel_export(
             if row_fill.fill_type: c_hours.fill = row_fill
 
             if is_multi_profile:
-                c_prof = ws.cell(row=current_row, column=3, value=entry.get('profile_name', ''))
+                raw_prof = entry.get('profile_name', '')
+                c_prof = ws.cell(row=current_row, column=3, value=sanitize_excel_cell(raw_prof))
                 c_prof.font = Font(name=font_family, size=10)
                 c_prof.alignment = Alignment(horizontal="center", vertical="center")
                 c_prof.border = border_cell
@@ -393,12 +402,13 @@ def generate_pdf_export(
 
     # Title & Header (No emojis)
     if is_multi_profile:
+        escaped_profiles = [html.escape(p) for p in profile_names]
         main_title = "Arbeitszeiten-Übersicht"
-        sub_info = f"<b>Profile:</b> {', '.join(profile_names)} &nbsp;&bull;&nbsp; <b>Erstellt am:</b> {datetime.now().strftime('%d.%m.%Y')}"
+        sub_info = f"<b>Profile:</b> {', '.join(escaped_profiles)} &nbsp;&bull;&nbsp; <b>Erstellt am:</b> {datetime.now().strftime('%d.%m.%Y')}"
     else:
-        profile_name = profile_names[0] if profile_names else "Profil"
+        profile_name = html.escape(profile_names[0]) if profile_names else "Profil"
         main_title = f"Arbeitszeiten &ndash; {profile_name}"
-        sub_info = f"<b>Benutzer:</b> {user_name} &nbsp;&bull;&nbsp; <b>Erstellt am:</b> {datetime.now().strftime('%d.%m.%Y')}"
+        sub_info = f"<b>Benutzer:</b> {html.escape(user_name)} &nbsp;&bull;&nbsp; <b>Erstellt am:</b> {datetime.now().strftime('%d.%m.%Y')}"
 
     story.append(Paragraph(main_title, title_style))
     story.append(Paragraph(sub_info, subtitle_style))
@@ -414,7 +424,7 @@ def generate_pdf_export(
 
     # Build monthly blocks
     for month_info in monthly_data:
-        m_name = month_info['month_name']
+        m_name = html.escape(str(month_info['month_name']))
         year = month_info['year']
         entries = month_info['entries']
         m_total = month_info.get('total_hours', Decimal('0'))
@@ -471,7 +481,7 @@ def generate_pdf_export(
                 t_data.append([
                     Paragraph(_format_date_display(entry['date']), cell_center),
                     Paragraph(f"<b>{_format_duration_display(entry['hours'])}</b>", cell_right),
-                    Paragraph(entry.get('profile_name', ''), cell_style)
+                    Paragraph(html.escape(entry.get('profile_name', '')), cell_style)
                 ])
         else:
             t_data = [

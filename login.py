@@ -9,6 +9,13 @@ from models import category, db, data, users, profiles, token, update_expire_tim
 from constants import USERID, TOKEN, PROFILEID, USERNAME_REGEX
 
 
+DUMMY_HASH = generate_password_hash("dummy-password-for-timing-protection")
+
+
+def hash_token(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+
 def hash_pw(password: str) -> str:
     """Erstellt einen sicheren Passwort-Hash mit Salt (scrypt/pbkdf2)."""
     return generate_password_hash(password)
@@ -17,6 +24,7 @@ def hash_pw(password: str) -> str:
 def checkuser(username: str, password: str) -> bool:
     user = db.session.query(users).filter(users.username == username).first()
     if user is None or not user.password:
+        check_password_hash(DUMMY_HASH, password)
         return False
 
     # 1. Prüfe modernes Werkzeug-Hash-Format (scrypt / pbkdf2)
@@ -60,8 +68,9 @@ def delete_account(pw: Optional[str]):
 def delete_user_data(id: int):
     user = db.session.query(users).filter(users.id == id).first()
     if user and user.profile_image and not user.profile_image.startswith("data:image/"):
-        image_path = os.path.join(os.path.dirname(__file__), "static", user.profile_image)
-        if os.path.exists(image_path):
+        base_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "static"))
+        image_path = os.path.realpath(os.path.join(base_dir, user.profile_image))
+        if os.path.commonpath([base_dir, image_path]) == base_dir and os.path.exists(image_path):
             os.remove(image_path)
 
     data.query.filter_by(userid=id).delete()
@@ -116,8 +125,9 @@ def change_password(cur_pw, new_pw, new_pw_confirm):
         return "Passwort muss mindestens 8 Zeichen lang sein"
 
     u.password = hash_pw(new_pw)
+    db.session.query(token).filter(token.userid == u.id).delete()
     db.session.commit()
-    logoutUser(session.get(TOKEN))
+    session.clear()
     return None
 
 
@@ -135,9 +145,10 @@ def _get_valid_token():
     if not user_id or not session_token:
         return None
 
+    token_hash = hash_token(session_token)
     return db.session.query(token).filter(
         token.userid == user_id,
-        token.token == session_token,
+        token.token == token_hash,
         token.expiretime > int(time())
     ).first()
 
@@ -149,6 +160,8 @@ def loginChecker(func):
         if existingToken:
             existingToken.expiretime = update_expire_time()
             db.session.commit()
+            session.permanent = True
+            session.modified = True
             return redirect("/home")
         return func(*args, **kwargs)
     return wrapper
@@ -161,6 +174,8 @@ def validTokenChecker(func):
         if existingToken:
             existingToken.expiretime = update_expire_time()
             db.session.commit()
+            session.permanent = True
+            session.modified = True
             return func(*args, **kwargs)
         session.clear()
         return redirect("/login")
@@ -172,7 +187,8 @@ def logoutUser(currentToken):
     db.session.query(token).filter(token.expiretime < int(time())).delete()
 
     if currentToken:
-        delToken = db.session.query(token).filter(token.token == currentToken).first()
+        token_hash = hash_token(currentToken)
+        delToken = db.session.query(token).filter(token.token == token_hash).first()
         if delToken:
             db.session.delete(delToken)
 
@@ -190,6 +206,7 @@ def get_authenticated_api_user_id() -> Optional[int]:
     if valid_session_token:
         valid_session_token.expiretime = update_expire_time()
         db.session.commit()
+        session.permanent = True
         return valid_session_token.userid
 
     # 2. Prüfe Authorization Bearer Header
@@ -197,14 +214,14 @@ def get_authenticated_api_user_id() -> Optional[int]:
     if authorization.startswith("Bearer "):
         token_value = authorization.removeprefix("Bearer ").strip()
         if token_value:
+            token_hash = hash_token(token_value)
             token_row = db.session.query(token).filter(
-                token.token == token_value,
+                token.token == token_hash,
                 token.expiretime > int(time())
             ).first()
             if token_row:
                 token_row.expiretime = update_expire_time()
                 db.session.commit()
-                session[USERID] = token_row.userid
                 return token_row.userid
 
     return None

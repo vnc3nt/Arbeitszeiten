@@ -1,18 +1,10 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify, session, send_file
-from datetime import datetime, date
-from models import db, users, profiles, token, data, category
+from datetime import datetime, date, timedelta
+from models import db, users, profiles, token, data, category, EXPIRE_TIME
 import os
 import io
 import base64
-from api import app as api_app
-from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw, _get_valid_token
-import secrets
-from constants import USERID, TOKEN, PROFILEID
-from time import time
-from sqlalchemy import func, distinct, text
-from decimal import Decimal, InvalidOperation
-from werkzeug.utils import secure_filename
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
@@ -21,6 +13,13 @@ from PIL import Image
 from werkzeug.middleware.proxy_fix import ProxyFix
 from translations import SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, get_translation, get_month_name
 from export_utils import generate_excel_export, generate_pdf_export
+from login import change_password, change_username, check_username, checkuser, delete_account, loginChecker, validTokenChecker, logoutUser, checkRegistration, hash_pw, _get_valid_token, hash_token
+import secrets
+from constants import USERID, TOKEN, PROFILEID
+from time import time
+from sqlalchemy import func, distinct, text
+from decimal import Decimal, InvalidOperation
+from werkzeug.utils import secure_filename
 
 # 1. Sauberes Laden der .env über python-dotenv
 load_dotenv()
@@ -70,11 +69,16 @@ if not secret_key:
 app.config.update(
     BUNDLE_ERRORS=True,
     SECRET_KEY=secret_key,
-SESSION_COOKIE_SECURE = os.environ.get("debug", "False") != "True",
+    PERMANENT_SESSION_LIFETIME=timedelta(seconds=EXPIRE_TIME),
+    SESSION_COOKIE_SECURE=os.environ.get("debug", "False") != "True",
     SESSION_COOKIE_HTTPONLY=True,  # Verhindert Zugriff auf Session-Cookie via JavaScript (XSS-Schutz)
     SESSION_COOKIE_SAMESITE="Lax",
     MAX_CONTENT_LENGTH=2 * 1024 * 1024,  # Blockiert Uploads > 2 MB sofort auf Server-Ebene (DoS-Schutz)
 )
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 # 2. CSRF-Schutz und Rate-Limiter initialisieren
 csrf = CSRFProtect(app)
@@ -82,8 +86,17 @@ limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=["3000 per day", "500 per hour"],
-    storage_uri="memory://",
+    storage_uri=os.environ.get("REDIS_URL", "memory://"),
 )
+
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 PROFILE_IMAGE_DEFAULT = "img/icons/512x512-profile.png"
 PROFILE_IMAGE_FOLDER = os.path.join("uploads", "profile_images")
@@ -93,6 +106,7 @@ PROFILE_IMAGE_MAX_SIZE = 2 * 1024 * 1024
 
 #print(app.config["SQLALCHEMY_DATABASE_URI"])
 
+from api import app as api_app
 app.register_blueprint(api_app)
 
 def format_hours_clock(decimal_hours, pad_hours=False):
@@ -457,8 +471,9 @@ def remove_profile_image_file(profile_image_path):
     if not profile_image_path or profile_image_path.startswith("data:image/"):
         return
 
-    absolute_path = os.path.join(app.static_folder, profile_image_path)
-    if os.path.exists(absolute_path):
+    base_dir = os.path.realpath(PROFILE_IMAGE_ABS_FOLDER)
+    absolute_path = os.path.realpath(os.path.join(app.static_folder, profile_image_path))
+    if os.path.commonpath([base_dir, absolute_path]) == base_dir and os.path.exists(absolute_path):
         try:
             os.remove(absolute_path)
         except OSError:
@@ -700,6 +715,8 @@ with app.app_context():
 
 @app.route('/')
 def index():
+    if _get_valid_token():
+        return redirect("/home")
     return redirect("/login")
 
 @app.route('/login', methods=["GET", "POST"])
@@ -713,6 +730,8 @@ def login():
         if username and password and checkuser(username, password):
             db.session.query(token).filter(token.expiretime < int(time())).delete()
             user_obj = db.session.query(users).filter(users.username == username).first()
+            session.clear()
+            session.permanent = True
             session[USERID] = user_obj.id
             chosen_profile = None
             if user_obj.last_profile_id:
@@ -730,8 +749,9 @@ def login():
                 session[PROFILEID] = chosen_profile.id
                 user_obj.last_profile_id = chosen_profile.id
 
-            newToken = token(userid=session[USERID], token=secrets.token_urlsafe(96))
-            session[TOKEN] = newToken.token
+            raw_token = secrets.token_urlsafe(96)
+            newToken = token(userid=session[USERID], token=hash_token(raw_token))
+            session[TOKEN] = raw_token
             db.session.add(newToken)
             db.session.commit()
             return redirect("/home")
@@ -1352,6 +1372,16 @@ def export_data():
             mimetype="application/pdf"
         )
 
+def get_safe_redirect_url(fallback_endpoint: str = "home") -> str:
+    referrer = request.referrer
+    if not referrer:
+        return url_for(fallback_endpoint)
+    parsed = urlparse(referrer)
+    if (not parsed.netloc or parsed.netloc == request.host) and parsed.scheme in ("", "http", "https"):
+        return referrer
+    return url_for(fallback_endpoint)
+
+
 @app.route('/set-language', methods=['POST'])
 @csrf.exempt
 def set_language():
@@ -1369,8 +1399,7 @@ def set_language():
     if wants_json:
         return jsonify(success=True, language=lang)
 
-    referrer = request.referrer or url_for('profile')
-    resp = redirect(referrer)
+    resp = redirect(get_safe_redirect_url("profile"))
     if lang in SUPPORTED_LANGUAGES:
         resp.set_cookie('lang', lang, max_age=365 * 24 * 3600, samesite='Lax')
     return resp
@@ -1393,8 +1422,7 @@ def set_theme():
     if wants_json:
         return jsonify(success=True, theme=theme)
 
-    referrer = request.referrer or url_for('profile')
-    resp = redirect(referrer)
+    resp = redirect(get_safe_redirect_url("profile"))
     if theme in SUPPORTED_THEMES:
         resp.set_cookie('theme', theme, max_age=365 * 24 * 3600, samesite='Lax')
     return resp
@@ -1423,12 +1451,15 @@ def count_entries():  # sourcery skip: use-named-expression
 @app.route('/impressum')
 def impressum():
     is_authenticated = _get_valid_token() is not None
-    fallback_url = url_for('home') if is_authenticated else url_for('login')
+    fallback_endpoint = 'home' if is_authenticated else 'login'
+    fallback_url = url_for(fallback_endpoint)
     
     referrer = request.referrer
     # Referrer nur speichern/aktualisieren, wenn er von der eigenen Domain kommt und NICHT impressum selbst ist
-    if referrer and request.host in referrer and '/impressum' not in referrer:
-        session['impressum_back_url'] = referrer
+    if referrer and '/impressum' not in referrer:
+        safe_url = get_safe_redirect_url(fallback_endpoint)
+        if safe_url != fallback_url:
+            session['impressum_back_url'] = safe_url
     elif 'impressum_back_url' not in session or not session.get('impressum_back_url'):
         session['impressum_back_url'] = fallback_url
 

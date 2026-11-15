@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser
 from models import users
+from main import limiter
 
 post_arguments = RequestParser()
 post_arguments.add_argument(
@@ -19,6 +20,7 @@ post_arguments.add_argument(
 
 
 class CheckExistence(Resource):
+    @limiter.limit("15 per minute")
     def post(self):
         data = post_arguments.parse_args(strict=True)
 
