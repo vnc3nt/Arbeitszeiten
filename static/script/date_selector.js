@@ -14,28 +14,16 @@ function formatDecimalComma(value) {
         return '';
     }
 
-    if (Number.isInteger(number)) {
-        return String(number);
-    }
-
-    return String(number).replace('.', ',');
+    const sign = number < -1e-9 ? '-' : '';
+    const absVal = Math.abs(number);
+    const totalMinutes = Math.round(absVal * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${sign}${hours}:${String(minutes).padStart(2, '0')}`;
 }
 
 function formatDecimalCommaLimited(value, maxDecimals = 2) {
-    const number = Number(value);
-
-    if (Number.isNaN(number)) {
-        return '';
-    }
-
-    // Round to specified decimal places
-    const rounded = Math.round(number * Math.pow(10, maxDecimals)) / Math.pow(10, maxDecimals);
-
-    if (Math.floor(rounded) === rounded) {
-        return String(Math.floor(rounded));
-    }
-
-    return String(rounded).replace('.', ',');
+    return formatDecimalComma(value);
 }
 
 function formatGermanDate(dateValue) {
@@ -48,7 +36,18 @@ function parseLocaleNumber(value) {
         return 0;
     }
 
-    const normalized = String(value).replace('h', '').replace(',', '.');
+    const cleanStr = String(value).replace('h', '').replace('+', '').trim();
+    if (cleanStr.includes(':')) {
+        const isNegative = cleanStr.startsWith('-');
+        const unsignedStr = isNegative ? cleanStr.slice(1) : cleanStr;
+        const [hoursText, minutesText] = unsignedStr.split(':');
+        const hours = Number.parseInt(hoursText, 10) || 0;
+        const minutes = Number.parseInt(minutesText, 10) || 0;
+        const decimal = hours + (minutes / 60);
+        return isNegative ? -decimal : decimal;
+    }
+
+    const normalized = cleanStr.replace(',', '.');
     const number = Number.parseFloat(normalized);
     return Number.isNaN(number) ? 0 : number;
 }
@@ -58,9 +57,12 @@ function formatTimeDisplay(decimalHours) {
         return '0:00';
     }
 
-    const hours = Math.trunc(decimalHours);
-    const minutes = Math.round((decimalHours - hours) * 60);
-    return `${hours}:${String(minutes).padStart(2, '0')}`;
+    const sign = decimalHours < -1e-9 ? '-' : '';
+    const absVal = Math.abs(decimalHours);
+    const totalMinutes = Math.round(absVal * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${sign}${hours}:${String(minutes).padStart(2, '0')}`;
 }
 
 function formatTimeInputValue(decimalHours) {
@@ -68,8 +70,10 @@ function formatTimeInputValue(decimalHours) {
         return '00:00';
     }
 
-    const hours = Math.trunc(decimalHours);
-    const minutes = Math.round((decimalHours - hours) * 60);
+    const absVal = Math.abs(decimalHours);
+    const totalMinutes = Math.round(absVal * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
@@ -78,7 +82,10 @@ function parseClockToDecimal(clockValue) {
         return 0;
     }
 
-    const [hoursText, minutesText] = clockValue.split(':');
+    const clean = clockValue.trim();
+    const isNegative = clean.startsWith('-');
+    const unsignedStr = isNegative ? clean.slice(1) : clean;
+    const [hoursText, minutesText] = unsignedStr.split(':');
     const hours = Number.parseInt(hoursText, 10);
     const minutes = Number.parseInt(minutesText, 10);
 
@@ -86,7 +93,8 @@ function parseClockToDecimal(clockValue) {
         return 0;
     }
 
-    return hours + (minutes / 60);
+    const decimal = hours + (minutes / 60);
+    return isNegative ? -decimal : decimal;
 }
 
 // Easing function for smooth animation
@@ -116,8 +124,9 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
         const easeProgress = easeOutCubic(progress);
         const currentValue = startValue + difference * easeProgress;
 
-        // Format and display the current value (limited to 2 decimal places)
-        element.textContent = `${formatDecimalCommaLimited(currentValue, 2)}h`;
+        // Format and display the current value in clock format
+        const sign = currentValue > 0 && element.closest('#total-hours-card') ? '+' : '';
+        element.textContent = `${sign}${formatDecimalComma(currentValue)}h`;
 
         // Continue animation if not finished
         if (progress < 1) {
@@ -125,7 +134,8 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
         } else {
             // Ensure final value is exact
             if (numberAnimationTokens.get(element) === animationToken) {
-                element.textContent = `${formatDecimalCommaLimited(endValue, 2)}h`;
+                const finalSign = endValue > 0 && element.closest('#total-hours-card') ? '+' : '';
+                element.textContent = `${finalSign}${formatDecimalComma(endValue)}h`;
             }
         }
     }

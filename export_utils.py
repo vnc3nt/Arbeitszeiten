@@ -63,14 +63,18 @@ def _darken_hex(hex_val: str, factor: float = 0.25) -> str:
 
 
 def _format_duration_display(duration_val) -> str:
-    """Format decimal hours into German comma format, e.g. 2.5 -> '2,5h'."""
+    """Format decimal hours into clock format, e.g. 1.5 -> '1:30h', 1.75 -> '1:45h'."""
     if duration_val is None:
         return "-"
     if isinstance(duration_val, (int, float, Decimal)):
-        s = f"{float(duration_val):.2f}".rstrip('0').rstrip('.')
-        s = s.replace('.', ',')
-        return f"{s}h"
-    return f"{str(duration_val).replace('.', ',')}h"
+        val = float(duration_val)
+        sign = "-" if val < -1e-9 else ""
+        abs_val = abs(val)
+        total_minutes = int(round(abs_val * 60))
+        hours = total_minutes // 60
+        minutes = total_minutes % 60
+        return f"{sign}{hours}:{minutes:02d}h"
+    return f"{str(duration_val).replace('.', ':')}h"
 
 
 def _format_date_display(d: date) -> str:

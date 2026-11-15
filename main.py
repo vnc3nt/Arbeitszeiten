@@ -95,14 +95,31 @@ PROFILE_IMAGE_MAX_SIZE = 2 * 1024 * 1024
 
 app.register_blueprint(api_app)
 
-# Jinja2-Filter für deutsche Zahlenformatierung
+def format_hours_clock(decimal_hours, pad_hours=False):
+    """Konvertiert Dezimalstunden in Uhrzeitformat H:MM (z.B. 1.5 -> '1:30', 1.75 -> '1:45')."""
+    if decimal_hours is None:
+        return ""
+    val = float(decimal_hours)
+    sign = "-" if val < -1e-9 else ""
+    val = abs(val)
+    total_minutes = int(round(val * 60))
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+    if pad_hours:
+        return f"{sign}{hours:02d}:{minutes:02d}"
+    return f"{sign}{hours}:{minutes:02d}"
+
+
+# Jinja2-Filter für Stundenformatierung mit Doppelpunkt
 @app.template_filter('decimal_comma')
 def decimal_comma_filter(value):
-    """Ersetzt Punkt mit Komma als Dezimaltrennzeichen für deutsche Zahlenformatierung"""
+    """Formatiert Stunden mit Doppelpunkt statt Komma (z.B. 1.5 -> '1:30', 1.75 -> '1:45')."""
     if value is None:
-        return value
-    # Konvertiere zu String und ersetze Punkt mit Komma
-    return str(value).replace('.', ',')
+        return ""
+    try:
+        return format_hours_clock(value)
+    except (ValueError, TypeError):
+        return str(value).replace('.', ',')
 
 
 def get_month_start(target_date):
@@ -149,37 +166,30 @@ def get_previous_effective_maxhours(user_id, target_date):
 
 
 def format_decimal_hours(decimal_hours):
-    if decimal_hours == int(decimal_hours):
-        return str(int(decimal_hours))
-    return str(float(decimal_hours)).replace('.', ',')
+    if decimal_hours is None:
+        return ""
+    return format_hours_clock(decimal_hours)
 
 
 def format_hours(decimal_hours):
-    if decimal_hours == 0:
+    if decimal_hours is None or decimal_hours == 0:
         return "0:00"
-    hours = int(decimal_hours)
-    minutes = int((decimal_hours - hours) * 60)
-    return f"{hours}:{minutes:02d}"
+    return format_hours_clock(decimal_hours)
 
 
 def format_time_24h(decimal_hours):
-    if decimal_hours == 0:
+    if decimal_hours is None or decimal_hours == 0:
         return "00:00"
-    hours = int(decimal_hours)
-    minutes = int((decimal_hours - hours) * 60)
-    return f"{hours:02d}:{minutes:02d}"
+    return format_hours_clock(decimal_hours, pad_hours=True)
 
 
 def format_total_hours_with_sign(decimal_hours):
-    if decimal_hours == 0:
-        return "0"
-    if decimal_hours > 0:
-        if decimal_hours == int(decimal_hours):
-            return f"+{int(decimal_hours)}"
-        return f"+{float(decimal_hours)}".replace('.', ',')
-    if decimal_hours == int(decimal_hours):
-        return str(int(decimal_hours))
-    return str(float(decimal_hours)).replace('.', ',')
+    if decimal_hours is None or decimal_hours == 0:
+        return "0:00"
+    val = float(decimal_hours)
+    if val > 0:
+        return f"+{format_hours_clock(val)}"
+    return format_hours_clock(val)
 
 
 def serialize_overview_data(overview_data):
