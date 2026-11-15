@@ -126,7 +126,7 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
 
         // Format and display the current value in clock format
         const sign = currentValue > 0 && element.closest('#total-hours-card') ? '+' : '';
-        element.textContent = `${sign}${formatDecimalComma(currentValue)}h`;
+        element.textContent = `${sign}${formatDecimalComma(currentValue)}`;
 
         // Continue animation if not finished
         if (progress < 1) {
@@ -135,7 +135,7 @@ function animateNumberChange(element, startValue, endValue, duration = 400) {
             // Ensure final value is exact
             if (numberAnimationTokens.get(element) === animationToken) {
                 const finalSign = endValue > 0 && element.closest('#total-hours-card') ? '+' : '';
-                element.textContent = `${finalSign}${formatDecimalComma(endValue)}h`;
+                element.textContent = `${finalSign}${formatDecimalComma(endValue)}`;
             }
         }
     }
@@ -445,7 +445,7 @@ function renderOverviewData(overviewData) {
                 const differenceValue = Number(monthData.difference);
                 const differenceSpan = document.createElement('span');
                 differenceSpan.className = differenceValue > 0 ? 'month-surplus' : differenceValue < 0 ? 'month-deficit' : 'month-neutral';
-                differenceSpan.textContent = differenceValue > 0 ? `+${formatDecimalComma(differenceValue)}h` : differenceValue < 0 ? `${formatDecimalComma(differenceValue)}h` : '0h';
+                differenceSpan.textContent = differenceValue > 0 ? `+${formatDecimalComma(differenceValue)}` : differenceValue < 0 ? `${formatDecimalComma(differenceValue)}` : '0:00';
                 monthHeader.appendChild(differenceSpan);
             }
 
@@ -461,7 +461,7 @@ function renderOverviewData(overviewData) {
 
                 const entryHours = document.createElement('span');
                 entryHours.className = 'entry-hours';
-                entryHours.textContent = `${formatDecimalComma(entry.hours)}h`;
+                entryHours.textContent = `${formatDecimalComma(entry.hours)}`;
 
                 entryRow.appendChild(entryDate);
                 entryRow.appendChild(entryHours);

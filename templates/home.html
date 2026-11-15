@@ -53,7 +53,7 @@
   <div class="top-cards">
     <div class="card card-overall" id="total-hours-card" data-hours="{{ total_hours_numeric }}" onclick="openOverviewModal()">
       <div class="card-title">{{ t('common.total') }}</div>
-      <div class="card-value">{{ total_hours }}h</div>
+      <div class="card-value">{{ total_hours }}</div>
     </div>
     <div class="card card-month" onclick="openMaxHoursModal()" id="month-card" 
          data-current-hours="{{ month_hours_numeric }}" 
@@ -61,7 +61,7 @@
       <div class="progress-background"></div>
       <div class="card-content">
         <div class="card-title">{{ selected_month_name }}</div>
-        <div class="card-value">{{ month_hours }}h</div>
+        <div class="card-value">{{ month_hours }}</div>
       </div>
     </div>
   </div>
@@ -144,11 +144,11 @@
                   <span class="month-name">{{ month_data.name }}</span>
                   {% if month_data.difference is not none %}
                     {% if month_data.difference > 0 %}
-                      <span class="month-surplus">+{{ month_data.difference|decimal_comma }}h</span>
+                      <span class="month-surplus">+{{ month_data.difference|decimal_comma }}</span>
                     {% elif month_data.difference < 0 %}
-                      <span class="month-deficit">{{ month_data.difference|decimal_comma }}h</span>
+                      <span class="month-deficit">{{ month_data.difference|decimal_comma }}</span>
                     {% else %}
-                      <span class="month-neutral">0h</span>
+                      <span class="month-neutral">0:00</span>
                     {% endif %}
                   {% endif %}
                 </div>
@@ -156,7 +156,7 @@
                 {% for entry in month_data.entries %}
                   <div class="overview-entry">
                     <span class="entry-date">{{ entry.date.strftime('%d.%m.%Y') }}</span>
-                    <span class="entry-hours">{{ entry.hours|decimal_comma }}h</span>
+                    <span class="entry-hours">{{ entry.hours|decimal_comma }}</span>
                   </div>
                 {% endfor %}
               </div>

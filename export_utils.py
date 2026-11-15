@@ -63,7 +63,7 @@ def _darken_hex(hex_val: str, factor: float = 0.25) -> str:
 
 
 def _format_duration_display(duration_val) -> str:
-    """Format decimal hours into clock format, e.g. 1.5 -> '1:30h', 1.75 -> '1:45h'."""
+    """Format decimal hours into clock format, e.g. 1.5 -> '1:30', 1.75 -> '1:45'."""
     if duration_val is None:
         return "-"
     if isinstance(duration_val, (int, float, Decimal)):
@@ -73,8 +73,8 @@ def _format_duration_display(duration_val) -> str:
         total_minutes = int(round(abs_val * 60))
         hours = total_minutes // 60
         minutes = total_minutes % 60
-        return f"{sign}{hours}:{minutes:02d}h"
-    return f"{str(duration_val).replace('.', ':')}h"
+        return f"{sign}{hours}:{minutes:02d}"
+    return f"{str(duration_val).replace('.', ':')}"
 
 
 def _format_date_display(d: date) -> str:
