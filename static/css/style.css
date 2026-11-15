@@ -657,7 +657,18 @@ details> summary {
 
 #profile-menu {
   min-width: 200px;
-  
+  touch-action: pan-y;
+}
+
+button:active, .profile-menu-btn:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+}
+
+.icon, button, .profile-menu-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px;
 }
 
 .username {

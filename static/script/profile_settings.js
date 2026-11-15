@@ -39,6 +39,21 @@ HTMLDialogElement.prototype.close = function () {
 
 
 window.addEventListener("DOMContentLoaded", (e) => {
+    // Close profile menu on outside click or Escape key
+    document.addEventListener("pointerdown", (e) => {
+        const details = document.getElementById("profile-menu-btn");
+        if (details && details.open && !details.contains(e.target)) {
+            details.open = false;
+        }
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const details = document.getElementById("profile-menu-btn");
+            if (details && details.open) {
+                details.open = false;
+            }
+        }
+    });
     let change_user_name_btn = document.getElementById("changeUsernameBtn");
     let change_username_dialog = document.getElementById("change-user-name-dialog");
     if (!change_user_name_btn || !change_username_dialog) return;
@@ -642,6 +657,21 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("DOMContentLoaded", (e) => {
+    // Close profile menu on outside click or Escape key
+    document.addEventListener("pointerdown", (e) => {
+        const details = document.getElementById("profile-menu-btn");
+        if (details && details.open && !details.contains(e.target)) {
+            details.open = false;
+        }
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const details = document.getElementById("profile-menu-btn");
+            if (details && details.open) {
+                details.open = false;
+            }
+        }
+    });
     let delete_account_btn = document.getElementById("deleteAccountBtn");
     let delete_acc_dialog = document.getElementById("delete-account-dialog");
     if (!delete_account_btn || !delete_acc_dialog) return;
@@ -658,6 +688,21 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
 
 window.addEventListener("DOMContentLoaded", (e) => {
+    // Close profile menu on outside click or Escape key
+    document.addEventListener("pointerdown", (e) => {
+        const details = document.getElementById("profile-menu-btn");
+        if (details && details.open && !details.contains(e.target)) {
+            details.open = false;
+        }
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const details = document.getElementById("profile-menu-btn");
+            if (details && details.open) {
+                details.open = false;
+            }
+        }
+    });
     let change_password_btn = document.getElementById("changePasswordBtn");
     let change_password_dialog = document.getElementById("change-password-dialog");
     if (!change_password_btn || !change_password_dialog) return;
@@ -763,6 +808,21 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("DOMContentLoaded", (e) => {
+    // Close profile menu on outside click or Escape key
+    document.addEventListener("pointerdown", (e) => {
+        const details = document.getElementById("profile-menu-btn");
+        if (details && details.open && !details.contains(e.target)) {
+            details.open = false;
+        }
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const details = document.getElementById("profile-menu-btn");
+            if (details && details.open) {
+                details.open = false;
+            }
+        }
+    });
     const changeProfilePicBtn = document.getElementById("changeProfilePic");
     const changeProfilePicDialog = document.getElementById("change-profile-picture-dialog");
 
@@ -886,6 +946,21 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
 // Touch-Funktionalität für das Profil-Menü
 window.addEventListener("DOMContentLoaded", (e) => {
+    // Close profile menu on outside click or Escape key
+    document.addEventListener("pointerdown", (e) => {
+        const details = document.getElementById("profile-menu-btn");
+        if (details && details.open && !details.contains(e.target)) {
+            details.open = false;
+        }
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const details = document.getElementById("profile-menu-btn");
+            if (details && details.open) {
+                details.open = false;
+            }
+        }
+    });
     const profileMenu = document.getElementById('profile-menu');
     const profileButton = document.querySelector('.profile');
     
