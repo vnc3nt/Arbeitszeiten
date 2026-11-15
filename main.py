@@ -74,6 +74,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,  # Verhindert Zugriff auf Session-Cookie via JavaScript (XSS-Schutz)
     SESSION_COOKIE_SAMESITE="Lax",
     MAX_CONTENT_LENGTH=2 * 1024 * 1024,  # Blockiert Uploads > 2 MB sofort auf Server-Ebene (DoS-Schutz)
+    SEND_FILE_MAX_AGE_DEFAULT=31536000,  # 1 Jahr Cache für statische Dateien
 )
 
 @app.before_request
@@ -96,6 +97,14 @@ def add_security_headers(response):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "img-src 'self' data:; "
+        "style-src 'self' 'unsafe-inline'; "
+        "script-src 'self' 'unsafe-inline';"
+    )
+    if request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     return response
 
 PROFILE_IMAGE_DEFAULT = "img/icons/512x512-profile.png"
