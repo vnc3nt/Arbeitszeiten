@@ -10,6 +10,10 @@ from constants import USERID, TOKEN, PROFILEID, USERNAME_REGEX
 
 
 DUMMY_HASH = generate_password_hash("dummy-password-for-timing-protection")
+COMMON_PASSWORDS = {
+    "12345678", "123456789", "1234567890", "password", "passwort",
+    "qwertyuiop", "qwertzuiop", "admin123", "letmein123", "welcome123"
+}
 
 
 def hash_token(raw_token: str) -> str:
@@ -121,8 +125,8 @@ def change_password(cur_pw, new_pw, new_pw_confirm):
     if new_pw != new_pw_confirm:
         return "Neues Passwort und Bestätigung sind verschieden"
 
-    if len(new_pw) < 8:
-        return "Passwort muss mindestens 8 Zeichen lang sein"
+    if len(new_pw) < 10 or new_pw.lower() in COMMON_PASSWORDS:
+        return "Passwort muss mindestens 10 Zeichen lang sein und darf kein triviales Passwort sein"
 
     u.password = hash_pw(new_pw)
     db.session.query(token).filter(token.userid == u.id).delete()
@@ -133,7 +137,12 @@ def change_password(cur_pw, new_pw, new_pw_confirm):
 
 def checkRegistration(username: str, password_1: str, password_2: str) -> bool:
     user = db.session.query(users).filter(users.username == username).first()
-    if user is None and password_1 == password_2 and len(password_1) >= 8:
+    if (
+        user is None
+        and password_1 == password_2
+        and len(password_1) >= 10
+        and password_1.lower() not in COMMON_PASSWORDS
+    ):
         return True
     return False
 
