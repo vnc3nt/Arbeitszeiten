@@ -19,13 +19,13 @@ function validateUsername() {
     return;
   }
 
-  // Muss zu constants.py passen: Mindestens 3 Zeichen und keine Leerzeichen!
-  if (usernameInput.length < 3 || /\s/.test(usernameInput)) {
+  // Muss zu constants.py passen: ^[a-zA-Z0-9_.-]{3,30}$
+  if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(usernameInput)) {
     inputField.style.borderColor = 'red';
     usernameCheck.style.display = 'none';
     usernameX.style.display = 'inline';
     usernameAvailable.style.display = 'none';
-    usernameNotAvailable.textContent = 'Mindestens 3 Zeichen ohne Leerzeichen erforderlich';
+    usernameNotAvailable.textContent = '3–30 Zeichen, nur Buchstaben, Zahlen sowie _ . - erlaubt';
     usernameNotAvailable.style.display = 'inline';
     return;
   }
@@ -73,7 +73,7 @@ function validatePassword(index) {
     inputField.style.borderColor = 'red';
     passwordCheck.style.display = 'none';
     passwordX.style.display = 'none';
-  } else if (passwordInput.length >= 8 && !/\s/.test(passwordInput)) {
+  } else if (passwordInput.length >= 10) {
     inputField.style.borderColor = 'green';
     passwordCheck.style.display = 'inline';
     passwordX.style.display = 'none';
@@ -89,7 +89,7 @@ function validatePassword(index) {
 
   if (index === 2) {
     const firstPasswordInput = document.getElementById('password_input_1')?.value || '';
-    if (passwordInput.length >= 8 && !/\s/.test(passwordInput) && passwordInput === firstPasswordInput) {
+    if (passwordInput.length >= 10 && passwordInput === firstPasswordInput) {
       inputField.style.borderColor = 'green';
       passwordCheck.style.display = 'none';
       passwordX.style.display = 'none';
