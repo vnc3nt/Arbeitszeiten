@@ -11,7 +11,7 @@ function validateUsername() {
   const usernameNotAvailable = document.getElementById('usernameNotAvailable');
 
   if (usernameInput.length === 0) {
-    inputField.style.borderColor = '';
+    inputField.style.borderColor = 'red';
     usernameCheck.style.display = 'none';
     usernameX.style.display = 'none';
     usernameAvailable.style.display = 'none';
@@ -62,7 +62,6 @@ function validatePassword(index) {
   const passwordInput = inputField.value;
   let passwordCheck = document.getElementById('firstPWCheck');
   let passwordX = document.getElementById('firstPWX');
-  const passwordMin10 = document.getElementById('passwordMin8');
   const passwordNotTheSame = document.getElementById('passwordNotTheSame');
 
   if (index === 2) {
@@ -70,47 +69,37 @@ function validatePassword(index) {
     passwordX = document.getElementById('secondPWX');
   }
 
-  if (index === 1) {
-    if (passwordInput.length === 0) {
-      inputField.style.borderColor = '';
-      passwordCheck.style.display = 'none';
-      passwordX.style.display = 'none';
-      if (passwordMin10) passwordMin10.style.display = 'none';
-    } else if (passwordInput.length >= 10) {
-      inputField.style.borderColor = 'green';
-      passwordCheck.style.display = 'inline';
-      passwordX.style.display = 'none';
-      if (passwordMin10) passwordMin10.style.display = 'none';
-    } else {
-      inputField.style.borderColor = 'red';
-      passwordCheck.style.display = 'none';
-      passwordX.style.display = 'inline';
-      if (passwordMin10) passwordMin10.style.display = 'block';
-    }
-
-    const pw2 = document.getElementById('password_input_2');
-    if (pw2 && pw2.value.length > 0) {
-      validatePassword(2);
-    }
-    return;
-  }
-
-  const firstPasswordInput = document.getElementById('password_input_1')?.value || '';
   if (passwordInput.length === 0) {
-    inputField.style.borderColor = '';
+    inputField.style.borderColor = 'red';
     passwordCheck.style.display = 'none';
     passwordX.style.display = 'none';
-    passwordNotTheSame.style.display = 'none';
-  } else if (passwordInput.length >= 10 && passwordInput === firstPasswordInput) {
+  } else if (passwordInput.length >= 10) {
     inputField.style.borderColor = 'green';
     passwordCheck.style.display = 'inline';
     passwordX.style.display = 'none';
-    passwordNotTheSame.style.display = 'none';
   } else {
     inputField.style.borderColor = 'red';
     passwordCheck.style.display = 'none';
     passwordX.style.display = 'inline';
-    passwordNotTheSame.style.display = 'block';
+  }
+
+  if (index === 1) {
+    validatePassword(2);
+  }
+
+  if (index === 2) {
+    const firstPasswordInput = document.getElementById('password_input_1')?.value || '';
+    if (passwordInput.length >= 10 && passwordInput === firstPasswordInput) {
+      inputField.style.borderColor = 'green';
+      passwordCheck.style.display = 'none';
+      passwordX.style.display = 'none';
+      passwordNotTheSame.style.display = 'none';
+    } else {
+      inputField.style.borderColor = 'red';
+      passwordCheck.style.display = 'none';
+      passwordX.style.display = 'inline';
+      passwordNotTheSame.style.display = 'inline';
+    }
   }
 }
 

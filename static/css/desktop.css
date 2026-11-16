@@ -237,8 +237,8 @@ body {
     color: #fff;
     border: none;
     border-radius: 10px;
-    padding: 0;
-    font-size: 1.8rem;
+    padding: 0; /* Kein riesiges Padding mehr, das Text abschneidet */
+    font-size: 1.8rem; /* Schöne Größe für + und - */
     font-weight: 600;
     transition: background-color 0.2s ease, transform 0.2s ease;
     width: 6rem;
@@ -389,10 +389,9 @@ body {
 
 .overview-modal {
     width: 600px;
-    max-height: 80vh;
     padding: 2rem;
     overflow-y: auto;
-    top: 50%;
+    top: 40%;
 }
 
 .modal-header h3 {
@@ -514,18 +513,6 @@ body {
 
 .overview-entry:last-child {
     border-bottom: none;
-}
-
-#passwordMin8 {
-    display: none;
-}
-
-.export-profiles-header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 } /* Ende Desktop Media Query */

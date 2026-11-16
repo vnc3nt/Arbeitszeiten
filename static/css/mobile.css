@@ -24,7 +24,6 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     z-index: 1000;
-    background-color: rgba(24, 24, 28, 0.94);
     backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
     padding: 1.5rem 1rem calc(1.5rem + env(safe-area-inset-bottom, 0px) + 5px) 1rem;
@@ -34,10 +33,6 @@
     opacity: 0;
     transform: translateY(100%);
     transition: all 0.2s ease-out;
-}
-
-html.light-mode #profile-menu {
-    background-color: rgba(255, 255, 255, 0.95);
 }
 
 /* Links und interaktive Elemente müssen anklickbar sein */
@@ -52,8 +47,8 @@ html.light-mode #profile-menu {
 .profile details[open] #profile-menu {
     opacity: 1;
     transform: translateY(0%);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
 }
 
 /* Spezielle Ausblende-Animation nach unten */
@@ -103,10 +98,10 @@ html.light-mode #profile-menu {
 }
 
 .legal {
-    position: static;
-    bottom: auto;
-    margin-top: 1rem;
+    bottom: 10rem;
 }
+
+
 
 /* Container zentrieren mit Flexbox */
 .container {
@@ -114,6 +109,8 @@ html.light-mode #profile-menu {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
     min-height: 100dvh;
     padding-top: max(1rem, env(safe-area-inset-top, 1rem));
@@ -367,6 +364,10 @@ html.light-mode #profile-menu {
         position: relative;
     }
 
+
+
+
+
     .styled-date-picker::-webkit-calendar-picker-indicator {
         opacity: 0;
         position: absolute;
@@ -384,8 +385,8 @@ html.light-mode #profile-menu {
     }
 
     .edit-btn {
-        font-size: 1.5rem;
-        padding: 0;
+        font-size: 0.95rem;
+        padding: 0.4rem 0.85rem;
         transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
@@ -408,25 +409,6 @@ html.light-mode #profile-menu {
     /* Einheitlicher Header-Abstand (wie auf der Einstellungsseite / halber Offset) */
     :root {
         --mobile-header-top: max(1.2rem, calc(1.5rem + env(safe-area-inset-top, 0px)));
-    }
-
-    .auth-lang-switch {
-        position: fixed;
-        top: max(1rem, env(safe-area-inset-top, 1rem));
-        right: max(1rem, env(safe-area-inset-right, 1rem));
-        z-index: 1002;
-    }
-
-    #passwordMin8 {
-        display: none;
-    }
-
-    .export-profiles-header {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.5rem;
     }
 
     .logo-pic {
@@ -539,41 +521,9 @@ html.light-mode #profile-menu {
         text-overflow: ellipsis;
     }
 
-    /* Modals auf Mobile */
+    /* Modal-Animationen für Mobile */
     .modal-content {
-        width: min(92vw, 440px);
-        max-height: 82dvh;
-        display: flex;
-        flex-direction: column;
-        padding: 1.4rem;
-        box-sizing: border-box;
         animation: mobile-modal-appear 0.2s ease-out;
-    }
-
-    .overview-body {
-        overflow-y: auto;
-        padding-bottom: 0.75rem;
-    }
-
-    .maxHours-modal .modal-body input[type="text"] {
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        box-sizing: border-box;
-    }
-
-    .modal-footer {
-        display: flex;
-        gap: 0.75rem;
-        width: 100%;
-        margin-top: 1.25rem;
-    }
-
-    .btn-cancel, .btn-save {
-        width: auto !important;
-        max-width: none !important;
-        flex: 1;
-        margin: 0 !important;
     }
 
     @keyframes mobile-modal-appear {
@@ -593,7 +543,7 @@ html.light-mode #profile-menu {
         overflow-y: auto !important;
         overflow-x: hidden !important;
         touch-action: pan-y !important;
-        position: static !important;
+        position: relative !important;
         width: 100% !important;
         max-width: 100vw !important;
         height: auto !important;
@@ -609,13 +559,13 @@ html.light-mode #profile-menu {
     }
 
     body.page-home {
-        overflow-y: auto !important;
-        touch-action: pan-y !important;
-        position: relative !important;
+        overflow: hidden !important;
+        touch-action: none !important;
+        position: fixed !important;
         width: 100% !important;
-        min-height: 100dvh !important;
-        height: auto !important;
+        height: 100dvh !important;
         padding-top: 0 !important;
+        /* Verhindert doppelte Verschiebung mit .logo-pic/.profile */
         box-sizing: border-box !important;
     }
 
