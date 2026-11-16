@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 from flask import Blueprint, render_template, request, send_file, session, url_for
 from translations import SUPPORTED_LANGUAGES
 from utils.session_helpers import get_current_language
@@ -14,7 +15,9 @@ def impressum():
     fallback_url = url_for(fallback_endpoint)
     referrer = request.referrer
     if referrer and "/impressum" not in referrer:
-        session["impressum_back_url"] = referrer
+        parsed = urlparse(referrer)
+        if (not parsed.netloc or parsed.netloc == request.host) and parsed.scheme in ("", "http", "https"):
+            session["impressum_back_url"] = referrer
     elif not session.get("impressum_back_url"):
         session["impressum_back_url"] = fallback_url
     return render_template(
