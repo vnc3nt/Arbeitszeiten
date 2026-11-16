@@ -660,7 +660,7 @@ details> summary {
   touch-action: pan-y;
 }
 
-button:active, #profile-menu-btn:active, #profile-menu-btn summary:active {
+button:active, #profile-menu-btn summary:active {
     transform: scale(0.96);
     opacity: 0.85;
 }
@@ -976,8 +976,8 @@ input[type=color]::-webkit-color-swatch-wrapper {
 }
 
 .icon {
-  height: 1.2rem;
-  width: 1.2rem;
+  width: 22px;
+  height: 22px;
   min-width: 0;
   min-height: 0;
   padding-right: 0.5rem;

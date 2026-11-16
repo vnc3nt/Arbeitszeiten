@@ -9,11 +9,6 @@
     display: none;
 }
 
-#profile-menu-btn:active {
-    transform: none;
-    opacity: 1;
-}
-
 #profile-menu {
     position: fixed;
     top: auto;

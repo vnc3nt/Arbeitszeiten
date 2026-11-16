@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser
 from models import users
-from main import limiter
+from extensions import limiter
 
 post_arguments = RequestParser()
 post_arguments.add_argument(

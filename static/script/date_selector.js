@@ -569,7 +569,7 @@ function applyHomeState(state, snapshot = null) {
 
     const maxHoursInput = document.getElementById('maxHoursInput');
     if (maxHoursInput) {
-        maxHoursInput.placeholder = `${state.suggested_max_hours_display || ''}h`;
+        maxHoursInput.placeholder = state.suggested_max_hours_display || '';
     }
 
     if (state.data_changed) {

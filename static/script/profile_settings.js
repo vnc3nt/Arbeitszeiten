@@ -40,17 +40,22 @@ HTMLDialogElement.prototype.close = function () {
 // ── Animated profile-menu close helper ───────────────────────────────────────
 // Closes the profile menu with the same CSS animation as the summary click.
 // Called from the outside-click and Escape handlers (registered only once).
+let profileMenuCloseTimer = null;
+
 function closeProfileMenuAnimated() {
     const details = document.getElementById("profile-menu-btn");
     if (!details || !details.open) return;
     const menu = document.getElementById("profile-menu");
     if (menu) {
+        if (menu.classList.contains("closing")) return;
         menu.classList.add("closing");
         const isDesktop = window.innerWidth >= 766;
-        const delay = isDesktop ? 150 : 300;
-        setTimeout(() => {
+        const delay = isDesktop ? 200 : 220;
+        clearTimeout(profileMenuCloseTimer);
+        profileMenuCloseTimer = setTimeout(() => {
             details.removeAttribute("open");
             menu.classList.remove("closing");
+            profileMenuCloseTimer = null;
         }, delay);
     } else {
         // Fallback wenn kein Menü-Element gefunden
