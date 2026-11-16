@@ -3,7 +3,7 @@ from models import db, users, profiles
 from constants import USERID, PROFILEID
 from translations import SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE
 
-SUPPORTED_THEMES = {'auto': 'Automatisch', 'dark': 'Darkmode', 'light': 'Lightmode'}
+SUPPORTED_THEMES = {'auto': 'Auto', 'dark': 'Darkmode', 'light': 'Lightmode'}
 
 
 def get_current_language() -> str:
