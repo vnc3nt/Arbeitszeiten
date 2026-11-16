@@ -52,7 +52,7 @@ def login():
             db.session.add(newToken)
             db.session.commit()
             return redirect("/home")
-        login_error = "Benutzername oder Passwort ist falsch"
+        login_error = "auth.error.invalid_credentials"
     return render_template('login.html', login_error=login_error)
 
 
@@ -66,7 +66,7 @@ def register():
         terms_checkbox = request.form.get("terms_checkbox")
 
         if not terms_checkbox:
-            return render_template('register.html', error="Sie müssen den Datenschutzbestimmungen zustimmen.")
+            return render_template('register.html', error="auth.error.terms_required")
 
         if username_input and password_1 and password_2 and checkRegistration(username_input, password_1, password_2) and check_username(username_input):
             try:
@@ -84,7 +84,7 @@ def register():
                 return redirect("/login")
             except Exception:
                 db.session.rollback()
-                return render_template('register.html', error="Benutzername existiert bereits.")
+                return render_template('register.html', error="auth.error.username_exists")
     return render_template('register.html')
 
 

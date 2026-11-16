@@ -2258,13 +2258,24 @@ html.light-mode .edit-btn:hover {
    ========================================================= */
 .auth-page-container {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 2.5rem 1rem 4rem;
     box-sizing: border-box;
+}
+
+.auth-body {
+    min-height: 100dvh;
+    height: auto;
+    overflow-y: auto;
+}
+
+.auth-body #content,
+.auth-body #home-content {
+    min-height: 100dvh;
 }
 
 .auth-card {
@@ -2501,9 +2512,9 @@ html.light-mode input.auth-input {
 /* Sprachwechsler oben rechts auf Login / Registrierung */
 .auth-lang-switch {
     position: fixed;
-    top: 1.25rem;
-    right: 1.25rem;
-    z-index: 100;
+    top: max(0.85rem, env(safe-area-inset-top, 0px));
+    right: max(0.85rem, env(safe-area-inset-right, 0px));
+    z-index: 1000;
     display: inline-flex;
     align-items: center;
     background: rgba(0, 0, 0, 0.35);
@@ -2564,13 +2575,27 @@ html.light-mode .auth-lang-btn:hover,
 
 @media (max-width: 480px) {
     .auth-lang-switch {
-        top: 0.85rem;
-        right: 0.85rem;
         padding: 2px;
     }
     .auth-lang-btn {
         padding: 0.3rem 0.55rem;
         font-size: 0.78rem;
+    }
+}
+
+@media (max-width: 765px) {
+    .auth-body {
+        justify-content: flex-start;
+    }
+
+    .auth-body .auth-page-container {
+        justify-content: flex-start;
+        padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
+        padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px));
+    }
+
+    .auth-body .auth-card {
+        width: min(92vw, 440px);
     }
 }
 

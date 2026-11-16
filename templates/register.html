@@ -1,6 +1,7 @@
 {% extends "index.html" %}
+{% block body_class %}auth-body{% endblock %}
 {% block title %}
-<title>register</title>
+<title>{{ t('auth.register') }}</title>
 {% endblock title %}
 {% block head_tags %}
 <style>
@@ -76,7 +77,7 @@
         <div class="auth-header">
             <img class="auth-logo" src="{{ url_for('static', filename='img/logo/logo.webp') }}" alt="Arbeitszeiten">
             <h1 class="auth-title">{{ t('auth.register') }}</h1>
-            <p class="auth-subtitle">Erstelle dein Konto, um deine Arbeitszeiten zu verwalten.</p>
+            <p class="auth-subtitle">{{ t('auth.register_subtitle') }}</p>
         </div>
 
         {% if error %}
@@ -86,7 +87,7 @@
                 <line x1="12" y1="8" x2="12" y2="12"></line>
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
-            <span>{{ error }}</span>
+            <span>{{ t(error) }}</span>
         </div>
         {% endif %}
 
@@ -100,8 +101,8 @@
                     <span class="regex" id="usernameCheck"></span>
                     <span class="regex" id="usernameX"></span>
                 </div>
-                <div class="regexFeedback" id="usernameAvailable">Benutzername ist verfügbar</div>
-                <div class="regexFeedback" id="usernameNotAvailable">Benutzername ist bereits vergeben</div>
+                <div class="regexFeedback" id="usernameAvailable" data-message="{{ t('auth.username_available') }}">{{ t('auth.username_available') }}</div>
+                <div class="regexFeedback" id="usernameNotAvailable" data-message="{{ t('auth.username_taken') }}" data-invalid-message="{{ t('auth.username_invalid') }}">{{ t('auth.username_taken') }}</div>
             </div>
 
             <div class="auth-input-group">
@@ -111,7 +112,7 @@
                     <span class="regex" id="firstPWCheck"></span>
                     <span class="regex" id="firstPWX"></span>
                 </div>
-                <div class="regexFeedback" id="passwordMin8">Passwort muss mindestens 10 Zeichen lang sein</div>
+                <div class="regexFeedback" id="passwordMin8">{{ t('auth.password_min_length') }}</div>
             </div>
 
             <div class="auth-input-group">
@@ -121,7 +122,7 @@
                     <span class="regex" id="secondPWCheck"></span>
                     <span class="regex" id="secondPWX"></span>
                 </div>
-                <div class="regexFeedback" id="passwordNotTheSame">Passwörter müssen identisch sein</div>
+                <div class="regexFeedback" id="passwordNotTheSame">{{ t('auth.password_mismatch') }}</div>
             </div>
 
             <div class="terms-container">
@@ -136,7 +137,7 @@
         </form>
 
         <div class="auth-footer-text">
-            <span>Bereits registriert?</span>
+            <span>{{ t('auth.already_registered') }}</span>
             <a href="{{ url_for('login') }}" class="auth-link">{{ t('auth.login') }}</a>
         </div>
     </div>

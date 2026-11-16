@@ -25,7 +25,7 @@ function validateUsername() {
     usernameCheck.style.display = 'none';
     usernameX.style.display = 'inline';
     usernameAvailable.style.display = 'none';
-    usernameNotAvailable.textContent = '3–30 Zeichen, nur Buchstaben, Zahlen sowie _ . - erlaubt';
+    usernameNotAvailable.textContent = usernameNotAvailable.dataset.invalidMessage;
     usernameNotAvailable.style.display = 'inline';
     return;
   }
@@ -39,7 +39,7 @@ function validateUsername() {
           usernameCheck.style.display = 'none';
           usernameX.style.display = 'inline';
           usernameAvailable.style.display = 'none';
-          usernameNotAvailable.textContent = 'Benutzername ist bereits vergeben';
+          usernameNotAvailable.textContent = usernameNotAvailable.dataset.message;
           usernameNotAvailable.style.display = 'inline';
         } else {
           inputField.style.borderColor = 'green';
