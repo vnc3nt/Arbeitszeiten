@@ -1,5 +1,10 @@
 let dialogNormalShowModal = HTMLDialogElement.prototype.showModal;
 
+function syncPageScrollLock() {
+    const hasOpenOverlay = document.querySelector("dialog[open], #profile-menu-btn[open]");
+    document.body.classList.toggle("dialog-open", Boolean(hasOpenOverlay));
+}
+
 let dialogCloseOnClick = (e) => {
     e.stopPropagation();
     let elem = e.target.closest("dialog");
@@ -26,6 +31,7 @@ HTMLDialogElement.prototype.showModal = function () {
     let bg_modal = document.getElementById("modal-background");
     if (bg_modal) bg_modal.style.display = "block";
     dialogNormalShowModal.apply(this, arguments);
+    syncPageScrollLock();
     this.addEventListener("click", dialogCloseOnClick);
 };
 
@@ -35,6 +41,7 @@ HTMLDialogElement.prototype.close = function () {
     if (bg_modal) bg_modal.style.display = "none";
     dialogNormalModalClose.apply(this, arguments);
     this.removeEventListener("click", dialogCloseOnClick);
+    syncPageScrollLock();
 };
 
 // ── Animated profile-menu close helper ───────────────────────────────────────
@@ -1046,6 +1053,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
         
         // Fallback für toggle-Event (für andere Schließ-Methoden)
         profileDetails.addEventListener('toggle', function() {
+            syncPageScrollLock();
             if (this.open) {
                 // Menü wird geöffnet - sicherstellen dass closing-Klasse entfernt ist
                 profileMenu.classList.remove('closing');

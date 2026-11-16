@@ -971,6 +971,10 @@ input[type=color]::-webkit-color-swatch-wrapper {
   overflow-y: hidden;
 }
 
+body.dialog-open {
+  overflow: hidden !important;
+}
+
 .enable-scroll {
   overflow-y: auto;
 }
@@ -1147,6 +1151,10 @@ dialog {
   color: var(--text-color);
   box-sizing: border-box;
   text-align: left;
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 dialog.modern-dialog,
