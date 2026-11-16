@@ -88,7 +88,6 @@
             </div>
         </div>
 
-        <!-- Sektion Sprache im Hauptmenü (ersetzt den Button) -->
         <div class="theme-selector-container">
             <span class="theme-selector-label">{{ t('dialog.language.title') }}</span>
             <div class="theme-segmented-control" role="radiogroup" aria-label="{{ t('dialog.language.title') }}" id="language-segmented-control">
@@ -169,7 +168,7 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="change-password">
             <div class="dialog-form-group">
-                <input type="password" class="dialog-input" name="current-password" id="current_passwor"
+                <input type="password" class="dialog-input" name="current-password" id="current_password"
                     placeholder="{{ t('dialog.password.current') }}" autocomplete="current-password" required />
                 <input type="password" class="dialog-input" name="new-password"
                     placeholder="{{ t('dialog.password.new') }}" autocomplete="new-password" minlength="10" required />
@@ -192,7 +191,6 @@
             <p class="dialog-subtitle">{{ t('dialog.avatar.desc') }}</p>
         </div>
 
-        <!-- Hauptformular für den Upload -->
         <form id="avatar-upload-form" action="" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="change-profile-picture">
@@ -212,7 +210,6 @@
                     accept="image/png,image/jpeg,image/webp" style="display: none;" />
             </div>
 
-            <!-- Button verweist per form="avatar-reset-form" auf das separate Formular unten -->
             <button type="submit" form="avatar-reset-form" class="btn-reset-avatar">{{ t('dialog.avatar.reset')
                 }}</button>
 
@@ -232,7 +229,6 @@
             </div>
         </form>
 
-        <!-- Separates Formular für das Zurücksetzen (außerhalb des Upload-Formulars!) -->
         <form id="avatar-reset-form" action="" method="post" class="profile-reset-form" style="display: none;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="reset-profile-picture">
@@ -305,8 +301,7 @@
                     </button>
 
                     <button type="submit" name="profile_action" value="delete" class="icon-btn delete-btn"
-                        title="{{ t('dialog.profiles.delete') }}" aria-label="{{ t('dialog.profiles.delete') }}"
-                        onclick="return confirm('{{ t('dialog.profiles.delete_confirm') }}')">
+                        title="{{ t('dialog.profiles.delete') }}" aria-label="{{ t('dialog.profiles.delete') }}">
                         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
                             fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
@@ -329,7 +324,7 @@
             </svg>
             <span>{{ t('dialog.profiles.new_title') }}</span>
         </button>
-        <button type="button" class="dialog-close-btn" autofocus onclick="this.closest('dialog').close()">{{ t('common.close')
+        <button type="button" class="dialog-close-btn" onclick="this.closest('dialog').close()">{{ t('common.close')
             }}</button>
     </dialog>
 
