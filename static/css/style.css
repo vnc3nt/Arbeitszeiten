@@ -660,12 +660,12 @@ details> summary {
   touch-action: pan-y;
 }
 
-button:active, .profile-menu-btn:active {
+button:active, #profile-menu-btn:active, #profile-menu-btn summary:active {
     transform: scale(0.96);
     opacity: 0.85;
 }
 
-.icon, button, .profile-menu-btn {
+button, .profile-menu-btn {
     min-width: 44px;
     min-height: 44px;
     padding: 8px;
@@ -757,6 +757,14 @@ button:active, .profile-menu-btn:active {
   color: var(--text-color);
 }
 
+/* Touch-Fläche für Menü-Links */
+#profile-menu ul a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 #profile-menu ul {
   margin: 0;
   padding: 0;
@@ -842,6 +850,8 @@ button:active, .profile-menu-btn:active {
 }
 
 #profile-menu ul li {
+  min-height: 44px;
+  box-sizing: border-box;
   border-radius: 10px;
   padding: 10px;
   user-select: none;
@@ -968,6 +978,8 @@ input[type=color]::-webkit-color-swatch-wrapper {
 .icon {
   height: 1.2rem;
   width: 1.2rem;
+  min-width: 0;
+  min-height: 0;
   padding-right: 0.5rem;
   object-fit: contain;
   vertical-align: middle;
